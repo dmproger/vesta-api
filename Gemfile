@@ -25,8 +25,19 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
+gem 'devise', '~> 4.7', '>= 4.7.3'
+
+# Authentication For use with client side single page apps
+gem 'devise_token_auth', '~> 1.1', '>= 1.1.4'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
+
+# Middleware that will make Rack-based apps CORS compatible
+gem 'rack-cors', '~> 1.1', '>= 1.1.1'
+
+# Adds methods to set and authenticate against one time passwords 2FA
+gem 'active_model_otp', '~> 2.0', '>= 2.0.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
