@@ -39,6 +39,12 @@ gem 'rack-cors', '~> 1.1', '>= 1.1.1'
 # Adds methods to set and authenticate against one time passwords 2FA
 gem 'active_model_otp', '~> 2.0', '>= 2.0.1'
 
+# The official library for communicating with the Twilio REST API
+gem 'twilio-ruby', '~> 5.40', '>= 5.40.3'
+
+# Loads environment variables from `.env`.
+gem 'dotenv', '~> 2.7', '>= 2.7.6'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

@@ -3,7 +3,7 @@
 class User < ActiveRecord::Base
   extend Devise::Models
 
-  has_one_time_password length: 4 #OTP for phone number verification
+  has_one_time_password length: 5 #OTP for phone number verification
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
@@ -31,10 +31,9 @@ class User < ActiveRecord::Base
     false
   end
 
-  private
-
   def send_otp
-    # TODO: send OTP to user via SMS
-    puts "Current OTP is: #{otp_code}"
+    SendTwilioMessage.new("Your Vesta OTP is #{otp_code}", phone).call
+  rescue StandardError => e
+    puts "Unable to send OTP: #{e.message}"
   end
 end
