@@ -80,3 +80,4 @@ bower.json
 *.sw*
 
 config/database.yml
+/config/credentials/development.key

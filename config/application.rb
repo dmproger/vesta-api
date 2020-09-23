@@ -1,6 +1,7 @@
 require_relative 'boot'
 
 require 'rails/all'
+require 'dotenv/load'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -15,5 +16,16 @@ module VestaRails
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
+
+    # CORS
+    config.middleware.use Rack::Cors do
+      allow do
+        origins '*'
+        resource '*',
+                 headers: :any,
+                 expose: %w[access-token expiry token-type uid client],
+                 methods: [:get, :post, :options, :delete, :put]
+      end
+    end
   end
 end
