@@ -12,6 +12,9 @@ module VestaRails
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
+    # loading tink_api for entire application
+    require Rails.root.join('app', 'tink_api', 'v1', 'client')
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
