@@ -7,12 +7,19 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:index] do
+      resources :users, only: :index do
         get :verify_otp, on: :member
+        get :accounts, on: :member
         get :email_status, on: :collection
         get :phone_status, on: :collection
         get :details, on: :collection
       end
+
+      resources :accounts, only: :index
+
+      resources :tink_tokens, only: :create
     end
   end
+
+  get '/callback', to: 'tink_hooks#callback'
 end
