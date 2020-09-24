@@ -1,0 +1,2 @@
+module TinkHooksHelper
+end
