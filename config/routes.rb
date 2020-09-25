@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :users, only: :index do
         get :verify_otp, on: :member
         get :accounts, on: :member
+        get :accounts, on: :member
         get :email_status, on: :collection
         get :phone_status, on: :collection
         get :details, on: :collection
