@@ -48,7 +48,12 @@ class User < ActiveRecord::Base
     puts "Unable to send OTP: #{e.message}"
   end
 
-  def tink_token
+  def valid_tink_token
+    refresh_tink_token if tink_access_token.is_expired?
     tink_access_token.access_token
+  end
+
+  def refresh_tink_token
+    RefreshTinkToken.new(tink_access_token).call
   end
 end
