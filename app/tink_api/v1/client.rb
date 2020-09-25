@@ -17,7 +17,19 @@ module TinkAPI
                                        code: auth_code,
                                        client_id: ENV['TINK_CLIENT_ID'],
                                        client_secret: ENV['TINK_CLIENT_SECRET'],
-                                       grant_type: 'authorization_code  '
+                                       grant_type: 'authorization_code'
+                                   }
+
+        JSON.parse(response.body).symbolize_keys
+      end
+
+      def refresh_access_tokens(refresh_token:)
+        response = RestClient.post "#{API_ENDPOINT}/oauth/token",
+                                   {
+                                       refresh_token: refresh_token,
+                                       client_id: ENV['TINK_CLIENT_ID'],
+                                       client_secret: ENV['TINK_CLIENT_SECRET'],
+                                       grant_type: 'refresh_token'
                                    }
 
         JSON.parse(response.body).symbolize_keys
