@@ -8,7 +8,7 @@ module Overrides
         @resource.send_otp
         render json: {success: true, id: @resource.id, message: 'Please verify the OTP sent via SMS'}
       else
-        render_create_error_bad_credentials
+        render json: {success: false, message: 'phone does not exist', data: nil}, status: 422
       end
     end
   end

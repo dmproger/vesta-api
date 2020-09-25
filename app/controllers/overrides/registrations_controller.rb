@@ -17,6 +17,7 @@ module Overrides
     def render_create_success
       render json: {
           success: true,
+          message: 'Registered successfully',
           data: resource_data
       }
     end
@@ -24,8 +25,8 @@ module Overrides
     def render_create_error
       render json: {
           success: false,
+          message: @resource.errors.to_h.map {|k,v| "#{k} #{v}"}.join(', '),
           data: resource_data,
-          errors: resource_errors
       }, status: 422
     end
   end

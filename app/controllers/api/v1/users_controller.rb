@@ -10,7 +10,7 @@ class Api::V1::UsersController < ApplicationController
       sign_in_user
       render json: {success: true, message: 'OTP successfully verified', data: @resource.token_validation_response}
     else
-      render json: {success: false, message: 'invalid OTP, please try again'}
+      render json: {success: false, message: 'invalid OTP, please try again', data: nil}
     end
   end
 
@@ -39,13 +39,7 @@ class Api::V1::UsersController < ApplicationController
   def set_user
     @resource = User.find_by(id: params[:id])
     if @resource.blank?
-      render json: {success: false, message: 'invalid user id'}
+      render json: {success: false, message: 'invalid user id', data: nil}
     end
-  end
-
-  def render_create_success
-    render json: {
-        data: resource_data(resource_json: @resource.token_validation_response)
-    }
   end
 end
