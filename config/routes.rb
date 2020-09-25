@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: [:index] do
         get :verify_otp, on: :member
+        get :email_status, on: :collection
+        get :phone_status, on: :collection
+        get :details, on: :collection
       end
     end
   end

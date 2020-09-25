@@ -1,6 +1,6 @@
 class Api::V1::UsersController < ApplicationController
 
-  skip_before_action :authenticate_user!, only: [:verify_otp]
+  skip_before_action :authenticate_user!, only: [:verify_otp, :email_status, :phone_status]
 
   before_action :set_user, only: :verify_otp
 
@@ -12,6 +12,20 @@ class Api::V1::UsersController < ApplicationController
     else
       render json: {success: false, message: 'invalid OTP, please try again'}
     end
+  end
+
+  def details
+    render json: {success: true, data: current_user}
+  end
+
+  def email_status
+    is_taken = User.find_by(email: params[:email]).present?
+    render json: {success: true, message: 'email status', taken: is_taken}
+  end
+
+  def phone_status
+    is_taken = User.find_by(phone: params[:phone]).present?
+    render json: {success: true, message: 'phone status', taken: is_taken}
   end
 
   private
