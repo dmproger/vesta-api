@@ -14,6 +14,9 @@ class User < ActiveRecord::Base
 
   after_create :send_otp
 
+  has_many :properties, dependent: :destroy
+  has_many :tenants, through: :properties
+
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
     where(phone: conditions[:phone]).first

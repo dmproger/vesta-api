@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  default_url_options host: ENV['HOST_URL'] || 'localhost:3000'
+
+  resources :properties
   mount_devise_token_auth_for 'User', at: 'api/v1/auth',  controllers: {
       registrations: 'overrides/registrations',
       sessions: 'overrides/sessions',
@@ -12,6 +15,10 @@ Rails.application.routes.draw do
         get :email_status, on: :collection
         get :phone_status, on: :collection
         get :details, on: :collection
+      end
+
+      resources :properties do
+        resources :tenants
       end
     end
   end
