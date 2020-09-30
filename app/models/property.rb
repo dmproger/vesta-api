@@ -7,4 +7,8 @@ class Property < ApplicationRecord
   validates :city, presence: true
   validates :country, presence: true
   validates :post_code, presence: true
+
+  def active_tenant
+    tenants.where(is_active: true).first
+  end
 end

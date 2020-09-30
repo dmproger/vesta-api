@@ -2,7 +2,7 @@ class Api::V1::PropertiesController < ApplicationController
   before_action :set_property, only: [:show, :update, :destroy]
 
   def index
-    render json: {success: true, message: 'properties', data: current_user.properties}
+    @properties = current_user.properties.includes(:tenants)
   end
 
   def show
