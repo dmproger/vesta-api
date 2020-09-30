@@ -51,6 +51,9 @@ gem 'date_validator', '~> 0.10.0'
 # Official AWS Ruby gem for Amazon Simple Storage Service (Amazon S3)
 gem 'aws-sdk-s3', '~> 1.81', '>= 1.81.1', require: false
 
+# ActiveRecord backend for Delayed::Job
+gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.4'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
