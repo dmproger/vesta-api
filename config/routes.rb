@@ -20,6 +20,8 @@ Rails.application.routes.draw do
       resources :properties do
         resources :tenants
       end
+
+      resources :addresses
     end
   end
 end

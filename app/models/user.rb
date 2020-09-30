@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
 
   has_many :properties, dependent: :destroy
   has_many :tenants, through: :properties
+  has_many :addresses, dependent: :destroy
 
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
@@ -32,6 +33,14 @@ class User < ActiveRecord::Base
 
   def will_save_change_to_email?
     false
+  end
+
+  def full_name
+    "#{first_name} #{surname}"
+  end
+
+  def address_1
+    addresses.first&.address
   end
 
   def send_otp
