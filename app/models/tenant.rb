@@ -4,16 +4,22 @@ class Tenant < ApplicationRecord
   scope :active, -> { where(is_active: true) }
 
   PAYMENT_FREQUENCIES = %w[monthly quarterly bi-annually annually]
+  PAYEE_TYPES = %w[tenant agent joint]
 
   validates :payment_frequency, inclusion: {in: PAYMENT_FREQUENCIES}
-  validates :name, presence: true
+  validates :payee_type, inclusion: {in: PAYEE_TYPES}
+  validates :name, presence: true, unless: :joint_payee?
   validates :price, presence: true, numericality: {greater_than_or_equal_to: 0}
-  validates :phone, presence: true
+  validates :phone, presence: true, unless: :joint_payee?
   validates :start_date, date: {after_or_equal_to: Proc.new { Date.current }, before: :end_date}
   validates :end_date, date: {after: :start_date}
 
   has_one_attached :tenancy_agreement
   has_one_attached :agency_agreement
+
+  has_many :joint_tenants, dependent: :destroy
+
+  accepts_nested_attributes_for :joint_tenants, allow_destroy: true
 
   after_create :setup_expiry, if: :is_active
   after_update :setup_expiry, if: :is_active
@@ -57,5 +63,11 @@ class Tenant < ApplicationRecord
 
     # update_columns is used to avoid infinite callback loop
     self.update_column(:expiry_job_id, job.id)
+  end
+
+  private
+
+  def joint_payee?
+    payee_type == 'joint'
   end
 end

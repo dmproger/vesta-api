@@ -48,8 +48,9 @@ class Api::V1::TenantsController < ApplicationController
   end
 
   def tenants_params
-    params.require(:tenant).permit(:price, :payment_frequency, :start_date,
-                                   :end_date, :name, :email, :phone, :agent_is_payee,
-                                   :agency_agreement, :tenancy_agreement, :is_active)
+    params.require(:tenant).permit(:price, :day_of_month, :payment_frequency, :start_date,
+                                   :end_date, :name, :email, :phone, :payee_type,
+                                   :agency_agreement, :tenancy_agreement, :is_active,
+                                   joint_tenants_attributes: [:id, :name, :email, :price, :phone, :day_of_month, :_destroy])
   end
 end
