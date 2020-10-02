@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_30_111612) do
+ActiveRecord::Schema.define(version: 2020_10_02_080209) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -63,6 +63,18 @@ ActiveRecord::Schema.define(version: 2020_09_30_111612) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
+  create_table "joint_tenants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "price"
+    t.integer "day_of_month"
+    t.string "name"
+    t.string "email"
+    t.string "phone"
+    t.uuid "tenant_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tenant_id"], name: "index_joint_tenants_on_tenant_id"
+  end
+
   create_table "properties", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "address"
     t.string "city"
@@ -74,6 +86,18 @@ ActiveRecord::Schema.define(version: 2020_09_30_111612) do
     t.index ["user_id"], name: "index_properties_on_user_id"
   end
 
+  create_table "subscriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "payment_interval"
+    t.integer "day_of_month"
+    t.decimal "amount"
+    t.date "start_date"
+    t.boolean "is_active", default: false
+    t.uuid "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
   create_table "tenants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.decimal "price"
     t.string "payment_frequency", default: "monthly"
@@ -83,11 +107,14 @@ ActiveRecord::Schema.define(version: 2020_09_30_111612) do
     t.string "email"
     t.string "phone"
     t.boolean "is_active", default: true
-    t.boolean "agent_is_payee", default: false
     t.uuid "property_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "expiry_job_id"
+    t.string "payee_type", default: "tenant"
+    t.integer "day_of_month"
+    t.string "agent_name"
+    t.string "agent_email"
     t.index ["property_id"], name: "index_tenants_on_property_id"
   end
 

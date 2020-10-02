@@ -22,6 +22,13 @@ Rails.application.routes.draw do
       end
 
       resources :addresses
+
+      resources :subscriptions do
+        collection do
+          get :initiate_redirect_flow
+          get :complete_redirect_flow
+        end
+      end
     end
   end
 end

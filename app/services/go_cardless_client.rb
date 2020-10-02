@@ -1,3 +1,5 @@
+require 'gocardless_pro'
+
 class GoCardlessClient
   attr_reader :client
 
@@ -9,12 +11,12 @@ class GoCardlessClient
     client.customers.list.records
   end
 
-  def create_redirect_flow(user:)
+  def create_redirect_flow(user:, redirect_url:)
     client.redirect_flows.create(
         params: {
             description: 'Vesta Subscription',
             session_token: user.email,
-            success_redirect_url: 'https://developer.gocardless.com/example-redirect-uri/',
+            success_redirect_url: "#{redirect_url}?session=#{user.email}",
             prefilled_customer: {
                 given_name: user.first_name,
                 family_name: user.surname,
