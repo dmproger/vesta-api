@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_01_063228) do
+ActiveRecord::Schema.define(version: 2020_10_02_055409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -101,6 +101,8 @@ ActiveRecord::Schema.define(version: 2020_10_01_063228) do
     t.integer "expiry_job_id"
     t.string "payee_type", default: "tenant"
     t.integer "day_of_month"
+    t.string "agent_name"
+    t.string "agent_email"
     t.index ["property_id"], name: "index_tenants_on_property_id"
   end
 

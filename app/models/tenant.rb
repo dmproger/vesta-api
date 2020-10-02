@@ -8,11 +8,12 @@ class Tenant < ApplicationRecord
 
   validates :payment_frequency, inclusion: {in: PAYMENT_FREQUENCIES}
   validates :payee_type, inclusion: {in: PAYEE_TYPES}
-  validates :name, presence: true, unless: :joint_payee?
+  validates :name, presence: true, if: :tenant_payee?
   validates :price, presence: true, numericality: {greater_than_or_equal_to: 0}
-  validates :phone, presence: true, unless: :joint_payee?
+  validates :phone, presence: true, unless: :tenant_payee?
   validates :start_date, date: {after_or_equal_to: Proc.new { Date.current }, before: :end_date}
   validates :end_date, date: {after: :start_date}
+  validates :agent_name, presence: true, if: :agent_payee?
 
   has_one_attached :tenancy_agreement
   has_one_attached :agency_agreement
@@ -29,7 +30,7 @@ class Tenant < ApplicationRecord
   def conflict
     active_tenant = property.tenants.active.where.not(id: id).first
     if active_tenant.present? && is_active
-      errors.add(:is_active, ': there can only be one active tenant' )
+      errors.add(:is_active, ': there can only be one active tenant')
     end
 
     if start_date.present? &&
@@ -68,6 +69,14 @@ class Tenant < ApplicationRecord
   private
 
   def joint_payee?
-    payee_type == 'joint'
+    payee_type == PAYEE_TYPES.third
+  end
+
+  def agent_payee?
+    payee_type == PAYEE_TYPES.second
+  end
+
+  def tenant_payee?
+    payee_type == PAYEE_TYPES.first
   end
 end
