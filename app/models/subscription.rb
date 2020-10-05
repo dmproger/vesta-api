@@ -1,8 +1,18 @@
 class Subscription < ApplicationRecord
   belongs_to :user
 
-  INTERVAL_TYPES = %w[monthly annually]
+  INTERVAL_TYPES = %w[monthly yearly]
 
   validates :amount, presence: true
-  validates :payment_interval, inclusion: {in: INTERVAL_TYPES}
+  validates :interval_unit, inclusion: {in: INTERVAL_TYPES}
+  validates :month, inclusion: { in: Date::MONTHNAMES&.map {|v| v.downcase if v.present?} }, allow_blank: true
+
+
+  def yearly?
+    interval_unit == INTERVAL_TYPES.last
+  end
+
+  def monthly?
+    interval_unit == INTERVAL_TYPES.first
+  end
 end

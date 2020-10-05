@@ -87,11 +87,16 @@ ActiveRecord::Schema.define(version: 2020_10_02_080209) do
   end
 
   create_table "subscriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "payment_interval"
+    t.string "interval_unit"
     t.integer "day_of_month"
     t.decimal "amount"
     t.date "start_date"
     t.boolean "is_active", default: false
+    t.string "mandate"
+    t.string "customer"
+    t.string "external_sub_id"
+    t.string "currency"
+    t.string "month"
     t.uuid "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

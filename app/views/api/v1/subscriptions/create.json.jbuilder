@@ -1,6 +1,7 @@
 json.success true
-json.message 'please redirect user to following link'
+json.message 'created successfully'
 json.data do
+  json.merge! @subscription.attributes
   json.redirect_flow_id @redirect_flow.id
   json.redirect_url @redirect_flow.redirect_url
 end
