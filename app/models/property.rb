@@ -8,6 +8,9 @@ class Property < ApplicationRecord
   validates :country, presence: true
   validates :post_code, presence: true
 
+  scope :non_archived, -> {where(is_archived: false)}
+  scope :archived, -> {where(is_archived: true)}
+
   def active_tenant
     tenants.where(is_active: true).first
   end

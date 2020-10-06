@@ -1,8 +1,8 @@
 class Api::V1::PropertiesController < ApplicationController
-  before_action :set_property, only: [:show, :update, :destroy]
+  before_action :set_property, only: [:show, :update, :destroy, :archive]
 
   def index
-    @properties = current_user.properties.includes(:tenants)
+    @properties = current_user.properties.non_archived.includes(:tenants)
   end
 
   def show
@@ -22,6 +22,14 @@ class Api::V1::PropertiesController < ApplicationController
   def update
     if @property.update(property_params)
       render json: {success: true, message: 'updated successfully', data: @property}
+    else
+      render json: {success: false, message: errors_to_string(@property), data: nil}
+    end
+  end
+
+  def archive
+    if @property.update(is_archived: true)
+      render json: {success: true, message: 'archived successfully', data: nil}
     else
       render json: {success: false, message: errors_to_string(@property), data: nil}
     end

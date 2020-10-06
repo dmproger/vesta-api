@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
       resources :properties do
         resources :tenants
+        get :archive, on: :member
       end
 
       resources :addresses
