@@ -6,8 +6,6 @@ class CreateSubscriptions < ActiveRecord::Migration[6.0]
       t.decimal :amount
       t.date :start_date
       t.boolean :is_active, default: false
-      t.string :mandate
-      t.string :customer
       t.string :external_sub_id
       t.string :currency
       t.string :month

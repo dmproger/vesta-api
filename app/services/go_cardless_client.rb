@@ -36,17 +36,17 @@ class GoCardlessClient
     client.redirect_flows.complete(flow_id, params: {session_token: user.email})
   end
 
-  def create_subscription(subscription:)
+  def create_subscription(subscription:, user:)
     client.subscriptions.create(
         params: {
             amount: subscription.amount.to_i,
             currency: subscription.currency.presence || 'GBP',
             interval_unit: subscription.interval_unit,
-            day_of_month: subscription.day_of_month.presence || default_day_of_month,
+            day_of_month: subscription.yearly? ? (subscription.day_of_month.presence || Date.current) : nil,
             start_date: start_date(subscription),
             month: subscription.yearly? ? month_name(subscription) : nil,
             links: {
-                mandate: subscription.mandate
+                mandate: user.mandate
             },
             metadata: {
                 subscription_number: subscription.id
@@ -56,12 +56,14 @@ class GoCardlessClient
             'Idempotency-Key' => subscription.id
         }
     )
-  rescue StandardError => e
-    puts e.as_json
   end
 
   def get_subscription(external_sub_id:)
     client.subscriptions.get(external_sub_id)
+  end
+
+  def get_mandate(mandate_id:)
+    client.mandates.get(mandate_id)
   end
 
   def cancel_subscription(external_sub_id:)
@@ -74,16 +76,8 @@ class GoCardlessClient
     subscription.month.presence || Date::MONTHNAMES[Date.current.month].downcase
   end
 
-  def default_day_of_month
-    Date.current.day < 28 ? Date.current.day : -1
-  end
-
   def start_date(subscription)
-    if subscription.day_of_month.present?
-      subscription.day_of_month.present? ? nil : subscription.start_date
-    else
-      subscription.monthly? ? Date.current : 2.months.from_now.to_date
-    end
+    2.months.from_now.to_date if subscription.yearly?
   end
 
   def setup_go_cardless
