@@ -16,6 +16,12 @@ class User < ActiveRecord::Base
 
   has_many :properties, dependent: :destroy
   has_many :tenants, through: :properties
+  has_many :addresses, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
+
+  def subscription
+    subscriptions.order(created_at: :desc).first
+  end
 
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
@@ -32,6 +38,22 @@ class User < ActiveRecord::Base
 
   def will_save_change_to_email?
     false
+  end
+
+  def full_name
+    "#{first_name} #{surname}"
+  end
+
+  def address_1
+    addresses.first&.address
+  end
+
+  def post_code
+    addresses.first&.post_code
+  end
+
+  def city
+    addresses.first&.city
   end
 
   def send_otp

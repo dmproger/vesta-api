@@ -20,6 +20,15 @@ Rails.application.routes.draw do
       resources :properties do
         resources :tenants
       end
+
+      resources :addresses
+
+      resources :subscriptions do
+        collection do
+          get :initiate_redirect_flow
+          get :complete_redirect_flow
+        end
+      end
     end
   end
 end
