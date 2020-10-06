@@ -94,6 +94,6 @@ class Api::V1::SubscriptionsController < ApplicationController
   end
 
   def subscription_params
-    params.require(:subscription).permit(:interval_unit, :amount, :month, :currency)
+    params.require(:subscription).permit(:interval_unit, :amount, :month, :currency, :day_of_month)
   end
 end
