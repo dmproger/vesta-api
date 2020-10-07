@@ -18,9 +18,14 @@ class User < ActiveRecord::Base
   has_many :tenants, through: :properties
   has_many :addresses, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
+  has_many :gc_events, dependent: :destroy
 
   def subscription
     subscriptions.order(created_at: :desc).first
+  end
+
+  def active_subscription
+    subscriptions.active.first
   end
 
   def self.find_first_by_auth_conditions(warden_conditions)

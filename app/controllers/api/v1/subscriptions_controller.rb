@@ -34,7 +34,7 @@ class Api::V1::SubscriptionsController < ApplicationController
   end
 
   def destroy
-    @subscription.destroy if cancel_subscription
+    cancel_subscription
     render json: {success: true, message: 'subscription canceled successfully', data: nil}
   rescue StandardError => e
     render json: {success: false, message: e.message, data: nil}
@@ -78,7 +78,7 @@ class Api::V1::SubscriptionsController < ApplicationController
   end
 
   def validate_subscription
-    render json: {success: false, message: 'you already have a valid subscription', data: nil} if current_user.subscription.present?
+    render json: {success: false, message: 'you already have a valid subscription', data: nil} if current_user.active_subscription.present?
   end
 
   def save_customer_and_mandate(user, redirect_flow)
