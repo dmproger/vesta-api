@@ -3,7 +3,7 @@ class CreateGcEvents < ActiveRecord::Migration[6.0]
     create_table :gc_events, id: :uuid do |t|
       t.string :gc_event_id
 
-      t.references :user
+      t.references :user, type: :uuid
       t.timestamps
     end
   end

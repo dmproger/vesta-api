@@ -8,8 +8,6 @@ module DelayedJobs
       return if subscription.blank?
 
       GoCardlessClient.new.cancel_subscription(external_sub_id: subscription.external_sub_id)
-
-      subscription.destroy
     end
   end
 end

@@ -7,6 +7,8 @@ class Subscription < ApplicationRecord
   validates :interval_unit, inclusion: {in: INTERVAL_TYPES}
   validates :month, inclusion: { in: Date::MONTHNAMES&.map {|v| v.downcase if v.present?} }, allow_blank: true
 
+  scope :active, -> {where(is_active: true).where.not(external_sub_id: [nil, ''])}
+
 
   def yearly?
     interval_unit == INTERVAL_TYPES.last

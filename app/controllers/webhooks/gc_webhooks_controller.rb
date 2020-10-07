@@ -23,7 +23,7 @@ class Webhooks::GcWebhooksController < ApplicationController
         when 'mandates'
           Services::MandateEventProcessor.process(event, response)
         when 'subscriptions'
-
+          Services::SubscriptionEventProcessor.process(event, response)
         else
           response.stream.write("Don't know how to process an event with resource_type " \
                               "#{event.resource_type}\n")

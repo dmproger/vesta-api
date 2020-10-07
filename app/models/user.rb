@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   end
 
   def active_subscription
-    subscriptions.where(is_active: true).first
+    subscriptions.active.first
   end
 
   def self.find_first_by_auth_conditions(warden_conditions)

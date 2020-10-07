@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 2020_10_07_071715) do
 
   create_table "gc_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "gc_event_id"
-    t.bigint "user_id"
+    t.uuid "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_gc_events_on_user_id"
