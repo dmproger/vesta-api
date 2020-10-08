@@ -59,15 +59,19 @@ class GoCardlessClient
   end
 
   def get_subscription(external_sub_id:)
-    client.subscriptions.get(external_sub_id)
+    client.subscriptions.get(external_sub_id) rescue nil
   end
 
   def get_mandate(mandate_id:)
-    client.mandates.get(mandate_id)
+    client.mandates.get(mandate_id) rescue nil
   end
 
   def cancel_subscription(external_sub_id:)
     client.subscriptions.cancel(external_sub_id)
+  end
+
+  def get_payment(payment_id:)
+    client.payments.get(payment_id) rescue nil
   end
 
   private

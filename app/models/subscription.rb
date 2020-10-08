@@ -9,6 +9,8 @@ class Subscription < ApplicationRecord
 
   scope :active, -> {where(is_active: true).where.not(external_sub_id: [nil, ''])}
 
+  has_many :payments, dependent: :destroy
+
 
   def yearly?
     interval_unit == INTERVAL_TYPES.last
