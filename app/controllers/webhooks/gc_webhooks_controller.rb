@@ -21,11 +21,11 @@ class Webhooks::GcWebhooksController < ApplicationController
 
         case event.resource_type
         when 'mandates'
-          Services::MandateEventProcessor.process(event, response)
+          MandateEventProcessor.process(event, response)
         when 'subscriptions'
-          Services::SubscriptionEventProcessor.process(event, response)
+          SubscriptionEventProcessor.process(event, response)
         when 'payments'
-          Services::PaymentEventProcessor.process(event, response)
+          PaymentEventProcessor.process(event, response)
         else
           response.stream.write("Don't know how to process an event with resource_type " \
                               "#{event.resource_type}\n")
