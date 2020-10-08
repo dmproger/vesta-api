@@ -14,4 +14,8 @@ class Property < ApplicationRecord
   def active_tenant
     tenants.where(is_active: true).first
   end
+
+  def latest_tenant
+    tenants.order(created_at: :desc).first
+  end
 end
