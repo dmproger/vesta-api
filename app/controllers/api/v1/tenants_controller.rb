@@ -1,5 +1,5 @@
 class Api::V1::TenantsController < ApplicationController
-  before_action :set_property, only: [:create, :show, :update, :destroy, :index]
+  before_action :set_property, only: [:create, :show, :update, :destroy, :index, :archive]
 
   before_action :set_tenant, only: [:show, :update, :destroy, :archive]
 
