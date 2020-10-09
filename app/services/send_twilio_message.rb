@@ -7,6 +7,8 @@ class SendTwilioMessage
   end
 
   def call
+    return if ENV['DO_NOT_SEND_SMS'].present?
+
     client = Twilio::REST::Client.new
     client.messages.create(body: message, to: to, from: ENV['TWILIO_FROM_NUMBER'])
   end

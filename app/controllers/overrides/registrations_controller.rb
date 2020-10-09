@@ -18,6 +18,7 @@ module Overrides
       render json: {
           success: true,
           message: 'Registered successfully',
+          otp: @resource.otp_code,
           data: resource_data
       }
     end
