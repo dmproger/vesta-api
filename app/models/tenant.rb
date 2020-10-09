@@ -2,6 +2,7 @@ class Tenant < ApplicationRecord
   belongs_to :property
 
   scope :active, -> { where(is_active: true) }
+  scope :non_archived, -> { where(is_archived: false) }
 
   PAYMENT_FREQUENCIES = %w[monthly quarterly bi-annually annually]
   PAYEE_TYPES = %w[tenant agent joint]

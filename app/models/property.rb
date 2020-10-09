@@ -12,10 +12,10 @@ class Property < ApplicationRecord
   scope :archived, -> {where(is_archived: true)}
 
   def active_tenant
-    tenants.where(is_active: true).first
+    tenants.non_archived.where(is_active: true).first
   end
 
   def latest_tenant
-    tenants.order(created_at: :desc).first
+    tenants.non_archived.order(created_at: :desc).first
   end
 end

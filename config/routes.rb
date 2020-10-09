@@ -22,7 +22,9 @@ Rails.application.routes.draw do
       end
 
       resources :properties do
-        resources :tenants
+        resources :tenants do
+          get :archive, on: :member
+        end
         get :archive, on: :member
       end
 

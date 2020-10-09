@@ -1,7 +1,7 @@
 class Api::V1::TenantsController < ApplicationController
   before_action :set_property, only: [:create, :show, :update, :destroy, :index]
 
-  before_action :set_tenant, only: [:show, :update, :destroy]
+  before_action :set_tenant, only: [:show, :update, :destroy, :archive]
 
   def index; end
 
@@ -26,6 +26,14 @@ class Api::V1::TenantsController < ApplicationController
     render json: {success: true, message: 'deleted successfully', data: nil}
   rescue StandardError => e
     render json: {success: false, message: e.message, data: nil}
+  end
+
+  def archive
+    if @tenant.update(is_archived: true)
+      render json: {success: true, message: 'archived successfully', data: nil}
+    else
+      render json: {success: false, message: errors_to_string(@tenant), data: nil}
+    end
   end
 
   private
