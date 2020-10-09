@@ -22,7 +22,9 @@ Rails.application.routes.draw do
         get :details, on: :collection
       end
 
-      resources :accounts, only: :index
+      resources :accounts, only: :index do
+        get :linking_code
+      end
 
       resources :tink_tokens, only: :create
 

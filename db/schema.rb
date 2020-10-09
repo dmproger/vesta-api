@@ -10,24 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_08_065111) do
+ActiveRecord::Schema.define(version: 2020_10_09_124822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
-
-  create_table "tink_access_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "token_type"
-    t.integer "expires_in"
-    t.text "access_token"
-    t.string "refresh_token"
-    t.string "scope"
-    t.string "id_hint"
-    t.uuid "user_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_tink_access_tokens_on_user_id"
-  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -151,6 +138,7 @@ ActiveRecord::Schema.define(version: 2020_10_08_065111) do
     t.integer "day_of_month"
     t.string "agent_name"
     t.string "agent_email"
+    t.boolean "is_archived", default: false
     t.index ["property_id"], name: "index_tenants_on_property_id"
   end
 
@@ -187,6 +175,10 @@ ActiveRecord::Schema.define(version: 2020_10_08_065111) do
     t.text "apns_token"
     t.string "mandate"
     t.string "customer"
+    t.string "locale"
+    t.string "market"
+    t.string "tink_user_id"
+    t.string "tink_auth_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
