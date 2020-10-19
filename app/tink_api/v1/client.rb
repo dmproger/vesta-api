@@ -1,21 +1,24 @@
+# Note: restart the server whenever you make changes to this file
+
 module TinkAPI
   module V1
     class Client
       API_ENDPOINT = 'https://api.tink.com/api/v1'.freeze
-
+      ACTOR_CLIENT_ID = 'df05e4b379934cd09963197cc855bfe9'.freeze
       attr_reader :access_token
 
       def initialize(access_token = nil)
         @access_token = access_token
       end
 
-      def retrieve_access_tokens(auth_code:)
+      def retrieve_access_tokens(auth_code:, scopes:)
         response = RestClient.post "#{API_ENDPOINT}/oauth/token",
                                    {
                                        code: auth_code,
                                        client_id: ENV['TINK_CLIENT_ID'],
                                        client_secret: ENV['TINK_CLIENT_SECRET'],
-                                       grant_type: 'authorization_code'
+                                       grant_type: 'authorization_code',
+                                       scope: scopes
                                    }
 
         JSON.parse(response.body).symbolize_keys
@@ -41,6 +44,21 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
+      def grant_authorization(tink_user_id:, current_user:, grant_access_token:, scopes:)
+        response = RestClient.post "#{API_ENDPOINT}/oauth/authorization-grant",
+                                   {
+                                       user_id: tink_user_id,
+                                       id_hint: current_user.email,
+                                       actor_client_id: ACTOR_CLIENT_ID,
+                                       scope: scopes
+                                   },
+                                   {
+                                       'Authorization' => "Bearer #{grant_access_token}"
+                                   }
+
+        JSON.parse(response.body).symbolize_keys
+      end
+
       #  PERMANENT USERS FLOW
       # 1-Create a permanent user
       # 2-Generate a user authorization code (sent the code to app-client)
@@ -55,7 +73,7 @@ module TinkAPI
                                        client_id: ENV['TINK_CLIENT_ID'],
                                        client_secret: ENV['TINK_CLIENT_SECRET'],
                                        grant_type: 'client_credentials',
-                                       scope: 'user:create'
+                                       scope: 'user:create,authorization:grant'
                                    }
 
         JSON.parse(response.body).symbolize_keys
@@ -67,9 +85,10 @@ module TinkAPI
                                    {
                                        locale: locale || 'en_US',
                                        market: market || 'SE'
-                                   },
+                                   }.to_json,
                                    {
-                                       'Authorization' => "Bearer #{client_access_token}"
+                                       content_type: "application/json; charset=utf-8",
+                                       Authorization: "Bearer #{client_access_token}"
                                    }
 
         JSON.parse(response.body).symbolize_keys
@@ -79,16 +98,7 @@ module TinkAPI
 
       # 2.1 Get Access token with scope authorization:grant
       def client_access_token_with_grant
-        response = RestClient.post "#{API_ENDPOINT}/oauth/token",
-                                   {
-                                       client_id: ENV['TINK_CLIENT_ID'],
-                                       client_secret: ENV['TINK_CLIENT_SECRET'],
-                                       grant_type: 'client_credentials',
-                                       scope: 'authorization:grant'
-                                   }
-
-
-        JSON.parse(response.body).symbolize_keys
+        client_access_token
       end
 
       # 2.2 Delegate the authorization:grant to Tink Link
@@ -98,7 +108,7 @@ module TinkAPI
                                        user_id: tink_user_id,
                                        id_hint: current_user.email,
                                        actor_client_id: 'df05e4b379934cd09963197cc855bfe9',
-                                       scope: 'credentials:read,credentials:refresh,credentials:write,providers:read,user:read,authorization:read'
+                                       scope: 'credentials:read,credentials:refresh,credentials:write,providers:read,user:read,authorization:read,accounts:read'
                                    },
                                    {
                                        'Authorization' => "Bearer #{grant_access_token}"

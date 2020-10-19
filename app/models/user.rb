@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   has_many :addresses, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :gc_events, dependent: :destroy
+  has_many :accounts, dependent: :destroy
 
   def subscription
     subscriptions.order(created_at: :desc).first
@@ -78,12 +79,7 @@ class User < ActiveRecord::Base
     puts "Unable to send OTP: #{e.message}"
   end
 
-  def valid_tink_token
-    refresh_tink_token if tink_access_token.is_expired?
-    tink_access_token.access_token
-  end
-
-  def refresh_tink_token
-    RefreshTinkToken.new(tink_access_token).call
+  def valid_tink_token(scopes:)
+    GetTinkAccessToken.new(scopes: scopes, current_user: self).call
   end
 end

@@ -23,7 +23,7 @@ Rails.application.routes.draw do
       end
 
       resources :accounts, only: :index do
-        get :linking_code
+        get :linking_code, on: :collection
       end
 
       resources :tink_tokens, only: :create
