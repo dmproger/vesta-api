@@ -42,7 +42,7 @@ class GoCardlessClient
             amount: subscription.amount.to_i,
             currency: subscription.currency.presence || 'GBP',
             interval_unit: subscription.interval_unit,
-            day_of_month: subscription.yearly? ? (subscription.day_of_month.presence || Date.current) : nil,
+            day_of_month: subscription.yearly? ? (subscription.day_of_month.presence || Date.current.day) : nil,
             start_date: start_date(subscription),
             month: subscription.yearly? ? month_name(subscription) : nil,
             links: {
