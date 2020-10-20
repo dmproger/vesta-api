@@ -44,6 +44,22 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
+      def transactions(account_id:, query_tag:)
+        response = RestClient.post "#{API_ENDPOINT}/search",
+                                  {
+                                      accounts: [account_id],
+                                      queryString: query_tag,
+                                      sort: 'DATE',
+                                      order: 'DESC'
+                                  }.to_json,
+                                   {
+                                       Authorization: "Bearer #{access_token}",
+                                       content_type: "application/json; charset=utf-8"
+                                   }
+
+        JSON.parse(response.body).symbolize_keys
+      end
+
       def grant_authorization(tink_user_id:, current_user:, grant_access_token:, scopes:)
         response = RestClient.post "#{API_ENDPOINT}/oauth/authorization-grant",
                                    {
