@@ -1,7 +1,7 @@
 class Api::V1::AccountsController < ApplicationController
   def index
     accounts = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'accounts:read')).accounts
-    render json: {success: true, message: 'accounts', data: accounts}
+    render json: {success: true, message: 'accounts', data: persist_accounts(accounts)}
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
@@ -13,10 +13,16 @@ class Api::V1::AccountsController < ApplicationController
           "&scope=transactions:read,identity:read&redirect_uri=#{params[:callback_url].presence}"\
           "&authorization_code=#{user_auth_code}"
 
-    url << '&test=true' if !!ENV['SANDBOX_ENV']
+    url << '&test=true' if ENV['SANDBOX_ENV'] == 'true'
 
     render json: {success: true, message: 'tink link auth code', data: {code: user_auth_code, url: url}}
   rescue StandardError => e
     render json: {success: false, message: e.message, data: nil}
+  end
+
+  private
+
+  def persist_accounts(accounts)
+    PersistAccount.new(accounts.dig(:accounts), current_user).call
   end
 end
