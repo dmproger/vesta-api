@@ -3,6 +3,10 @@ class Property < ApplicationRecord
 
   has_many :tenants, dependent: :destroy
 
+  has_many :property_tenant_transactions, dependent: :destroy
+  has_many :saved_transactions, through: :property_tenant_transactions,
+           class_name: 'SavedTransaction'
+
   validates :address, presence: true
   validates :city, presence: true
   validates :country, presence: true

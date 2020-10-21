@@ -5,6 +5,8 @@ module TinkAPI
     class Client
       API_ENDPOINT = 'https://api.tink.com/api/v1'.freeze
       ACTOR_CLIENT_ID = 'df05e4b379934cd09963197cc855bfe9'.freeze
+      TRANSACTION_RESULT_LIMIT = 100.freeze
+
       attr_reader :access_token
 
       def initialize(access_token = nil)
@@ -50,7 +52,8 @@ module TinkAPI
                                       accounts: [account_id],
                                       queryString: query_tag,
                                       sort: 'DATE',
-                                      order: 'DESC'
+                                      order: 'DESC',
+                                      limit: TRANSACTION_RESULT_LIMIT,
                                   }.to_json,
                                    {
                                        Authorization: "Bearer #{access_token}",

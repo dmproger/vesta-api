@@ -24,7 +24,11 @@ Rails.application.routes.draw do
 
       resources :accounts, only: :index do
         get :linking_code, on: :collection
-        resources :transactions, only: :index
+        resources :transactions, only: [:index, :update]
+      end
+
+      namespace :transactions do
+        get :categories
       end
 
       resources :tink_tokens, only: :create

@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :gc_events, dependent: :destroy
   has_many :accounts, dependent: :destroy
-  has_many :transactions, dependent: :destroy
+  has_many :saved_transactions, dependent: :destroy
 
   def subscription
     subscriptions.order(created_at: :desc).first

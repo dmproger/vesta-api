@@ -1,5 +1,5 @@
 class Account < ApplicationRecord
   belongs_to :user
 
-  has_many :transactions, dependent: :destroy
+  has_many :saved_transactions, dependent: :destroy
 end
