@@ -7,6 +7,9 @@ class SavedTransaction < ApplicationRecord
   has_one :property, through: :property_tenant_transaction,
            class_name: 'Property'
 
+  has_one :tenant, through: :property_tenant_transaction,
+          class_name: 'Tenant'
+
   enum user_defined_category: [:rent, :mortgage, :ground_rent, :other]
 
   def replace_property(attributes = nil)

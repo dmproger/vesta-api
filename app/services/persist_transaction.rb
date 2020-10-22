@@ -8,13 +8,12 @@ class PersistTransaction
   end
 
   def call
-    transactions.map do |transaction|
+    transactions.each do |transaction|
       transaction = transaction.symbolize_keys
       transaction_params = to_map_able_json(transaction.dig(:transaction).symbolize_keys)
       persisted_transaction = account.saved_transactions.find_by(transaction_id: transaction_params[:transaction_id])
       if persisted_transaction.present?
         persisted_transaction.update(transaction_params)
-        persisted_transaction
       else
         account.saved_transactions.create(transaction_params.merge!(user_id: current_user.id))
       end

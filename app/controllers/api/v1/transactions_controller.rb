@@ -4,9 +4,8 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :set_property, only: [:assign_property]
 
   def index
-    transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
-                       .transactions(account_id: @account.account_id, query_tag: 'this month')
-    render json: {success: true, message: 'transactions', data: persist_transactions(transactions)}
+    refresh_transactions if params[:force_refresh] == 'true'
+    @transactions = current_user.saved_transactions.includes(tenant: :joint_tenants)
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
@@ -32,6 +31,12 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   private
+
+  def refresh_transactions
+    transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
+                       .transactions(account_id: @account.account_id, query_tag: 'this month')
+    persist_transactions(transactions)
+  end
 
   def transaction_params
     params.require(:transaction).permit(:user_defined_category)
