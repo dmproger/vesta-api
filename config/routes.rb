@@ -27,8 +27,9 @@ Rails.application.routes.draw do
         resources :transactions, only: [:index, :update]
       end
 
-      namespace :transactions do
+      resources :transactions, only: :show do
         get :categories
+        post :assign_property, on: :member
       end
 
       resources :tink_tokens, only: :create
