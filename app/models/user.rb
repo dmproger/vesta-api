@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true
   validates :phone, uniqueness: true
 
+  has_one :tink_access_token
+
   after_create :send_otp
 
   has_many :properties, dependent: :destroy
@@ -19,6 +21,8 @@ class User < ActiveRecord::Base
   has_many :addresses, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :gc_events, dependent: :destroy
+  has_many :accounts, dependent: :destroy
+  has_many :saved_transactions, dependent: :destroy
 
   def subscription
     subscriptions.order(created_at: :desc).first
@@ -26,6 +30,15 @@ class User < ActiveRecord::Base
 
   def active_subscription
     subscriptions.active.first
+  end
+
+  def replace_tink_access_token(attributes = nil)
+    TinkAccessToken.transaction do
+      tink_access_token&.destroy!
+      create_tink_access_token!(attributes)
+    end
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed
+    tink_access_token # returns invalid object
   end
 
   def self.find_first_by_auth_conditions(warden_conditions)
@@ -65,5 +78,9 @@ class User < ActiveRecord::Base
     SendTwilioMessage.new("Your Vesta OTP is #{otp_code}", phone).call
   rescue StandardError => e
     puts "Unable to send OTP: #{e.message}"
+  end
+
+  def valid_tink_token(scopes:)
+    GetTinkAccessToken.new(scopes: scopes, current_user: self).call
   end
 end

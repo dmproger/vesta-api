@@ -57,6 +57,9 @@ gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.4'
 # A gem for calling the GoCardless Pro API
 gem 'gocardless_pro', '~> 2.24'
 
+# A simple HTTP and REST client for Ruby
+gem 'rest-client', '~> 2.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

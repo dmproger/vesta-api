@@ -10,11 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_09_103023) do
+ActiveRecord::Schema.define(version: 2020_10_21_112522) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "bank_id"
+    t.string "account_number"
+    t.decimal "balance"
+    t.decimal "available_credit"
+    t.string "credentials_id"
+    t.string "account_id"
+    t.string "name"
+    t.string "account_type"
+    t.text "icon_url"
+    t.text "banner_url"
+    t.string "holder_name"
+    t.boolean "is_closed"
+    t.string "currency_code"
+    t.datetime "refreshed"
+    t.string "institution_id"
+    t.uuid "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -106,6 +128,37 @@ ActiveRecord::Schema.define(version: 2020_10_09_103023) do
     t.index ["user_id"], name: "index_properties_on_user_id"
   end
 
+  create_table "property_tenant_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "property_id"
+    t.uuid "tenant_id"
+    t.uuid "saved_transaction_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["property_id"], name: "index_property_tenant_transactions_on_property_id"
+    t.index ["saved_transaction_id"], name: "index_property_tenant_transactions_on_saved_transaction_id"
+    t.index ["tenant_id"], name: "index_property_tenant_transactions_on_tenant_id"
+  end
+
+  create_table "saved_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "amount"
+    t.string "category_id"
+    t.string "category_type"
+    t.date "transaction_date"
+    t.string "description"
+    t.string "transaction_id"
+    t.text "notes"
+    t.boolean "is_pending", default: false
+    t.boolean "is_modified", default: false
+    t.integer "user_defined_category"
+    t.uuid "user_id"
+    t.uuid "account_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["account_id"], name: "index_saved_transactions_on_account_id"
+    t.index ["user_defined_category"], name: "index_saved_transactions_on_user_defined_category"
+    t.index ["user_id"], name: "index_saved_transactions_on_user_id"
+  end
+
   create_table "subscriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "interval_unit"
     t.integer "day_of_month"
@@ -175,6 +228,10 @@ ActiveRecord::Schema.define(version: 2020_10_09_103023) do
     t.text "apns_token"
     t.string "mandate"
     t.string "customer"
+    t.string "locale"
+    t.string "market"
+    t.string "tink_user_id"
+    t.string "tink_auth_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

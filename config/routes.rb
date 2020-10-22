@@ -14,12 +14,25 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:index] do
+      resources :users, only: :index do
         get :verify_otp, on: :member
+        get :accounts, on: :member
         get :email_status, on: :collection
         get :phone_status, on: :collection
         get :details, on: :collection
       end
+
+      resources :accounts, only: :index do
+        get :linking_code, on: :collection
+        resources :transactions, only: [:index, :update]
+      end
+
+      resources :transactions, only: :show do
+        get :categories
+        post :assign_property, on: :member
+      end
+
+      resources :tink_tokens, only: :create
 
       resources :properties do
         resources :tenants do
@@ -38,4 +51,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  get '/callback', to: 'tink_hooks#callback'
 end
