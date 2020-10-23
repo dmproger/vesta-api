@@ -3,6 +3,8 @@ class Tenant < ApplicationRecord
 
   scope :active, -> { where(is_active: true) }
   scope :non_archived, -> { where(is_archived: false) }
+  scope :within, -> (period) {where("start_date <= ? AND end_date >= ?", period.end_of_month, period.end_of_month)}
+  scope :monthly, -> {where(payment_frequency: 'monthly')}
 
   PAYMENT_FREQUENCIES = %w[monthly quarterly bi-annually annually]
   PAYEE_TYPES = %w[tenant agent joint]

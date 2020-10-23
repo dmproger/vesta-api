@@ -2,6 +2,8 @@ class SavedTransaction < ApplicationRecord
   belongs_to :account
   belongs_to :user
 
+  scope :within, -> (period) {where(created_at: period.beginning_of_month..period.end_of_month)}
+
   has_one :property_tenant_transaction
 
   has_one :property, through: :property_tenant_transaction,
