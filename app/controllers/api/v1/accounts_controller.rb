@@ -1,7 +1,9 @@
 class Api::V1::AccountsController < ApplicationController
   def index
     accounts = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'accounts:read')).accounts
-    render json: {success: true, message: 'accounts', data: persist_accounts(accounts)}
+    render json: {success: true, message: 'accounts',
+                  data: {accounts: persist_accounts(accounts),
+                         subscription: current_user.active_subscription}}
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
