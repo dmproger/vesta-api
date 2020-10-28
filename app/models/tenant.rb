@@ -11,8 +11,7 @@ class Tenant < ApplicationRecord
   validates :payee_type, inclusion: {in: PAYEE_TYPES}
   validates :name, presence: true, if: :tenant_payee?
   validates :price, presence: true, numericality: {greater_than_or_equal_to: 0}
-  validates :phone, presence: true, unless: :tenant_payee?
-  validates :start_date, date: {after_or_equal_to: Proc.new { Date.current }, before: :end_date}, on: :create
+  validates :start_date, date: {before: :end_date}, on: :create
   validates :end_date, date: {after: :start_date}, on: :create
   validates :agent_name, presence: true, if: :agent_payee?
 
