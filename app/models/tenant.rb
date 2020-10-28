@@ -5,6 +5,7 @@ class Tenant < ApplicationRecord
   scope :non_archived, -> { where(is_archived: false) }
   scope :within, -> (period) {where("start_date <= ? AND end_date >= ?", period.end_of_month, period.end_of_month)}
   scope :monthly, -> {where(payment_frequency: 'monthly')}
+  scope :annually, -> {where(payment_frequency: 'annually')}
 
   PAYMENT_FREQUENCIES = %w[monthly quarterly bi-annually annually]
   PAYEE_TYPES = %w[tenant agent joint]
@@ -22,6 +23,8 @@ class Tenant < ApplicationRecord
   has_one_attached :agency_agreement
 
   has_many :joint_tenants, dependent: :destroy
+  has_many :property_tenant_transactions
+  has_many :saved_transactions, through: :property_tenant_transactions, class_name: 'SavedTransaction'
 
   accepts_nested_attributes_for :joint_tenants, allow_destroy: true
 

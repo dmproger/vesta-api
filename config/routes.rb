@@ -50,7 +50,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :home, only: :index
+      resources :home, only: :index do
+        get :details, on: :collection
+      end
     end
   end
 
