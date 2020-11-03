@@ -49,6 +49,10 @@ Rails.application.routes.draw do
           get :complete_redirect_flow
         end
       end
+
+      resources :home, only: :index do
+        get :details, on: :collection
+      end
     end
   end
 

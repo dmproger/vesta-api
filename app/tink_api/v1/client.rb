@@ -63,6 +63,16 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
+      def categories
+        response = RestClient.get "#{API_ENDPOINT}/categories",
+                                   {
+                                       Authorization: "Bearer #{access_token}",
+                                       content_type: "application/json; charset=utf-8"
+                                   }
+
+        JSON.parse(response.body)
+      end
+
       def grant_authorization(tink_user_id:, current_user:, grant_access_token:, scopes:)
         response = RestClient.post "#{API_ENDPOINT}/oauth/authorization-grant",
                                    {

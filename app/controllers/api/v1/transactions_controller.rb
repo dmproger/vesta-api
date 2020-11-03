@@ -5,7 +5,7 @@ class Api::V1::TransactionsController < ApplicationController
 
   def index
     refresh_transactions if params[:force_refresh] == 'true'
-    @transactions = current_user.saved_transactions.includes(tenant: :joint_tenants)
+    @transactions = current_user.saved_transactions.income.includes(tenant: :joint_tenants)
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
