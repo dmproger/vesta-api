@@ -3,7 +3,11 @@ class Api::V1::HomeController < ApplicationController
   before_action :set_type, only: :details
 
   def index
-    @data = HomeData.new(period: @period, current_user: current_user).call
+    @data = if params[:test] == 'true'
+              HomeTestData.new(period: @period).call
+            else
+              HomeData.new(period: @period, current_user: current_user).call
+            end
   end
 
   def details

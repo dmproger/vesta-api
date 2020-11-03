@@ -1,5 +1,5 @@
 json.success true
-json.message 'home data'
+json.message params[:test] == 'true' ? 'test data' : 'home data'
 json.data do
   json.period params[:period].presence || Date.current.strftime('%m-%Y')
   json.total @data.first
