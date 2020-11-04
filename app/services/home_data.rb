@@ -13,7 +13,7 @@ class HomeData
     @expected = calculate_expected_rent
     @total = calculate_total_rent
 
-    [total, collected, expected, late]
+    [total, collected, expected, late].map(&:to_f)
   end
 
   private
