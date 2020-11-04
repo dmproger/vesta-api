@@ -74,6 +74,14 @@ class User < ActiveRecord::Base
     addresses.first&.city
   end
 
+  def get_market
+    market || 'GB'
+  end
+
+  def get_locale
+    locale || 'en_US'
+  end
+
   def send_otp
     SendTwilioMessage.new("Your Vesta OTP is #{otp_code}", phone).call
   rescue StandardError => e

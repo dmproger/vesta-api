@@ -13,7 +13,8 @@ class Api::V1::AccountsController < ApplicationController
 
     url = "https://link.tink.com/1.0/credentials/add?client_id=#{ENV['TINK_CLIENT_ID']}"\
           "&scope=transactions:read,identity:read&redirect_uri=#{params[:callback_url].presence}"\
-          "&authorization_code=#{user_auth_code}"
+          "&authorization_code=#{user_auth_code}"\
+          "&market=#{current_user.get_market || 'GB'}&locale=#{current_user.get_locale}"
 
     url << '&test=true' if ENV['SANDBOX_ENV'] == 'true'
 
