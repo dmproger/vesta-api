@@ -32,8 +32,8 @@ class GetAccountLinkingCode
     raise 'unable to get access token' if access_token.blank?
 
     create_user_response = TinkAPI::V1::Client.new.create_tink_user(client_access_token: access_token,
-                                                                    locale: current_user.locale,
-                                                                    market: current_user.market)
+                                                                    locale: current_user.get_locale,
+                                                                    market: current_user.get_market)
 
     tink_user_id = create_user_response.dig(:user_id)
     raise 'unable to create user on tink' if tink_user_id.blank?

@@ -113,7 +113,7 @@ module TinkAPI
         response = RestClient.post "#{API_ENDPOINT}/user/create",
                                    {
                                        locale: locale || 'en_US',
-                                       market: market || 'SE'
+                                       market: market || 'GB'
                                    }.to_json,
                                    {
                                        content_type: "application/json; charset=utf-8",
