@@ -28,7 +28,7 @@ class PersistTransaction
     hash[:category_id] = transaction.dig(:categoryId)
     hash[:category_type] = transaction.dig(:categoryType)
     hash[:transaction_date] = Time.at(transaction.dig(:date) / 1000).to_date
-    hash[:description] = transaction.dig(:description)
+    hash[:description] = transaction.dig(:originalDescription)
     hash[:transaction_id] = transaction.dig(:id)
     hash[:notes] = transaction.dig(:notes)
     hash[:is_pending] = transaction.dig(:pending)
