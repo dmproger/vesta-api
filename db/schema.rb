@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_21_112522) do
+ActiveRecord::Schema.define(version: 2020_11_05_104345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -154,6 +154,9 @@ ActiveRecord::Schema.define(version: 2020_10_21_112522) do
     t.uuid "account_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "is_processed", default: false
+    t.boolean "is_associated", default: false
+    t.integer "association_type"
     t.index ["account_id"], name: "index_saved_transactions_on_account_id"
     t.index ["user_defined_category"], name: "index_saved_transactions_on_user_defined_category"
     t.index ["user_id"], name: "index_saved_transactions_on_user_id"

@@ -38,9 +38,7 @@ class Api::V1::AddressesController < ApplicationController
 
   def set_address
     @address = current_user.addresses.find_by(id: params[:id])
-    if @address.blank?
-      render json: {success: false, message: 'invalid address id', data: nil}
-    end
+    render json: {success: false, message: 'invalid address id', data: nil} if @address.blank?
   end
 
   def address_params

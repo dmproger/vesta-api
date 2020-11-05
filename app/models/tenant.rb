@@ -1,4 +1,10 @@
 class Tenant < ApplicationRecord
+  include PgSearch::Model
+
+  pg_search_scope :search, against: [:name, :agent_name], using: {
+      tsearch: {prefix: true, any_word: true}
+  }
+
   belongs_to :property
 
   scope :active, -> { where(is_active: true) }

@@ -60,6 +60,9 @@ gem 'gocardless_pro', '~> 2.24'
 # A simple HTTP and REST client for Ruby
 gem 'rest-client', '~> 2.1'
 
+# PgSearch builds Active Record named scopes that take advantage of PostgreSQL's full text search
+gem 'pg_search', '~> 2.3', '>= 2.3.4'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

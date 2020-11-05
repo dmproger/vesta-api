@@ -4,6 +4,7 @@ class SavedTransaction < ApplicationRecord
 
   scope :within, -> (period) {where(transaction_date: period.beginning_of_month..period.end_of_month)}
   scope :income, -> {where(category_type: 'INCOME')}
+  scope :not_processed, -> {where(is_processed: false)}
 
   has_one :property_tenant_transaction
 
@@ -14,6 +15,7 @@ class SavedTransaction < ApplicationRecord
           class_name: 'Tenant'
 
   enum user_defined_category: [:rent, :mortgage, :ground_rent, :other]
+  enum association_type: [:automatic, :manual]
 
   def replace_property(attributes = nil)
     PropertyTenantTransaction.transaction do
