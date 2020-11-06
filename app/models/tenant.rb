@@ -1,9 +1,8 @@
 class Tenant < ApplicationRecord
   include PgSearch::Model
 
-  pg_search_scope :search, against: [:name, :agent_name], using: {
-      tsearch: {prefix: true, any_word: true}
-  }
+  pg_search_scope :search, against: [:name, :agent_name], associated_against: {joint_tenants: :name},
+                  using: {tsearch: {prefix: true, any_word: true}}
 
   belongs_to :property
 
@@ -28,8 +27,9 @@ class Tenant < ApplicationRecord
   has_one_attached :agency_agreement
 
   has_many :joint_tenants, dependent: :destroy
-  has_many :property_tenant_transactions
-  has_many :saved_transactions, through: :property_tenant_transactions, class_name: 'SavedTransaction'
+  has_many :property_tenants, dependent: :destroy
+  has_many :associated_transactions, through: :property_tenants
+  has_many :saved_transactions, through: :associated_transactions, class_name: 'SavedTransaction'
 
   accepts_nested_attributes_for :joint_tenants, allow_destroy: true
 

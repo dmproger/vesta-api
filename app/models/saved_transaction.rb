@@ -6,23 +6,37 @@ class SavedTransaction < ApplicationRecord
   scope :income, -> {where(category_type: 'INCOME')}
   scope :not_processed, -> {where(is_processed: false)}
 
-  has_one :property_tenant_transaction
+  has_one :associated_transaction, dependent: :destroy
 
-  has_one :property, through: :property_tenant_transaction,
+  has_one :property_tenant, through: :associated_transaction
+
+  has_one :property, through: :property_tenant,
            class_name: 'Property'
 
-  has_one :tenant, through: :property_tenant_transaction,
+  has_one :tenant, through: :property_tenant,
           class_name: 'Tenant'
 
   enum user_defined_category: [:rent, :mortgage, :ground_rent, :other]
   enum association_type: [:automatic, :manual]
 
+  def assign_to_tenant(joint_tenant, attributes = nil)
+    property_tenant = find_property_tenant(attributes) || create_property_tenant!(attributes)
+    property_tenant.associated_transactions.create(saved_transaction_id: id,
+                                                   joint_tenant_id: joint_tenant)
+  rescue StandardError => _e
+    false
+  end
+
+  def find_property_tenant(attributes)
+    PropertyTenant.where(attributes).within(transaction_date).first
+  end
+
   def replace_property(attributes = nil)
-    PropertyTenantTransaction.transaction do
-      property_tenant_transaction&.destroy!
-      create_property_tenant_transaction!(attributes)
+    PropertyTenant.transaction do
+      property_tenant&.destroy!
+      create_property_tenant!(attributes)
     end
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed
-    property_tenant_transaction
+    property_tenant
   end
 end

@@ -29,7 +29,7 @@ class HomeData
   def total_expected
     on_time = []
     current_user.tenants.within(period).each do |tenant|
-      ptt = tenant.property_tenant_transactions.this_month(period).first
+      ptt = tenant.property_tenants.this_month(period).first
 
       case tenant.payment_frequency
       when 'monthly'
