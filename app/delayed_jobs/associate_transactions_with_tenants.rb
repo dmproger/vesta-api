@@ -15,8 +15,6 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
       else
         mark_unassociated(transaction)
       end
-
-      # TODO: Test & Fix ripples of schema changes
     end
   end
 
@@ -32,9 +30,11 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
   end
 
   def find_matching_tenant(transaction, user)
+    tenant_ids = user.tenants.includes(:joint_tenants).where(joint_tenants: {price: transaction.amount}).ids
     user.tenants
         .within(transaction.transaction_date)
         .where(price: transaction.amount)
-        .search(transaction.description).first
+        .or(user.tenants.within(transaction.transaction_date).where(id: tenant_ids))
+        .search(transaction.description).references(:joint_tenants).first
   end
 end

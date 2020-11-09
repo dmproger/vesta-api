@@ -20,9 +20,9 @@ class SavedTransaction < ApplicationRecord
   enum association_type: [:automatic, :manual]
 
   def assign_to_tenant(joint_tenant, attributes = nil)
-    property_tenant = find_property_tenant(attributes) || create_property_tenant!(attributes)
-    property_tenant.associated_transactions.create(saved_transaction_id: id,
-                                                   joint_tenant_id: joint_tenant)
+    property_tenant = find_property_tenant(attributes) || PropertyTenant.create(attributes)
+    property_tenant.associated_transactions.create!(saved_transaction_id: id,
+                                                   joint_tenant_id: joint_tenant.id)
   rescue StandardError => _e
     false
   end
