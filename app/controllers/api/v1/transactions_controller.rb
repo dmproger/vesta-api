@@ -5,7 +5,8 @@ class Api::V1::TransactionsController < ApplicationController
 
   def index
     refresh_transactions if params[:force_refresh] == 'true'
-    @transactions = current_user.saved_transactions.income.includes(tenant: :joint_tenants)
+    @transactions = @account.reload.saved_transactions.income.includes(tenant: :joint_tenants)
+    process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
@@ -31,6 +32,10 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   private
+
+  def process_transactions
+    Delayed::Job.enqueue AssociateTransactionsWithTenants.new(current_user.id)
+  end
 
   def refresh_transactions
     transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
