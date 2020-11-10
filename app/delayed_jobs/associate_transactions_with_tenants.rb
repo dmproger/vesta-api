@@ -2,6 +2,8 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
   def perform
     user = User.find_by(id: user_id)
     return if user.blank?
+    return unless user.properties.exists?
+    return unless user.tenants.exists?
 
     user.saved_transactions.income.not_processed.each do |transaction|
       tenant = find_matching_tenant(transaction, user)
@@ -30,6 +32,8 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
   end
 
   def find_matching_tenant(transaction, user)
+    # this extra query is fetching tenant ids based on joint_tenants because pg_search does not support
+    # includes with associated search
     tenant_ids = user.tenants.includes(:joint_tenants).where(joint_tenants: {price: transaction.amount}).ids
     user.tenants
         .within(transaction.transaction_date)
