@@ -24,6 +24,8 @@ class User < ActiveRecord::Base
   has_many :accounts, dependent: :destroy
   has_many :saved_transactions, dependent: :destroy
 
+  has_many :associated_transactions, through: :properties
+
   def subscription
     subscriptions.order(created_at: :desc).first
   end
