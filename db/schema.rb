@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_21_112522) do
+ActiveRecord::Schema.define(version: 2020_11_06_060005) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -68,6 +68,17 @@ ActiveRecord::Schema.define(version: 2020_10_21_112522) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_addresses_on_user_id"
+  end
+
+  create_table "associated_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "property_tenant_id"
+    t.uuid "saved_transaction_id"
+    t.uuid "joint_tenant_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["joint_tenant_id"], name: "index_associated_transactions_on_joint_tenant_id"
+    t.index ["property_tenant_id"], name: "index_associated_transactions_on_property_tenant_id"
+    t.index ["saved_transaction_id"], name: "index_associated_transactions_on_saved_transaction_id"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -128,15 +139,13 @@ ActiveRecord::Schema.define(version: 2020_10_21_112522) do
     t.index ["user_id"], name: "index_properties_on_user_id"
   end
 
-  create_table "property_tenant_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "property_tenants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "property_id"
     t.uuid "tenant_id"
-    t.uuid "saved_transaction_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["property_id"], name: "index_property_tenant_transactions_on_property_id"
-    t.index ["saved_transaction_id"], name: "index_property_tenant_transactions_on_saved_transaction_id"
-    t.index ["tenant_id"], name: "index_property_tenant_transactions_on_tenant_id"
+    t.index ["property_id"], name: "index_property_tenants_on_property_id"
+    t.index ["tenant_id"], name: "index_property_tenants_on_tenant_id"
   end
 
   create_table "saved_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -154,6 +163,9 @@ ActiveRecord::Schema.define(version: 2020_10_21_112522) do
     t.uuid "account_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "is_processed", default: false
+    t.boolean "is_associated", default: false
+    t.integer "association_type"
     t.index ["account_id"], name: "index_saved_transactions_on_account_id"
     t.index ["user_defined_category"], name: "index_saved_transactions_on_user_defined_category"
     t.index ["user_id"], name: "index_saved_transactions_on_user_id"
