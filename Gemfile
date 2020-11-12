@@ -25,8 +25,43 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
+gem 'devise', '~> 4.7', '>= 4.7.3'
+
+# Authentication For use with client side single page apps
+gem 'devise_token_auth', '~> 1.1', '>= 1.1.4'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
+
+# Middleware that will make Rack-based apps CORS compatible
+gem 'rack-cors', '~> 1.1', '>= 1.1.1'
+
+# Adds methods to set and authenticate against one time passwords 2FA
+gem 'active_model_otp', '~> 2.0', '>= 2.0.1'
+
+# The official library for communicating with the Twilio REST API
+gem 'twilio-ruby', '~> 5.40', '>= 5.40.3'
+
+# Loads environment variables from `.env`.
+gem 'dotenv', '~> 2.7', '>= 2.7.6'
+
+# AR date validator
+gem 'date_validator', '~> 0.10.0'
+
+# Official AWS Ruby gem for Amazon Simple Storage Service (Amazon S3)
+gem 'aws-sdk-s3', '~> 1.81', '>= 1.81.1', require: false
+
+# ActiveRecord backend for Delayed::Job
+gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.4'
+
+# A gem for calling the GoCardless Pro API
+gem 'gocardless_pro', '~> 2.24'
+
+# A simple HTTP and REST client for Ruby
+gem 'rest-client', '~> 2.1'
+
+# PgSearch builds Active Record named scopes that take advantage of PostgreSQL's full text search
+gem 'pg_search', '~> 2.3', '>= 2.3.4'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
