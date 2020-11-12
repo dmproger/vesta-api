@@ -60,7 +60,7 @@ class HomeData
         late_collected << tenant.price if saved_transaction.transaction_date&.day.to_i > tenant.day_of_month
       end
     else
-      if tenant.day_of_month < Date.current.day
+      if (period - (tenant.day_of_month - 1)) < Date.current
         late_expected << tenant.price
       else
         expected_rent << tenant.price
