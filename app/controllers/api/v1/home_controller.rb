@@ -1,6 +1,6 @@
 class Api::V1::HomeController < ApplicationController
   before_action :set_period
-  before_action :set_type, only: :details
+  before_action :set_type, only: [:details]
 
   def index
     @data = if params[:test] == 'true'
@@ -10,18 +10,20 @@ class Api::V1::HomeController < ApplicationController
             end
   end
 
+  def collected
+    @associated_transactions = current_user.associated_transactions.within(@period)
+  end
+
   def details
-    details = HomeDataDetails.new(period: @period, type: params[:type], current_user: current_user).call
-    render json: {success: true, message: 'home details', data: {
-        type: params[:type],
-        details: details.as_json(include: [:property, :tenant, :saved_transaction])
-    }}
+    tenants = ExpectedAmountDetail.new(period: @period, current_user: current_user, type: params[:type]).call
+
+    render json: {success: true, message: params[:type], data: tenants}
   end
 
   private
 
   def set_type
-    unless %w[collected expected late].include? params[:type]
+    unless %w[expected late].include? params[:type]
       render json: {success: false, message: 'invalid type', data: nil}
     end
   end
