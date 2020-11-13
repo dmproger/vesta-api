@@ -41,6 +41,6 @@ class ExpectedAmountDetail
   end
 
   def add_to_expected(tenant)
-    (period - (tenant.day_of_month - 1)) < Date.current ? late << tenant : expected << tenant
+    (period + (tenant.day_of_month - 1)) < Date.current ? late << tenant : expected << tenant
   end
 end
