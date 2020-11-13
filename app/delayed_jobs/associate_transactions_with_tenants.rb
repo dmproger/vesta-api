@@ -5,7 +5,7 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
     return unless user.properties.exists?
     return unless user.tenants.exists?
 
-    user.saved_transactions.income.not_processed.each do |transaction|
+    user.saved_transactions.income.not_associated.each do |transaction|
       tenant = find_matching_tenant(transaction, user)
 
       mark_unassociated(transaction) and next if tenant.blank?

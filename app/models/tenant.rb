@@ -6,6 +6,8 @@ class Tenant < ApplicationRecord
 
   belongs_to :property
 
+  has_one :user, through: :property
+
   scope :active, -> { where(is_active: true) }
   scope :non_archived, -> { where(is_archived: false) }
   scope :within, -> (period) {where("start_date <= ? AND end_date >= ?", period.end_of_month, period.end_of_month)}
@@ -35,6 +37,9 @@ class Tenant < ApplicationRecord
 
   after_create :setup_expiry, if: :is_active
   after_update :setup_expiry, if: :is_active
+
+  after_create :process_transactions
+  after_update :process_transactions
 
   validate :conflict
 
@@ -78,6 +83,11 @@ class Tenant < ApplicationRecord
   end
 
   private
+
+  # being used in a callback (after_create & after_update)
+  def process_transactions
+    Delayed::Job.enqueue AssociateTransactionsWithTenants.new(self.user)
+  end
 
   def joint_payee?
     payee_type == PAYEE_TYPES.third
