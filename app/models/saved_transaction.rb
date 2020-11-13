@@ -5,6 +5,7 @@ class SavedTransaction < ApplicationRecord
   scope :within, -> (period) {where(transaction_date: period.beginning_of_month..period.end_of_month)}
   scope :income, -> {where(category_type: 'INCOME')}
   scope :not_processed, -> {where(is_processed: false)}
+  scope :not_associated, -> {where(is_associated: false)}
 
   has_one :associated_transaction, dependent: :destroy
 
