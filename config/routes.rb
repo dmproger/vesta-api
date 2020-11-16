@@ -52,6 +52,7 @@ Rails.application.routes.draw do
 
       resources :home, only: :index do
         collection do
+          get :all_data
           get :collected
           get :details
         end

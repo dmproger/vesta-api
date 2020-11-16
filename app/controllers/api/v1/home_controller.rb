@@ -10,10 +10,21 @@ class Api::V1::HomeController < ApplicationController
             end
   end
 
+  def all_data
+    @data = HomeData.new(period: @period, current_user: current_user).call
+
+    @associated_transactions = current_user.associated_transactions.within(@period)
+
+    @expected_tenants, @late_tenants = ExpectedAmountDetail.new(period: @period,
+                                                                current_user: current_user,
+                                                                type: 'all').call
+  end
+
   def collected
     @associated_transactions = current_user.associated_transactions.within(@period)
   end
 
+  # expected and late tenants details
   def details
     tenants = ExpectedAmountDetail.new(period: @period, current_user: current_user, type: params[:type]).call
 
