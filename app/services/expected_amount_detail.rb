@@ -1,4 +1,4 @@
-class ExpectedAmountDetail
+class ExpectedAmountDetail < HomeUtils
   attr_reader :period, :current_user, :expected, :late, :type
 
   def initialize(period:, current_user:, type:)
@@ -45,6 +45,6 @@ class ExpectedAmountDetail
   end
 
   def add_to_expected(tenant)
-    (period + (tenant.day_of_month - 1)) < Date.current ? late << tenant : expected << tenant
+    get_due_datetime(period + (tenant.day_of_month - 1)) < DateTime.current ? late << tenant : expected << tenant
   end
 end
