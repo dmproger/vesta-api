@@ -12,7 +12,11 @@ class ExpectedAmountDetail
   def call
     evaluate_expected_detail
 
-    (type == 'expected') ? expected : late
+    if type == 'all'
+      [expected, late]
+    else
+      (type == 'expected') ? expected : late
+    end
   end
 
   private
