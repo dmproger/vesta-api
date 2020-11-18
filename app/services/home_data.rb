@@ -1,4 +1,4 @@
-class HomeData
+class HomeData < HomeUtils
   attr_reader :period, :current_user,
               :expected, :collected, :total, :late_collected, :late_expected, :on_time_collection
 
@@ -32,7 +32,7 @@ class HomeData
 
   def total_expected
     expected_rent = []
-    current_user.tenants.within(period).each do |tenant|
+    current_user.non_archived_tenants_by(period: period).within(period).each do |tenant|
       ptt = tenant.property_tenants.this_month(period).first
 
       case tenant.payment_frequency
@@ -60,7 +60,7 @@ class HomeData
         late_collected << tenant.price if saved_transaction.transaction_date&.day.to_i > tenant.day_of_month
       end
     else
-      if (period + (tenant.day_of_month - 1)) < Date.current
+      if get_due_datetime(period + (tenant.day_of_month - 1)) < DateTime.current
         late_expected << tenant.price
       else
         expected_rent << tenant.price

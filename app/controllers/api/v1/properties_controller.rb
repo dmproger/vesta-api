@@ -28,7 +28,7 @@ class Api::V1::PropertiesController < ApplicationController
   end
 
   def archive
-    if @property.update(is_archived: true)
+    if @property.update(is_archived: true, archived_at: Date.current)
       render json: {success: true, message: 'archived successfully', data: nil}
     else
       render json: {success: false, message: errors_to_string(@property), data: nil}

@@ -29,7 +29,7 @@ class Api::V1::TenantsController < ApplicationController
   end
 
   def archive
-    if @tenant.update(is_archived: true)
+    if @tenant.update(is_archived: true, archived_at: Date.current)
       render json: {success: true, message: 'archived successfully', data: nil}
     else
       render json: {success: false, message: errors_to_string(@tenant), data: nil}
