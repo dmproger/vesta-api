@@ -32,7 +32,7 @@ class HomeData < HomeUtils
 
   def total_expected
     expected_rent = []
-    current_user.tenants.within(period).each do |tenant|
+    current_user.non_archived_tenants_by(period: period).within(period).each do |tenant|
       ptt = tenant.property_tenants.this_month(period).first
 
       case tenant.payment_frequency
