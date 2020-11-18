@@ -22,7 +22,7 @@ class ExpectedAmountDetail < HomeUtils
   private
 
   def evaluate_expected_detail
-    current_user.tenants.within(period).each do |tenant|
+    current_user.non_archived_tenants_by(period: period).within(period).each do |tenant|
       ptt = tenant.property_tenants.this_month(period).first
 
       next if ptt.present?
