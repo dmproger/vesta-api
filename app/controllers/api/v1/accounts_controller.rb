@@ -1,4 +1,6 @@
 class Api::V1::AccountsController < ApplicationController
+  before_action :verify_account_linked?, only: :index
+
   def index
     accounts = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'accounts:read')).accounts
     render json: {success: true, message: 'accounts',
@@ -24,6 +26,10 @@ class Api::V1::AccountsController < ApplicationController
   end
 
   private
+
+  def verify_account_linked?
+    render json: {success: true, message: 'please link your account first!', data: nil} if current_user.tink_user_id.blank?
+  end
 
   def persist_accounts(accounts)
     PersistAccount.new(accounts.dig(:accounts), current_user).call
