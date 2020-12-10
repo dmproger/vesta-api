@@ -28,7 +28,7 @@ class Api::V1::AccountsController < ApplicationController
   private
 
   def verify_account_linked?
-    render json: {success: true, message: 'please link your account first!', data: nil} if current_user.tink_user_id.blank?
+    render json: {success: true, message: 'please link your account first!', data: []} if current_user.tink_user_id.blank?
   end
 
   def persist_accounts(accounts)
