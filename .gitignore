@@ -79,7 +79,6 @@ bower.json
 # vim
 *.sw*
 
-config/database.yml
 /config/credentials/development.key
 
 # Ignore application configuration
