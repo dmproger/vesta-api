@@ -45,6 +45,10 @@ class ExpectedAmountDetail < HomeUtils
   end
 
   def add_to_expected(tenant)
-    get_due_datetime(period + (tenant.day_of_month - 1)) < DateTime.current ? late << tenant : expected << tenant
+    if get_due_datetime(period + (tenant.day_of_month - 1)) < DateTime.current
+      late << tenant.as_json(include: :joint_tenants)
+    else
+      expected << tenant.as_json(include: :joint_tenants)
+    end
   end
 end

@@ -63,6 +63,8 @@ gem 'rest-client', '~> 2.1'
 # PgSearch builds Active Record named scopes that take advantage of PostgreSQL's full text search
 gem 'pg_search', '~> 2.3', '>= 2.3.4'
 
+gem 'daemons', '~> 1.3', '>= 1.3.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -75,6 +77,13 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+
+  gem 'capistrano', '~> 3.14', '>= 3.14.1'
+  gem 'capistrano3-puma', '~> 5.0', '>= 5.0.2'
+  gem 'capistrano-rails', '~> 1.6', '>= 1.6.1', require: false
+  gem 'capistrano-bundler', '~> 2.0', '>= 2.0.1', require: false
+  gem 'capistrano-rvm', '~> 0.1.2'
+  gem 'capistrano3-delayed-job', '~> 1.7', '>= 1.7.6'
 end
 
 group :test do
