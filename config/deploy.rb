@@ -6,7 +6,7 @@ set :branch, :develop
 set :deploy_to, '/home/ubuntu/vesta-rails'
 set :pty, true
 set :linked_files, %w{config/database.yml}
-set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/uploads}
+set :linked_dirs, %w{tmp/pids tmp/sockets log tmp/cache vendor/bundle public/system public/uploads}
 set :keep_releases, 5
 set :rvm_type, :user
 set :rvm_ruby_version, 'ruby-2.7.0'
@@ -26,14 +26,3 @@ set :puma_workers, 0
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false
-
-# namespace :deploy do
-#   desc 'Restart application'
-#   task :restart do
-#     on roles(:app), in: :sequence, wait: 5 do
-#       invoke 'puma:start'
-#     end
-#   end
-# end
-
-# after 'deploy', 'deploy:restart'
