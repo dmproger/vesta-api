@@ -34,7 +34,7 @@ set :delayed_job_workers
 set :delayed_job_roles, %i(app background)
 
 set :ssh_options, {
-    keys: %w(vesta-dev-rails.pem),
+    keys: %w(vesta-prod-rails.pem),
     forward_agent: true,
     auth_methods: %w(publickey)
 }
