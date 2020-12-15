@@ -63,6 +63,8 @@ gem 'rest-client', '~> 2.1'
 # PgSearch builds Active Record named scopes that take advantage of PostgreSQL's full text search
 gem 'pg_search', '~> 2.3', '>= 2.3.4'
 
+gem 'daemons', '~> 1.3', '>= 1.3.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
