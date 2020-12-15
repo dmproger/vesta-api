@@ -83,6 +83,7 @@ group :development do
   gem 'capistrano-rails', '~> 1.6', '>= 1.6.1', require: false
   gem 'capistrano-bundler', '~> 2.0', '>= 2.0.1', require: false
   gem 'capistrano-rvm', '~> 0.1.2'
+  gem 'capistrano-delayed-job', '~> 1.1'
 end
 
 group :test do
