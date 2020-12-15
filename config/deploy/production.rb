@@ -29,7 +29,9 @@ set :puma_preload_app, false
 
 set :puma_bind,       "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
+
 set :delayed_job_workers
+set :delayed_job_roles, %i(app background)
 
 set :ssh_options, {
     keys: %w(vesta-dev-rails.pem),

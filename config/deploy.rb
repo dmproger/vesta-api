@@ -27,6 +27,9 @@ set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false
 
+set :delayed_job_workers
+set :delayed_job_roles, %i(app background)
+
 namespace :deploy do
   desc 'Restart application'
   task :restart do
