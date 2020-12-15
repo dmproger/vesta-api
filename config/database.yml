@@ -13,6 +13,12 @@ test:
   <<: *default
   database: vesta_rails_test
 
+staging:
+  <<: *default
+  database: vesta_rails_production
+  username: vesta
+  password: vesta12!
+
 production:
   <<: *default
   database: vesta_rails_production
