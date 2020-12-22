@@ -15,11 +15,17 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :users, only: :index do
-        get :verify_otp, on: :member
-        get :accounts, on: :member
-        get :email_status, on: :collection
-        get :phone_status, on: :collection
-        get :details, on: :collection
+        collection do
+          get :email_status
+          get :phone_status
+          get :details
+        end
+
+        member do
+          get :verify_otp
+          get :accounts
+          get :subscription_status
+        end
       end
 
       resources :accounts, only: :index do

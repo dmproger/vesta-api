@@ -28,6 +28,22 @@ class Api::V1::UsersController < ApplicationController
     render json: {success: true, message: 'phone status', taken: is_taken}
   end
 
+  def subscription_status
+    render json: {
+      success: false,
+      message: 'invalid user, please login and try again',
+      data: nil
+    } unless current_user.id == params[:id]
+
+    render json: {
+      status: true,
+      message: 'subscription status',
+      data: {
+        active_subscription: current_user.active_subscription.present?
+      }
+    }
+  end
+
   private
 
   def sign_in_user
