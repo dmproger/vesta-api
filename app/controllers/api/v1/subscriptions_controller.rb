@@ -46,7 +46,7 @@ class Api::V1::SubscriptionsController < ApplicationController
     if redirect_flow.links.present?
       save_customer_and_mandate(user, redirect_flow)
       save_external_subscription(subscription: subscribe_user(user), user: user)
-      redirect_to redirect_flow.confirmation_url
+      redirect_to 'ubps.vesta.test-goCardless://?completed=true' if redirect_flow.confirmation_url.present?
     else
       render json: {success: false, message: 'something went wrong', data: nil}
     end
