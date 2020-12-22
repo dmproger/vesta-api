@@ -4,6 +4,8 @@ class Api::V1::UsersController < ApplicationController
 
   before_action :set_user, only: :verify_otp
 
+  before_action :verify_user_id, only: :subscription_status
+
   VERIFICATION_TIMEOUT = 120 # seconds
   def verify_otp
     if @resource.authenticate_otp(params.dig( :otp).to_s, drift: VERIFICATION_TIMEOUT)
@@ -30,12 +32,6 @@ class Api::V1::UsersController < ApplicationController
 
   def subscription_status
     render json: {
-      success: false,
-      message: 'invalid user, please login and try again',
-      data: nil
-    } unless current_user.id == params[:id]
-
-    render json: {
       status: true,
       message: 'subscription status',
       data: {
@@ -45,6 +41,14 @@ class Api::V1::UsersController < ApplicationController
   end
 
   private
+
+  def verify_user_id
+    render json: {
+      success: false,
+      message: 'invalid user, please login and try again',
+      data: nil
+    } unless current_user.id == params[:id]
+  end
 
   def sign_in_user
     @token = @resource.create_token
