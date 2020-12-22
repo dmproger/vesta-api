@@ -36,7 +36,7 @@ class PersistAccount
     hash[:holder_name] = account.dig(:holderName)
     hash[:is_closed] = account.dig(:closed)
     hash[:currency_code] = account.dig(:currencyCode)
-    hash[:refreshed] = DateTime.strptime(account.dig(:refreshed).to_s,'%S')
+    hash[:refreshed] = DateTime.strptime(account.dig(:refreshed).to_s,'%S') if account.dig(:refreshed).present?
     hash[:institution_id] = account.dig(:financialInstitutionId)
     hash
   end
