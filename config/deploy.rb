@@ -2,7 +2,7 @@ lock "~> 3.14.1"
 
 set :application, 'vesta-rails'
 set :repo_url, 'git@github.com:Vesta-Property-Technologies-Ltd/vesta-rails.git'
-set :branch, :develop
+set :branch, :master
 set :deploy_to, '/home/ubuntu/vesta-rails'
 set :pty, true
 set :linked_files, %w{config/database.yml}
@@ -26,3 +26,17 @@ set :puma_workers, 0
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false
+
+set :delayed_job_workers
+set :delayed_job_roles, %i(app background)
+
+namespace :deploy do
+  desc 'Restart application'
+  task :restart do
+    on roles(:app), in: :sequence, wait: 5 do
+      invoke 'puma:start'
+    end
+  end
+end
+
+after 'deploy', 'deploy:restart'

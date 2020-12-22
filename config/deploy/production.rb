@@ -2,7 +2,7 @@ server '18.132.47.22', user: 'ubuntu', roles: %w{web app db}
 
 set :application, 'vesta-rails'
 set :repo_url, 'git@github.com:Vesta-Property-Technologies-Ltd/vesta-rails.git'
-set :branch, :develop
+set :branch, :master
 set :deploy_to, '/home/ubuntu/vesta-rails'
 set :pty, true
 set :linked_files, %w{config/database.yml}
@@ -29,6 +29,9 @@ set :puma_preload_app, false
 
 set :puma_bind,       "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
+
+set :delayed_job_workers
+set :delayed_job_roles, %i(app background)
 
 set :ssh_options, {
     keys: %w(vesta-dev-rails.pem),
