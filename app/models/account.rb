@@ -10,7 +10,7 @@ class Account < ApplicationRecord
   def update_username
     if user.first_name&.empty?
       name = holder_name&.split(' ', 2)
-      user.update_columns(first_name: name.first, surname: name.last)
+      user.update_columns(first_name: name&.first, surname: name&.last)
     end
   end
 end
