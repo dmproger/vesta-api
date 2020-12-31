@@ -145,6 +145,32 @@ module TinkAPI
 
         JSON.parse(response.body).symbolize_keys
       end
+
+      def renew_credentials(id:, provider_name:)
+        # TODO: call appropriate private method based on provider name
+      end
+
+      private
+
+      # refreshing credentials
+      # required scope -> credentials:refresh
+      def refresh_credentials(id:)
+        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}/refresh",
+                                  {
+                                    authorization: "Bearer #{access_token}"
+                                  }
+        JSON.parse(response.body).symbolize_keys
+      end
+
+      # authenticating credentials
+      # required scope -> credentials:refresh
+      def authenticate_credentials(id:)
+        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}/authenticate",
+                                  {
+                                    authorization: "Bearer #{access_token}"
+                                  }
+        JSON.parse(response.body).symbolize_keys
+      end
     end
   end
 end
