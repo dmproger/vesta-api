@@ -1,11 +1,10 @@
 class Api::V1::AccountsController < ApplicationController
   before_action :verify_account_linked?, only: :index
+  before_action :set_account, only: [:update_credentials ,:renew_credentials_link]
 
   def index
     accounts = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'accounts:read')).accounts
-    render json: {success: true, message: 'accounts',
-                  data: {accounts: persist_accounts(accounts),
-                         subscription: current_user.active_subscription}}
+    @accounts = persist_accounts(accounts)
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
@@ -25,7 +24,50 @@ class Api::V1::AccountsController < ApplicationController
     render json: {success: false, message: e.message, data: nil}
   end
 
+  def renew_credentials_link
+    user_auth_code = GetAccountLinkingCode.new(current_user).call
+
+    url = "https://link.tink.com/1.0/"\
+          "credentials/#{open_banking? ? AUTHENTICATE_ENDPOINT : REFRESH_ENDPOINT}?"\
+          "client_id=#{ENV['TINK_CLIENT_ID']}"\
+          "&redirect_uri=#{params.dig(:callback_url)}"\
+          "&credentials_id=#{@account.credentials_id}"\
+          "&authorization_code=#{user_auth_code}"\
+          "#{open_banking? ? '' : '&authenticate=false'}"
+
+    url << '&test=true' if ENV['SANDBOX_ENV'] == 'true'
+
+    render json: {success: true, message: 'tink link refresh credentials', data: {code: user_auth_code, url: url}}
+  end
+
+  def update_credentials
+    credential = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'credentials:read'))
+                                    .get_credentials(id: @account.credentials_id)
+
+    if @account.tink_credential&.update(credential)
+      render json: {success: true, message: 'credentials updated', data: nil}
+    else
+      render json: {success: false, message: 'credentials update failed', data: nil}
+    end
+  end
+
   private
+
+  REFRESH_ENDPOINT='refresh'.freeze
+  AUTHENTICATE_ENDPOINT='authenticate'.freeze
+  def open_banking?
+    @account.tink_credential&.provider_name&.include?('open-banking')
+  end
+
+  def set_account
+    @account = current_user.accounts.find_by(id: params[:id])
+
+    render json: {
+      success: false,
+      message: 'invalid account id',
+      data: nil
+    } if @account.blank?
+  end
 
   def verify_account_linked?
     render json: {success: true, message: 'please link your account first!', data: nil} if current_user.tink_user_id.blank?

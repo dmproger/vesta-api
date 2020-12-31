@@ -10,16 +10,35 @@ class PersistAccount
     accounts.map do |account|
       account_params = to_map_able_json(account.symbolize_keys)
       persisted_account = current_user.accounts.find_by(account_id: account_params[:account_id])
-      if persisted_account.present?
-        persisted_account.update(account_params)
-        persisted_account
-      else
-        current_user.accounts.create(account_params)
-      end
+      account = if persisted_account.present?
+                  persisted_account.update(account_params)
+                  persisted_account
+                else
+                  current_user.accounts.create(account_params)
+                end
+      persist_account_credentials(account)
+      account
     end
   end
 
   private
+
+  def persist_account_credentials(account)
+    if account.tink_credential.present?
+      if account.tink_credential&.updated_at < 1.hour.ago || account.credentials_expired?
+        credential = get_updated_credential(account)
+        account.tink_credential.update(credential.merge(updated_at: DateTime.current))
+      end
+    else
+      credential = get_updated_credential(account)
+      account.create_tink_credential(credential)
+    end
+  end
+
+  def get_updated_credential(account)
+    TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'credentials:read'))
+                       .get_credentials(id: account.credentials_id)
+  end
 
   def to_map_able_json(account)
     hash = {}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_18_055810) do
+ActiveRecord::Schema.define(version: 2020_12_31_080437) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -220,6 +220,24 @@ ActiveRecord::Schema.define(version: 2020_11_18_055810) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_tink_access_tokens_on_user_id"
+  end
+
+  create_table "tink_credentials", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "username"
+    t.string "credentials_id"
+    t.string "provider_name"
+    t.datetime "status_expiry_date"
+    t.string "status"
+    t.string "status_payload"
+    t.datetime "status_updated"
+    t.string "supplemental_information"
+    t.string "credentials_type"
+    t.datetime "updated"
+    t.string "tink_user_id"
+    t.uuid "account_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["account_id"], name: "index_tink_credentials_on_account_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
