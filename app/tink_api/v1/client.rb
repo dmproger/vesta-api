@@ -150,26 +150,34 @@ module TinkAPI
         # TODO: call appropriate private method based on provider name
       end
 
-      private
-
-      # refreshing credentials
-      # required scope -> credentials:refresh
-      def refresh_credentials(id:)
-        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}/refresh",
+      # Get credentials
+      # required scope -> credentials:read
+      def get_credentials(id:)
+        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}",
                                   {
                                     authorization: "Bearer #{access_token}"
                                   }
-        JSON.parse(response.body).symbolize_keys
+
+        credential_to_map_able_json(JSON.parse(response.body).symbolize_keys)
       end
 
-      # authenticating credentials
-      # required scope -> credentials:refresh
-      def authenticate_credentials(id:)
-        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}/authenticate",
-                                  {
-                                    authorization: "Bearer #{access_token}"
-                                  }
-        JSON.parse(response.body).symbolize_keys
+      private
+
+      # TODO: move this to external service
+      def credential_to_map_able_json(credential)
+        hash = {}
+        hash[:username] = credential.dig(:fields, :username)
+        hash[:credentials_id] = credential.dig(:id)
+        hash[:provider_name] = credential.dig(:providerName)
+        hash[:status_expiry_date] = DateTime.strptime(credential.dig(:sessionExpiryDate).to_s,'%S') if credential.dig(:sessionExpiryDate).present?
+        hash[:status] = credential.dig(:status)
+        hash[:status_payload] = credential.dig(:statusPayload)
+        hash[:status_updated] = credential.dig(:statusUpdated)
+        hash[:supplemental_information] = credential.dig(:supplementalInformation)
+        hash[:credentials_type] = credential.dig(:type)
+        hash[:updated] = DateTime.strptime(credential.dig(:updated).to_s,'%S') if credential.dig(:updated).present?
+        hash[:tink_user_id] = credential.dig(:userId)
+        hash
       end
     end
   end
