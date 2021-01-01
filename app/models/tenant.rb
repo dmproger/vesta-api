@@ -44,7 +44,7 @@ class Tenant < ApplicationRecord
   validate :conflict
 
   def conflict
-    active_tenant = property.tenants.active.where.not(id: id).first
+    active_tenant = property.tenants.active.non_archived.where.not(id: id).first
     if active_tenant.present? && is_active
       errors.add(:is_active, ': there can only be one active tenant')
     end

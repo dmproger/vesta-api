@@ -1,7 +1,7 @@
 class Api::V1::TinkTokensController < ApplicationController
 
   def create
-    response = TinkAPI::V1::Client.new.retrieve_access_tokens(auth_code: create_params.dig(:code))
+    response = TinkAPI::V1::Client.new.retrieve_access_tokens(auth_code: create_params.dig(:code), scopes: '')
 
     current_user.replace_tink_access_token(response)
 
