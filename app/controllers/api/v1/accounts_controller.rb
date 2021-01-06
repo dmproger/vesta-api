@@ -33,7 +33,7 @@ class Api::V1::AccountsController < ApplicationController
           "&redirect_uri=#{params.dig(:callback_url)}"\
           "&credentials_id=#{@account.credentials_id}"\
           "&authorization_code=#{user_auth_code}"\
-          "#{open_banking? ? '' : '&authenticate=false'}"
+          "#{open_banking? ? '' : '&authenticate=true'}"
 
     url << '&test=true' if ENV['SANDBOX_ENV'] == 'true'
 
