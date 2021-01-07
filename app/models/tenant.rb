@@ -10,7 +10,7 @@ class Tenant < ApplicationRecord
 
   scope :active, -> { where(is_active: true) }
   scope :non_archived, -> { where(is_archived: false) }
-  scope :within, -> (period) {where("start_date <= ? AND end_date >= ?", period.end_of_month, period.end_of_month)}
+  scope :within, -> (period) {where("start_date <= ? AND end_date >= ?", period.end_of_month, period)}
   scope :monthly, -> {where(payment_frequency: 'monthly')}
   scope :annually, -> {where(payment_frequency: 'annually')}
 
