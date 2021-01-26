@@ -39,7 +39,7 @@ class Api::V1::TransactionsController < ApplicationController
 
   def refresh_transactions
     transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
-                       .transactions(account_id: @account.account_id, query_tag: 'this year last year')
+                       .transactions(account_id: @account.account_id, query_tag: '')
     persist_transactions(transactions)
   end
 
