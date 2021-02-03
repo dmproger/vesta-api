@@ -3,7 +3,7 @@ class SavedTransaction < ApplicationRecord
   belongs_to :user
 
   scope :within, -> (period) {where(transaction_date: period.beginning_of_month..period.end_of_month)}
-  scope :income, -> {where(category_type: 'INCOME')}
+  scope :income, -> {where(category_type: %w[INCOME TRANSFERS]).where('amount >= ?', 0)}
   scope :not_processed, -> {where(is_processed: false)}
   scope :not_associated, -> {where(is_associated: false)}
 
