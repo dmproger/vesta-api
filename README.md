@@ -1,24 +1,29 @@
-# README
+# Vesta project API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Financial management service for landlords.
 
-Things you may want to cover:
+Backend only. Front is mobile ios app
 
-* Ruby version
+# Install
 
-* System dependencies
+`TODO` installation bug fixes
 
-* Configuration
+## OS Dependencies
+* postgres installed
+* ruby 2.7.0
 
-* Database creation
+## Clone
+```bash
+git clone https://github.com/vesta-tech/rails
+cd rails
+bundle
+```
+## Prepare
+* create `vesta_rails_production`, `vesta_rails_development`, `vesta_rails_test` databases
+* create `vesta` user
+* `rails db:migrate`
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+# Start
+```bash
+rails s
+```
