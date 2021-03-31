@@ -1,5 +1,7 @@
 module Overrides
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
+    CREDENTIALS_PARAMS = %i[name email phone first_name surname].freeze
+
     skip_before_action :authenticate_user!
 
     def create
@@ -9,12 +11,22 @@ module Overrides
                            password: Devise.friendly_token.first(8),
                            provider: 'email')
       @resource.assign_attributes(create_params)
-      @resource.save ? render_create_success : render_create_error
+      @resource.save ? render_success : render_error
+    end
+
+    def update
+      @resource = current_user
+      @resource.update(account_update_params)
+      @resource.saved_changes? ? render_success : render_error
     end
 
     private
 
-    def render_create_success
+    def account_update_params
+      params.require(:registration).permit(*CREDENTIALS_PARAMS)
+    end
+
+    def render_success
       render json: {
           success: true,
           message: 'Registered successfully',
@@ -23,7 +35,7 @@ module Overrides
       }
     end
 
-    def render_create_error
+    def render_error
       render json: {
           success: false,
           message: @resource.errors.to_h.map {|k,v| "#{k} #{v}"}.join(', '),
