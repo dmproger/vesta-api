@@ -34,11 +34,15 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
   def find_matching_tenant(transaction, user)
     # this extra query is fetching tenant ids based on joint_tenants because pg_search does not support
     # includes with associated search
-    tenant_ids = user.tenants.includes(:joint_tenants).where(joint_tenants: {price: transaction.amount}).ids
+    #
+    # where(price: transaction.amount) in tenant_ids and tenatns old algorithm
+    # new algirithm - search only on transaction.description
+    # Checkout it, may not work
+    #
+    joint_tenants = user.tenants.includes(:joint_tenants)
     user.tenants
         .within(transaction.transaction_date)
-        .where(price: transaction.amount)
-        .or(user.tenants.within(transaction.transaction_date).where(id: tenant_ids))
+        .or(user.tenants.within(transaction.transaction_date).where(id: joint_tenants.ids))
         .search(transaction.description).references(:joint_tenants).first
   end
 end
