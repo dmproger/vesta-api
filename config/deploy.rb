@@ -1,7 +1,7 @@
 lock "~> 3.14.1"
 
 set :application, 'vesta-rails'
-set :repo_url, 'git@github.com:Vesta-Property-Technologies-Ltd/vesta-rails.git'
+set :repo_url, 'git@github.com:dmproger/vesta-api.git'
 set :branch, :master
 set :deploy_to, '/home/ubuntu/vesta-rails'
 set :pty, true
