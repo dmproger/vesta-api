@@ -11,22 +11,12 @@ module Overrides
                            password: Devise.friendly_token.first(8),
                            provider: 'email')
       @resource.assign_attributes(create_params)
-      @resource.save ? render_success : render_error
-    end
-
-    def update
-      @resource = current_user
-      @resource.update(account_update_params)
-      @resource.saved_changes? ? render_success : render_error
+      @resource.save ? render_create_success : render_create_error
     end
 
     private
 
-    def account_update_params
-      params.require(:registration).permit(*CREDENTIALS_PARAMS)
-    end
-
-    def render_success
+    def render_create_success
       render json: {
           success: true,
           message: 'Registered successfully',
@@ -35,7 +25,7 @@ module Overrides
       }
     end
 
-    def render_error
+    def render_create_error
       render json: {
           success: false,
           message: @resource.errors.to_h.map {|k,v| "#{k} #{v}"}.join(', '),
