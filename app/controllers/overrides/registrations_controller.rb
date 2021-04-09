@@ -15,15 +15,23 @@ module Overrides
     end
 
     def update
-      @resource = current_user
-      @resource.update(account_update_params)
-      @resource.saved_changes? ? render_success : render_error
+      if @resource
+        if @resource.send(resource_update_method, account_update_params)
+          yield @resource if block_given?
+          update_auth_header
+          render_update_success
+        else
+          render_update_error
+        end
+      else
+        render_update_error_user_not_found
+      end
     end
 
     private
 
     def account_update_params
-      params.require(:registration).permit(*CREDENTIALS_PARAMS)
+      params.permit(*CREDENTIALS_PARAMS)
     end
 
     def render_success

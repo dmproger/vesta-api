@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Overrides::RegistrationsController do
   context 'change user credentials' do
-    subject(:change_credentials) { put '/api/v1/auth', headers: headers, params: params }
+    subject(:change_credentials) { patch '/api/v1/auth', headers: headers, params: params }
 
     def to_credentials(attributes)
       attributes.symbolize_keys.slice(*described_class::CREDENTIALS_PARAMS)
@@ -13,7 +13,7 @@ RSpec.describe Overrides::RegistrationsController do
     let!(:credentials) { to_credentials(some_user.attributes) }
 
     let!(:headers) { auth_headers }
-    let!(:params) { {}.merge(registration: credentials) }
+    let!(:params) { {}.merge(credentials) }
 
     before do
       some_user.delete
