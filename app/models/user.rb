@@ -27,6 +27,10 @@ class User < ActiveRecord::Base
 
   has_many :associated_transactions, through: :properties
 
+  def admin?
+    true
+  end
+
   def non_archived_tenants_by(period:)
     tenants.where('(tenants.archived_at IS NULL OR tenants.archived_at > ?) AND (properties.archived_at IS NULL OR properties.archived_at > ?)', period, period)
         .joins(:property)
