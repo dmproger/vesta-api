@@ -1,4 +1,4 @@
-server '18.134.226.201', user: 'ubuntu', roles: %w{web app db}
+server '35.177.182.142', user: 'ubuntu', roles: %w{web app db}
 
 set :application, 'vesta-rails'
 set :repo_url, 'git@github.com:dmproger/vesta-api.git'
