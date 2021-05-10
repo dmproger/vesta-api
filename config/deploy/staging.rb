@@ -1,7 +1,8 @@
 server '35.177.182.142', user: 'ubuntu', roles: %w{web app db}
 
 set :application, 'vesta-rails'
-set :repo_url, 'git@github.com:dmproger/vesta-api.git'
+# set :repo_url, 'git@github.com:dmproger/vesta-api.git'
+set :repo_url, 'git@github.com:vesta-tech/rails.git'
 set :branch, :develop
 set :deploy_to, '/home/ubuntu/vesta-rails'
 set :pty, true
