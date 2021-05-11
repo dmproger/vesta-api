@@ -1,11 +1,3 @@
-class ActiveRecord::Base
-  include Adminable
-end
-
-class RailsAdmin::AbstractModel
-  include Adminable
-end
-
 RailsAdmin.config do |config|
 
   ### Popular gems integration
@@ -34,7 +26,7 @@ RailsAdmin.config do |config|
   config.actions do
     dashboard                     # mandatory
     index                         # mandatory
-    new
+    # new
     export
     bulk_delete
     show
@@ -52,44 +44,67 @@ RailsAdmin.config do |config|
     field :phone
     field :first_name
     field :surname
+    field :created_at
   end
 
 
   config.included_models = %w{
     User::All
-    User::PhoneNotConfirmed
-    User::TinkNotRegistered
-    User::TinkRegistered
+
+    User::Trouble::NoPhone
+    User::Trouble::NoPhoneConfirmed
+    User::Trouble::NoProperty
+    User::Trouble::NoTenant
+    User::Trouble::NoTinkLink
+    User::Trouble::NoBankAccount
+
+    User::Success::WithPhone
+    User::Success::WithPhoneConfirmed
+    User::Success::WithProperty
+    User::Success::WithTenant
+    User::Success::WithTinkLink
+    User::Success::WithBankAccount
   }
 
   config.model User::All do
     list { list_info }
   end
-  config.model User::BankMany do
+
+  config.model User::Trouble::NoPhone do
     list { list_info }
   end
-  config.model User::BankSingle do
+  config.model User::Trouble::NoPhoneConfirmed do
     list { list_info }
   end
-  config.model User::PhoneNotConfirmed do
+  config.model User::Trouble::NoTinkLink do
     list { list_info }
   end
-  config.model User::PropertyMany do
+  config.model User::Trouble::NoBankAccount do
     list { list_info }
   end
-  config.model User::PropertySingle do
+  config.model User::Trouble::NoTenant do
     list { list_info }
   end
-  config.model User::TenantNotAdded do
+  config.model User::Trouble::NoProperty do
     list { list_info }
   end
-  config.model User::TinkNotAuthenticated do
+
+  config.model User::Success::WithPhone do
     list { list_info }
   end
-  config.model User::TinkNotRegistered do
+  config.model User::Success::WithPhoneConfirmed do
     list { list_info }
   end
-  config.model User::TinkRegistered do
+  config.model User::Success::WithTinkLink do
+    list { list_info }
+  end
+  config.model User::Success::WithBankAccount do
+    list { list_info }
+  end
+  config.model User::Success::WithTenant do
+    list { list_info }
+  end
+  config.model User::Success::WithProperty do
     list { list_info }
   end
 end

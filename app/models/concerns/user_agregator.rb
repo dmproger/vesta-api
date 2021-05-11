@@ -1,7 +1,9 @@
-module Adminable
+module UserAgregator
   extend ActiveSupport::Concern
 
-  included do
+  included do |base|
+    base.table_name = 'users'
+
     def count
       super&.values.sum
     end
