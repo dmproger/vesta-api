@@ -37,6 +37,7 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
 
-pidfile '/home/ubuntu/vesta-rails/shared/tmp/pids/puma.pid'
-
-state_path '/home/ubuntu/vesta-rails/shared/tmp/pids/puma.state'
+unless ENV['RAILS_ENV'] == 'development'
+  pidfile '/home/ubuntu/vesta-rails/shared/tmp/pids/puma.pid'
+  state_path '/home/ubuntu/vesta-rails/shared/tmp/pids/puma.state'
+end
