@@ -17,15 +17,15 @@ class User
         end
 
         def create_model
-          @model_name = model_name
           superclass = Class.new(ActiveRecord::Base)
-          User::Test.const_set(@model_name, superclass)
+          @model_name = model_name
 
-          "User::Test::#{ @model_name }".constantize
+          User::Test.const_set(@model_name, superclass)
         end
 
         def config_model
           @tids = @transactions.pluck(:id)
+
           @model.class_eval <<-STR
             self.table_name = 'saved_transactions'
             default_scope { where(id: #{ @tids }) }
