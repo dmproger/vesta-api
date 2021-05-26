@@ -30,8 +30,8 @@ RailsAdmin.config do |config|
     export
     bulk_delete
     show
-    # edit
-    # delete
+    edit
+    delete
     show_in_app
 
     ## With an audit adapter, you can add:
@@ -46,7 +46,6 @@ RailsAdmin.config do |config|
     field :surname
     field :created_at
   end
-
 
   config.included_models = %w{
     User::All
@@ -66,6 +65,35 @@ RailsAdmin.config do |config|
     User::Success::WithBankAccount
   }
 
+  User::Test::Builder.build
+
+  test_fields = %i[
+    amount
+    category_type
+    description
+    transaction_date
+  ]
+  User::Test::Builder.models.each do |model|
+    config.included_models << "#{ model }"
+    config.model model do
+      list do
+        sort_by :transaction_date
+        test_fields.each do |column|
+          field column
+        end
+      end
+      show do
+        test_fields.each do |column|
+          field column
+        end
+      end
+      edit do
+        test_fields.each do |column|
+          field column
+        end
+      end
+    end
+  end
   config.model User::All do
     list { list_info }
   end
