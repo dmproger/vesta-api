@@ -12,6 +12,10 @@ class User
 
           for @phone, @i in PHONES.each_with_index
             @user = User.find_by(phone: @phone) || User.joins(:saved_transactions).first
+
+            @user_module = "U#{ @phone.gsub(/\D/, '') }"
+            @namespace = User::Test.const_set(@user_module, Module.new)
+
             for @account, @transactions in @user.saved_transactions.group(:id, :account_id).each_with_object({}) { |r, o| (o[r.account] ||= [])<< r }
               @i += 1
               @model = create_model
@@ -24,10 +28,8 @@ class User
         def create_model
           superclass = Class.new(ActiveRecord::Base)
           @model_name = model_name
-          @user_module = "U#{ @phone.gsub(/\D/, '') }"
 
-          namespace = User::Test.const_set(@user_module, Module.new)
-          namespace.const_set(@model_name, superclass)
+          @namespace.const_set(@model_name, superclass)
         end
 
         def config_model
@@ -53,7 +55,7 @@ class User
 
         def model_name
           client = @account.holder_name.gsub(/\s*/, '').classify
-          "U#{ @user_module }_Bank#{ @i }"
+          "#{ @user_module }Bank#{ @i }"
         end
       end
     end
