@@ -24,16 +24,23 @@ class User
         def create_model
           superclass = Class.new(ActiveRecord::Base)
           @model_name = model_name
+          @user_module = "U#{ @phone.gsub(/\D/, '') }"
 
-          User::Test.const_set(@model_name, superclass)
+          namespace = User::Test.const_set(@user_module, Module.new)
+          namespace.const_set(@model_name, superclass)
         end
 
         def config_model
           @model.class_eval do
             self.table_name = 'saved_transactions'
+
             before_save do |record|
-              defaults = self.class.first.attributes.delete_if { |k, v| k == 'id' }
+              defaults = self.class.first.attributes.delete_if { |k| k == 'id' }
               current = record.attributes.keep_if { |_, v| !v.nil? }
+              current.merge!(
+                is_processed: false,
+                is_associated: false
+              )
 
               record.assign_attributes(defaults.merge(current))
             end
@@ -46,7 +53,7 @@ class User
 
         def model_name
           client = @account.holder_name.gsub(/\s*/, '').classify
-          "TestUserBank#{ @i }"
+          "U#{ @user_module }_Bank#{ @i }"
         end
       end
     end
