@@ -22,7 +22,7 @@ class User
               @namespace = User::Test.const_set(@user_module, Module.new)
 
               @i = 0
-              for @account, @transactions in @user.reload.saved_transactions.group(:id, :account_id).each_with_object({}) { |r, o| (o[r.account] ||= [])<< r }
+              for @account in @user.reload.accounts
                 @i += 1
                 @model = create_model
                 config_model
