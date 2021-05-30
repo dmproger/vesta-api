@@ -22,7 +22,7 @@ class User
               @namespace = User::Test.const_set(@user_module, Module.new)
 
               @i = 0
-              for @account, @transactions in @user.saved_transactions.group(:id, :account_id).each_with_object({}) { |r, o| (o[r.account] ||= [])<< r }
+              for @account, @transactions in @user.reload.saved_transactions.group(:id, :account_id).each_with_object({}) { |r, o| (o[r.account] ||= [])<< r }
                 @i += 1
                 @model = create_model
                 config_model
@@ -33,8 +33,18 @@ class User
         end
 
         def create_account
-          account = Account.create!(user: @user, holder_name: 'Testname Testname')
-          TinkCredential.create!(account: account)
+          account = Account.create!(
+            user: @user,
+            holder_name: 'Testname Testname'
+          )
+
+          @user.saved_transactions.create!(
+            account: account,
+            amount: 0,
+            category_type: 'TEST',
+            description: 'TEST',
+            transaction_date: Time.current
+          )
         end
 
         def create_model
