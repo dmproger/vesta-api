@@ -61,13 +61,14 @@ class User
         end
 
         def config_model
-          @model.class_eval do
-            self.table_name = 'saved_transactions'
+          @model.table_name = 'saved_transactions'
 
-            self.has_one :associated_transaction, dependent: :destroy,
-              class_name: 'AssociatedTransaction',
-              foreign_key: 'saved_transaction_id'
-          end
+          @model.has_one :associated_transaction, dependent: :destroy,
+            class_name: 'AssociatedTransaction',
+            foreign_key: 'saved_transaction_id'
+
+          @model.before_save :user_account_association!
+          @model.before_save :destroy_associated_transaction!
 
           @model.class_eval <<-STR
             default_scope { where(account_id: '#{ @account.id }', user_id: '#{ @user.id }') }
@@ -84,11 +85,6 @@ class User
             def destroy_associated_transaction!
               associated_transaction&.destroy
             end
-          end
-
-          @model.class_eval do
-            before_save :user_account_association!
-            before_save :destroy_associated_transaction!
           end
         end
 
