@@ -58,8 +58,12 @@ class User
           @model.class_eval do
             self.table_name = 'saved_transactions'
 
+            self.has_one :associated_transaction, dependent: :destroy,
+              class_name: 'AssociatedTransaction',
+              foreign_key: 'saved_transaction_id'
+
             before_save do |record|
-              defaults = self.class.first.attributes.delete_if { |k| k == 'id' }
+              defaults = self.class.first&.attributes&.delete_if { |k| k == 'id' } || {}
 
               current = record.attributes.keep_if { |_, v| !v.nil? }
               current.merge!(
