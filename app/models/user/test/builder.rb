@@ -6,6 +6,7 @@ class User
           +447758639852
           +447785136253
           +447785122365
+          +4477555555
         ]
 
       PHONES << '+4489613464' if Rails.env.development?
