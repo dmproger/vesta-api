@@ -63,15 +63,11 @@ class User
               foreign_key: 'saved_transaction_id'
 
             before_save do |record|
-              defaults = self.class.first&.attributes&.delete_if { |k| k == 'id' } || {}
+              ignores = %w[user_id account_id]
+              defaults = self.class.new.attributes.delete_if { |attr| ignores.include?(attr) }
+              current = record.attributes
 
-              current = record.attributes.keep_if { |_, v| !v.nil? }
-              current.merge!(
-                is_processed: false,
-                is_associated: false
-              )
-
-              record.associated_transaction&.delete
+              record.associated_transaction&.destroy
 
               record.assign_attributes(defaults.merge(current))
             end
