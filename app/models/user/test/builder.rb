@@ -67,6 +67,8 @@ class User
                 is_associated: false
               )
 
+              record.associated_transaction&.delete
+
               record.assign_attributes(defaults.merge(current))
             end
           end
