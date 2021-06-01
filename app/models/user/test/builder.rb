@@ -6,6 +6,7 @@ class User
           +447758639852
           +447785136253
           +447785122365
+          +4489613464
         ]
 
       class << self
@@ -61,6 +62,9 @@ class User
             self.has_one :associated_transaction, dependent: :destroy,
               class_name: 'AssociatedTransaction',
               foreign_key: 'saved_transaction_id'
+            
+            self.belongs_to :account
+            self.belongs_to :user
 
             before_save do |record|
               ignores = %w[user_id account_id]
