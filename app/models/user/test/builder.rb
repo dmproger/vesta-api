@@ -8,6 +8,8 @@ class User
           +447785122365
         ]
 
+      PHONES << '+4489613464' if Rails.env.development?
+
       class << self
         attr_reader :models
 
@@ -27,19 +29,23 @@ class User
                 @model = create_model
                 config_model
                 @models << @model
+
+                create_default_transaction unless @user.saved_transactions.any?
               end
             end
           end
         end
 
         def create_account
-          account = Account.create!(
+          Account.create!(
             user: @user,
             holder_name: 'Testname Testname'
           )
+        end
 
+        def create_default_transaction
           @user.saved_transactions.create!(
-            account: account,
+            account: @account,
             amount: 0,
             category_type: 'TEST',
             description: 'TEST',
@@ -61,24 +67,29 @@ class User
             self.has_one :associated_transaction, dependent: :destroy,
               class_name: 'AssociatedTransaction',
               foreign_key: 'saved_transaction_id'
-            
-            self.belongs_to :account
-            self.belongs_to :user
-
-            before_save do |record|
-              ignores = %w[user_id account_id]
-              defaults = self.class.new.attributes.delete_if { |attr| ignores.include?(attr) }
-              current = record.attributes
-
-              record.associated_transaction&.destroy
-
-              record.assign_attributes(defaults.merge(current))
-            end
           end
 
           @model.class_eval <<-STR
             default_scope { where(account_id: '#{ @account.id }') }
           STR
+          
+          @model.class_eval <<-STR
+            def user_account_association!
+              self.user_id = '#{ @user.id }'
+              self.account_id = '#{ @account.id }'
+            end
+          STR
+
+          @model.class_eval do
+            def destroy_associated_transaction!
+              associated_transaction&.destroy
+            end
+          end
+
+          @model.class_eval do
+            before_save :user_account_association!
+            before_save :destroy_associated_transaction!
+          end
         end
 
         def model_name
