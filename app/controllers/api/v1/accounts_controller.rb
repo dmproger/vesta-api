@@ -5,6 +5,7 @@ class Api::V1::AccountsController < ApplicationController
   def index
     accounts = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'accounts:read')).accounts
     @accounts = persist_accounts(accounts)
+    @accounts = test_accounts_resolve if @accounts.none?
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
   end
@@ -75,5 +76,10 @@ class Api::V1::AccountsController < ApplicationController
 
   def persist_accounts(accounts)
     PersistAccount.new(accounts.dig(:accounts), current_user).call
+  end
+
+  def test_accounts_resolve
+    holder_name = User::Test::Builder::ACCOUNT_HOLDERNAME
+    current_user.accounts.keep_if { |account| account.holder_name == holder_name }
   end
 end

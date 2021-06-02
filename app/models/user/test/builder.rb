@@ -1,6 +1,8 @@
 class User
   module Test
     module Builder
+      ACCOUNT_HOLDERNAME = 'VestaTestUser'
+
       PHONES = ENV['PHONES']&.split(' ') || \
         %w[
           +447758639852
@@ -40,7 +42,7 @@ class User
         def create_account
           Account.create!(
             user: @user,
-            holder_name: 'Testname Testname',
+            holder_name: ACCOUNT_HOLDERNAME,
             bank_id: Time.now.to_i.to_s,
             account_number: Time.now.to_i.to_s,
             account_id: "#{ @user.id.gsub(/[-]/, '') }#{ Time.now.to_i.to_s }"
