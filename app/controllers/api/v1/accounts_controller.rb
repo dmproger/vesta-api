@@ -80,6 +80,6 @@ class Api::V1::AccountsController < ApplicationController
 
   def test_accounts_resolve
     holder_name = User::Test::Builder::ACCOUNT_HOLDERNAME
-    current_user.accounts.keep_if { |account| account.holder_name == holder_name }
+    current_user.accounts.map { |account| account.holder_name == holder_name ? account : nil }.compact
   end
 end
