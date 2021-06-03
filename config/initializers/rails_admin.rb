@@ -50,6 +50,8 @@ RailsAdmin.config do |config|
   config.included_models = %w{
     User::All
 
+    User::Operation::Reset
+
     User::Trouble::NoPhone
     User::Trouble::NoPhoneConfirmed
     User::Trouble::NoProperty
@@ -73,6 +75,7 @@ RailsAdmin.config do |config|
     description
     transaction_date
   ]
+
   User::Test::Builder.models.each do |model|
     config.included_models << "#{ model }"
     config.model model do
@@ -97,7 +100,31 @@ RailsAdmin.config do |config|
   config.model User::All do
     list { list_info }
   end
-
+  config.model User::Operation::Reset do
+    list do
+      field :phone
+      field :email
+      field :first_name
+    end
+    show do
+      field :phone
+      field :email
+      field :first_name
+      field :reset_accounts
+      field :reset_properties
+      field :reset_tenants
+      field :reset_transactions
+    end
+    edit do
+      field :phone
+      field :email
+      field :first_name
+      field :reset_accounts
+      field :reset_properties
+      field :reset_tenants
+      field :reset_transactions
+    end
+  end
   config.model User::Trouble::NoPhone do
     list { list_info }
   end
