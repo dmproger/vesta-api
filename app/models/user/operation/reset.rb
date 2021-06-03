@@ -3,7 +3,7 @@ class User::Operation::Reset < ApplicationRecord
 
   validate :prevent_modify_user, if: :phone_changed?
   validate :prevent_modify_user, if: :email_changed?
-  validate :prevent_modify_user, if: :firstname_changed?
+  validate :prevent_modify_user, if: :first_name_changed?
 
   before_save :set_user
   before_save :operation!
@@ -31,18 +31,19 @@ class User::Operation::Reset < ApplicationRecord
     self.reset_properties = false
     self.reset_tenants = false
     self.reset_accounts = false
+    self.reset_transactions = false
   end
 
   def reset_properties!
-    @user.properties.delete_all
+    @user.properties.each(&:destroy)
   end
 
   def reset_tenants!
-    @user.tenants.delete_all
+    @user.tenants.each(&:destroy)
   end
 
   def reset_accounts!
-    @user.accounts.delete_all
+    @user.accounts.each(&:destroy)
   end
 
   def reset_transactions!
