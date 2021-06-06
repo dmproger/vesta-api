@@ -1,5 +1,7 @@
 require_relative 'boot'
 
+ENV['RAILS_ADMIN_THEME'] = 'rollincode'
+
 require 'rails/all'
 require 'dotenv/load'
 
