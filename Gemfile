@@ -66,6 +66,7 @@ gem 'pg_search', '~> 2.3', '>= 2.3.4'
 gem 'daemons', '~> 1.3', '>= 1.3.1'
 
 gem 'rails_admin', '~> 2.0'
+gem 'rails_admin_rollincode', '~> 1.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
