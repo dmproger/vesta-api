@@ -1,5 +1,5 @@
 class Api::V1::PropertiesController < ApplicationController
-  before_action :set_property, only: [:show, :update, :destroy, :archive]
+  before_action :set_property, only: [:show, :summary, :update, :destroy, :archive]
 
   def index
     @properties = current_user.properties.non_archived.includes(:tenants)
@@ -7,6 +7,10 @@ class Api::V1::PropertiesController < ApplicationController
 
   def show
     render json: {success: true, message: 'property', data: @property}
+  end
+
+  def summary
+    current_user.saved_transactions.where(property: @property).sum(:amount)
   end
 
   def create

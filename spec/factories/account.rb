@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :account do
-    # TODO
+    bank_id { Faker::Crypto.sha1 }
+    association :user
   end
 end
