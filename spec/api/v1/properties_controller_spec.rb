@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::HomeController do
-  describe 'when GET /api/v1/home/symmary' do
-    subject(:send_request) { get '/api/v1/home/summary', params: params, headers: headers }
+RSpec.describe Api::V1::PropertiesController do
+  describe 'when GET /api/v1/properties/:id/symmary' do
+    subject(:send_request) { get "/api/v1/properties/#{ property.id }/summary", params: params, headers: headers }
 
     let!(:user) { create(:user) }
     let!(:account) { create(:account) }
@@ -15,12 +15,11 @@ RSpec.describe Api::V1::HomeController do
         create(:associated_transaction, saved_transaction: saved_transaction, property_tenant: property_tenant)
       end
     end
-
     let(:summary) do
-      SavedTransaction.
-        where(id: saved_transactions.pluck(:id)).
-        joins(associated_transaction: :property_tenant).
-        where(property_tenant: { property: params[:property_id] })
+      user.
+        saved_transactions.
+        joins(associated_transaction: :property).
+        where(property_tenants: { property: property }).
         sum(:amount)
     end
 
@@ -30,7 +29,7 @@ RSpec.describe Api::V1::HomeController do
     end
 
     it 'has symmary of collected values' do
-      byebug
+      # TODO
     end
   end
 end

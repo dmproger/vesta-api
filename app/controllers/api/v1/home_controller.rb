@@ -10,12 +10,6 @@ class Api::V1::HomeController < ApplicationController
             end
   end
 
-  def summary
-    sum = current_user.saved_transactions.joins(:associated_transactions).where.not(id: nil).sum(:amount)
-
-    render json: { success: true, message: params[:type], data: sum }
-  end
-
   def all_data
     @data = HomeData.new(period: @period, current_user: current_user).call
 

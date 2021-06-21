@@ -10,7 +10,14 @@ class Api::V1::PropertiesController < ApplicationController
   end
 
   def summary
-    current_user.saved_transactions.where(property: @property).sum(:amount)
+    sum =
+      current_user.
+        saved_transactions.
+        joins(associated_transaction: :property).
+        where(property_tenants: { property: @property }).
+        sum(:amount)
+
+    render json: { success: true, data: sum || 0 }
   end
 
   def create
