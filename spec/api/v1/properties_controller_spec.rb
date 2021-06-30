@@ -20,7 +20,7 @@ RSpec.describe Api::V1::PropertiesController do
     let!(:period) { (Date.current - 2.days)..(Date.current) }
     let!(:summary) do
       user.
-        saved_transactions.
+        saved_transactions.income.
         joins(associated_transaction: :property).
         where(property_tenants: { property: property }).
         where(transaction_date: period).
@@ -28,7 +28,7 @@ RSpec.describe Api::V1::PropertiesController do
     end
     let!(:other_summary) do
       user.
-        saved_transactions.
+        saved_transactions.income.
         joins(associated_transaction: :property).
         where(property_tenants: { property: property }).
         sum(:amount)

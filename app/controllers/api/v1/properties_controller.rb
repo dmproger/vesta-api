@@ -17,7 +17,7 @@ class Api::V1::PropertiesController < ApplicationController
 
     sum =
       current_user.
-        saved_transactions.
+        saved_transactions.income.
         joins(associated_transaction: :property).
         where(property_tenants: { property: @property }).
         where(transaction_date: @period).
