@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       resources :tink_tokens, only: :create
 
       resources :properties do
+        get :summary, on: :member
         resources :tenants do
           get :archive, on: :member
         end

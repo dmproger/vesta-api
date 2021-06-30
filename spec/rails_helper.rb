@@ -33,7 +33,7 @@ end
 
 require 'faker'
 RSpec.configure do |config|
-  config.include AuthHelper, type: :request
+  config.include AuthHelper
   config.include FactoryBot::Syntax::Methods
 
   # arbitrary gems may also be filtered via:
