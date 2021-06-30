@@ -23,7 +23,7 @@ class Api::V1::PropertiesController < ApplicationController
         where(transaction_date: @period).
         sum(:amount)
 
-    render json: { success: true, data: sum || 0 }
+    render json: { success: true, data: sum.to_f.round(2) || 0 }
   end
 
   def create

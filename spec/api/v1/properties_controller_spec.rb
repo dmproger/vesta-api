@@ -26,6 +26,13 @@ RSpec.describe Api::V1::PropertiesController do
         where(transaction_date: period).
         sum(:amount)
     end
+    let!(:other_summary) do
+      user.
+        saved_transactions.
+        joins(associated_transaction: :property).
+        where(property_tenants: { property: property }).
+        sum(:amount)
+    end
 
     let!(:headers) { auth_headers }
     let!(:params) {
@@ -40,7 +47,10 @@ RSpec.describe Api::V1::PropertiesController do
     it 'has symmary of collected values' do
       subject
       expect(summary).not_to be(0)
-      expect(body).to include(summary.to_s)
+
+      value = JSON.parse(body)['data']
+      expect(value).to eq(summary.to_f.round(2))
+      expect(value).not_to eq(other_summary.to_f.round(2))
     end
   end
 end
