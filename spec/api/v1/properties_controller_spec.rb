@@ -1,6 +1,37 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PropertiesController do
+  context 'expenses' do
+    describe 'when GET /api/v1/properties/:id/expenses' do
+      subject(:send_request) { get "/api/v1/properties/#{ property.id }/expenses", params: params, headers: headers }
+
+      let!(:user) { create(:user) }
+      let!(:property) { create(:property, user: user) }
+      let!(:headers) { auth_headers }
+
+      before { sign_in(user) }
+
+      it 'returns expenses' do
+        subject
+        expect(body).to include('water')
+      end
+    end
+
+    describe 'when GET /api/v1/properties/expenses' do
+      subject(:send_request) { get "/api/v1/properties/expenses", params: params, headers: headers }
+
+      let!(:user) { create(:user) }
+      let!(:property) { create(:property, user: user) }
+      let!(:headers) { auth_headers }
+
+      before { sign_in(user) }
+
+      it 'returns expenses' do
+        subject
+        expect(body).to include('water')
+      end
+    end
+  end
   describe 'when GET /api/v1/properties/:id/symmary', :request do
     subject(:send_request) { get "/api/v1/properties/#{ property.id }/summary", params: params, headers: headers }
 

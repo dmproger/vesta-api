@@ -1,7 +1,7 @@
 class Api::V1::TransactionsController < ApplicationController
   before_action :set_account, except: [:categories, :assign_property]
-  before_action :set_transaction, only: [:update, :assign_property]
-  before_action :set_property, only: [:assign_property]
+  before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
+  before_action :set_property, only: [:assign_property, :assign_expenses]
 
   def index
     refresh_transactions if params[:force_refresh] == 'true'
@@ -29,6 +29,10 @@ class Api::V1::TransactionsController < ApplicationController
                   data: @transaction.as_json(include: :property)}
   rescue StandardError => e
     render json: {success: false, message: e.message, data: nil}
+  end
+
+  def assign_expenses
+    render json: {success: true, message: 'expenses assigned successfully', data: @params}
   end
 
   private

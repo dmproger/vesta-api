@@ -26,6 +26,20 @@ class Api::V1::PropertiesController < ApplicationController
     render json: { success: true, data: sum.to_f.round(2) || 0 }
   end
 
+  def expenses
+    set_property if params[:id]
+    render json: { success: true, data: {
+      water: 10,
+      sewer: 20,
+      gas: 30,
+      electricity: 40,
+      trash: 50,
+      insurance: 60,
+      taxes: 70,
+      mortage: 80
+    }}
+  end
+
   def create
     property = current_user.properties.create(property_params)
 
