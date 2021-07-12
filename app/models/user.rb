@@ -24,8 +24,21 @@ class User < ActiveRecord::Base
   has_many :accounts, dependent: :destroy
   has_many :saved_transactions, dependent: :destroy
   has_many :tink_credentials, through: :accounts
+  has_many :expenses, dependent: :destroy
 
   has_many :associated_transactions, through: :properties
+
+  def self.default_expenses
+    Expense::DEFAULTS
+  end
+
+  def self.expenses_without_defaults
+    expenses.map(&:name)
+  end
+
+  def self.expenses_with_defaults
+    expenses_without_defaults + default_expenses
+  end
 
   def non_archived_tenants_by(period:)
     tenants.where('(tenants.archived_at IS NULL OR tenants.archived_at > ?) AND (properties.archived_at IS NULL OR properties.archived_at > ?)', period, period)
