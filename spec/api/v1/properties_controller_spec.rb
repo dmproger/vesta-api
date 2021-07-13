@@ -9,6 +9,15 @@ RSpec.describe Api::V1::PropertiesController do
       let!(:property) { create(:property, user: user) }
       let!(:headers) { auth_headers }
 
+      let!(:period) { (Date.current - 2.days)..(Date.current) }
+      let!(:params) {
+        {
+          start_date: period.first.strftime('%F'),
+          end_date: period.last.strftime('%F')
+        }
+      }
+
+
       before { sign_in(user) }
 
       it 'returns expenses' do
@@ -23,6 +32,13 @@ RSpec.describe Api::V1::PropertiesController do
       let!(:user) { create(:user) }
       let!(:property) { create(:property, user: user) }
       let!(:headers) { auth_headers }
+      let!(:period) { (Date.current - 2.days)..(Date.current) }
+      let!(:params) {
+        {
+          start_date: period.first.strftime('%F'),
+          end_date: period.last.strftime('%F')
+        }
+      }
 
       before { sign_in(user) }
 
