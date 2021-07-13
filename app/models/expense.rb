@@ -12,7 +12,7 @@ class Expense < ApplicationRecord
   end
 
   def self.create_defaults(user)
-    (DEFAULTS - joins(:user).where(user: user).map(&:name)).each do |expense|
+    (DEFAULTS - where(user: user).map(&:name)).each do |expense|
       create!(user: user, name: expense)
     end
   end

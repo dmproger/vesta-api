@@ -1,6 +1,6 @@
 class Api::V1::PropertiesController < ApplicationController
-  before_action :set_property, only: [:show, :summary, :update, :destroy, :archive]
-  before_action :set_period, only: [:summary]
+  before_action :set_property, only: [:show, :update, :destroy, :archive]
+  before_action :set_period, only: [:collected_summary, :expenses_summary]
 
   def index
     @properties = current_user.properties.non_archived.includes(:tenants)
@@ -10,24 +10,30 @@ class Api::V1::PropertiesController < ApplicationController
     render json: {success: true, message: 'property', data: @property}
   end
 
-  def summary
+  def collected_summary
     if incorrect_period?
       return render json: { success: false, message: 'incorrect date period', date: [@period.first, @period.last] }
     end
 
-    sum =
+    transactions =
       current_user.
         saved_transactions.income.
-        joins(associated_transaction: :property).
-        where(property_tenants: { property: @property }).
         where(transaction_date: @period).
-        sum(:amount)
+        joins(associated_transaction: :property)
 
-    render json: { success: true, data: sum.to_f.round(2) || 0 }
+    if params[:id]
+      set_property
+      transactions = transactions.where(property_tenants: { property: @property })
+    end
+
+    render json: { success: true, data: transactions.sum(:amount).to_f.round(2) || 0 }
   end
 
-  def expenses
-    set_property if params[:id]
+  def expenses_summary
+    if params[:id]
+      set_property
+    end
+
     render json: { success: true, data: {
       water: 10,
       sewer: 20,

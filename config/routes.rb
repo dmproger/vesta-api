@@ -40,21 +40,23 @@ Rails.application.routes.draw do
       resources :transactions, only: :show do
         get :categories
         post :assign_property, on: :member
-        post :assign_expenses, on: :member
+        post :assign_expense, on: :member
       end
 
       resources :tink_tokens, only: :create
 
       resources :properties do
-        collection { get :expenses }
-        get :expenses, on: :member
-        get :summary, on: :member
+        collection { get :expenses_summary }
+        collection { get :collected_summary }
+        get :collected_summary, on: :member
+        get :expenses_summary, on: :member
         resources :tenants do
           get :archive, on: :member
         end
         get :archive, on: :member
       end
 
+      resources :expenses
 
       resources :addresses
 
