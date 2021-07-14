@@ -46,7 +46,7 @@ class Api::V1::PropertiesController < ApplicationController
         group(:expense_id).
         sum(:amount)
 
-    render json: { success: true, data: summary.to_json }
+    render json: { success: true, data: summary.transform_values { |v| v.to_f.round(2) }.to_json }
   end
 
   def create
