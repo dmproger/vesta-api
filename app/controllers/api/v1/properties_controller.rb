@@ -38,12 +38,15 @@ class Api::V1::PropertiesController < ApplicationController
       set_property
     end
 
-    expense_transactions =
-      @property.
-        expense_transactions.
-        where(transaction_date: @period)
+    summary =
+      ExpenseProperty.
+        where(property: @property).
+        joins(:saved_transaction).
+        where(saved_transactions: { transaction_date: @period }).
+        group(:expense_id).
+        sum(:amount)
 
-    render json: { success: true, data: expense_transactions.sum(:amount) }
+    render json: { success: true, data: summary.to_json }
   end
 
   def create

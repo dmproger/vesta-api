@@ -25,7 +25,7 @@ RSpec.describe Api::V1::PropertiesController do
 
       it 'returns expenses summary' do
         subject
-        expect(body).to include(transactions.map(&:amount).sum.to_s)
+        expect(body).to include(*(transactions.map(&:amount) + expenses.map(&:id)).map(&:to_s))
       end
     end
 
