@@ -32,18 +32,9 @@ class Api::V1::PropertiesController < ApplicationController
   def expenses_summary
     if params[:id]
       set_property
-    end
 
-    render json: { success: true, data: {
-      water: 10,
-      sewer: 20,
-      gas: 30,
-      electricity: 40,
-      trash: 50,
-      insurance: 60,
-      taxes: 70,
-      mortage: 80
-    }}
+      @property.expense_transactions.sum(:amount)
+    end
   end
 
   def create

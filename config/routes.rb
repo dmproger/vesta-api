@@ -40,7 +40,7 @@ Rails.application.routes.draw do
       resources :transactions, only: :show do
         get :categories
         post :assign_property, on: :member
-        post :assign_expense, on: :member
+        post :assign_expenses, on: :member
       end
 
       resources :tink_tokens, only: :create

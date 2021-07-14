@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_13_151052) do
+ActiveRecord::Schema.define(version: 2021_07_14_152351) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -107,12 +107,12 @@ ActiveRecord::Schema.define(version: 2021_07_13_151052) do
   end
 
   create_table "expense_properties", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id"
-    t.uuid "expense_id"
-    t.uuid "property_id"
+    t.uuid "expense_id", null: false
+    t.uuid "property_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id", "expense_id", "property_id"], name: "uniq_expense_property_user", unique: true
+    t.uuid "saved_transaction_id", null: false
+    t.index ["property_id", "expense_id", "saved_transaction_id"], name: "uniq_cortage_by_property_expense_transaction"
   end
 
   create_table "expenses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

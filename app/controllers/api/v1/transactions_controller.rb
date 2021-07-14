@@ -1,7 +1,8 @@
 class Api::V1::TransactionsController < ApplicationController
-  before_action :set_account, except: [:categories, :assign_property]
+  before_action :set_account, except: [:categories, :assign_property, :assign_expenses]
   before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
   before_action :set_property, only: [:assign_property, :assign_expenses]
+  before_action :set_expense, only: [:assign_expenses]
 
   def index
     refresh_transactions if params[:force_refresh] == 'true'
@@ -25,14 +26,16 @@ class Api::V1::TransactionsController < ApplicationController
     @transaction.replace_property(property_id: @property.id,
                                   tenant_id: @property.active_tenant.id).save
 
-    render json: {success: true, message: 'property assigned successfully',
+    render json: {success: true, message: 'property assigned successfuly!',
                   data: @transaction.as_json(include: :property)}
   rescue StandardError => e
     render json: {success: false, message: e.message, data: nil}
   end
 
   def assign_expenses
-    render json: {success: true, message: 'expenses assigned successfully', data: @params}
+    @property.assign_expense(@expense, @transaction)
+
+    render json: {success: true, message: 'expenses assigned successfuly!', data: nil }
   end
 
   private
@@ -64,6 +67,11 @@ class Api::V1::TransactionsController < ApplicationController
   def set_property
     @property = current_user.properties.find_by(id: params[:property_id])
     render json: {success: false, message: 'invalid property id', data: nil} if @property.blank?
+  end
+
+  def set_expense
+    @expense = current_user.expenses.find(params[:expense_id])
+    render json: {success: false, message: 'invalid expense id', data: nil} if @expense.blank?
   end
 
   def persist_transactions(transactions)

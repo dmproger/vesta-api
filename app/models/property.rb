@@ -8,6 +8,11 @@ class Property < ApplicationRecord
   has_many :saved_transactions, through: :associated_transactions,
            class_name: 'SavedTransaction'
 
+  has_many :expense_properties
+  has_many :expenses, through: :expense_properties
+  has_many :expense_transactions, through: :expense_properties,
+    source: :saved_transaction
+
   validates :address, presence: true
   validates :city, presence: true
   validates :country, presence: true
@@ -22,5 +27,9 @@ class Property < ApplicationRecord
 
   def latest_tenant
     tenants.non_archived.order(created_at: :desc).first
+  end
+
+  def assign_expense(expense, transaction)
+    expense_properties.create!(expense: expense, saved_transaction: transaction)
   end
 end

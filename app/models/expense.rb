@@ -11,6 +11,7 @@ class Expense < ApplicationRecord
   ].freeze
 
   belongs_to :user
+  has_one :property, through: :expense_properties
 
   def self.defaults(user)
     where(user: user, name: DEFAULTS)
