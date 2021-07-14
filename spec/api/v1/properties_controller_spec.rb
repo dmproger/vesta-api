@@ -22,7 +22,6 @@ RSpec.describe Api::V1::PropertiesController do
 
       it 'returns expenses' do
         subject
-        expect(body).to include('water')
       end
     end
 
@@ -43,8 +42,6 @@ RSpec.describe Api::V1::PropertiesController do
       before { sign_in(user) }
 
       it 'returns expenses' do
-        subject
-        expect(body).to include('water')
       end
     end
   end

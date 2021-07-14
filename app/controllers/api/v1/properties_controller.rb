@@ -30,11 +30,20 @@ class Api::V1::PropertiesController < ApplicationController
   end
 
   def expenses_summary
+    if incorrect_period?
+      return render json: { success: false, message: 'incorrect date period', date: [@period.first, @period.last] }
+    end
+
     if params[:id]
       set_property
-
-      @property.expense_transactions.sum(:amount)
     end
+
+    expense_transactions =
+      @property.
+        expense_transactions.
+        where(transaction_date: @period)
+
+    render json: { success: true, data: expense_transactions.sum(:amount) }
   end
 
   def create
