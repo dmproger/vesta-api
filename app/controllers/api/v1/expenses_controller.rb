@@ -6,7 +6,7 @@ class Api::V1::ExpensesController < ApplicationController
 
     render json: {
       success: true,
-      data: current_user.expenses.index_by(&:id).transform_values { |v| v.name }
+      data: current_user.expenses.select('id, name')
     }
   end
 
@@ -20,7 +20,7 @@ class Api::V1::ExpensesController < ApplicationController
   end
 
   def show
-    render json: { success: true, date: @expense.name }
+    render json: { success: true, date: @expense.attributes.slice('id', 'name') }
   end
 
   def destroy

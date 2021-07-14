@@ -5,19 +5,26 @@ RSpec.describe Api::V1::ExpensesController do
     subject(:send_request) { get '/api/v1/expenses', params: params, headers: headers }
 
     let!(:user) { create(:user) }
-    let!(:expenses) { create_list(:expense, rand(2..3), user: user) }
-    let!(:other_user) { create(:user) }
-    let!(:other_expenses) { create_list(:expense, rand(2..3), user: other_user) }
-
     let!(:headers) { auth_headers }
 
-    before { sign_in(user) }
+    context 'for defaults only' do
+      it 'returns default list' do
+        subject
+        expect(body).to include(*Expense::DEFAULTS)
+      end
+    end
 
-    it 'returns all user expenses' do
-      subject
+    context 'when user created expenses' do
+      let!(:expenses) { create_list(:expense, rand(2..3), user: user) }
+      let!(:other_user) { create(:user) }
+      let!(:other_expenses) { create_list(:expense, rand(2..3), user: other_user) }
 
-      expect(body).to include(*expenses.map(&:name))
-      expect(body).not_to include(*other_expenses.map(&:name))
+      it 'returns all user expenses' do
+        subject
+
+        expect(body).to include(*expenses.map(&:name))
+        expect(body).not_to include(*other_expenses.map(&:name))
+      end
     end
   end
 

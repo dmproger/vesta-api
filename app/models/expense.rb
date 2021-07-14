@@ -1,9 +1,13 @@
 class Expense < ApplicationRecord
-  DEFAULTS = %w[
-    expense1
-    expense2
-    expense3
-  ]
+  DEFAULTS = [
+    'Bills',
+    'Service charge',
+    'Ground rent',
+    'Insurance',
+    'Legal',
+    'Professional fees',
+    'Repair'
+  ].freeze
 
   belongs_to :user
 
