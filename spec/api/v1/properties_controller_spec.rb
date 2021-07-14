@@ -6,22 +6,26 @@ RSpec.describe Api::V1::PropertiesController do
       subject(:send_request) { get "/api/v1/properties/#{ property.id }/expenses_summary", params: params, headers: headers }
 
       let!(:user) { create(:user) }
+      let!(:account) { create(:account) }
+      let!(:transactions) { create_list(:saved_transaction, 3, user: user, account: account, transaction_date: Date.current - 1.day) }
+      let!(:expenses) { create_list(:expense, 3, user: user) }
       let!(:property) { create(:property, user: user) }
+
       let!(:headers) { auth_headers }
 
       let!(:period) { (Date.current - 2.days)..(Date.current) }
-      let!(:params) {
-        {
-          start_date: period.first.strftime('%F'),
-          end_date: period.last.strftime('%F')
-        }
-      }
+      let!(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
 
+      before do
+        sign_in(user)
+        expenses.each_with_index do |expense, i|
+          property.assign_expense(expense, transactions[i])
+        end
+      end
 
-      before { sign_in(user) }
-
-      it 'returns expenses' do
+      it 'returns expenses summary' do
         subject
+        expect(body).to include(transactions.map(&:amount).sum.to_s)
       end
     end
 
@@ -32,16 +36,12 @@ RSpec.describe Api::V1::PropertiesController do
       let!(:property) { create(:property, user: user) }
       let!(:headers) { auth_headers }
       let!(:period) { (Date.current - 2.days)..(Date.current) }
-      let!(:params) {
-        {
-          start_date: period.first.strftime('%F'),
-          end_date: period.last.strftime('%F')
-        }
-      }
+      let!(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
 
       before { sign_in(user) }
 
       it 'returns expenses' do
+        # TODO
       end
     end
   end
@@ -81,12 +81,7 @@ RSpec.describe Api::V1::PropertiesController do
       end
 
       let!(:headers) { auth_headers }
-      let!(:params) {
-        {
-          start_date: period.first.strftime('%F'),
-          end_date: period.last.strftime('%F')
-        }
-      }
+      let!(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
 
       before { sign_in(user) }
 
