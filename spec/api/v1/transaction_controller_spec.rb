@@ -12,9 +12,11 @@ RSpec.describe Api::V1::TransactionsController do
       for type in types
         (1..rand(2..3)).each do
           result << create(:saved_transaction, user: user, account: account, category_type: type)
+          result << create(:saved_transaction, user: user, account: account, category_type: type, transaction_date: Date.current - 1.day)
+          result << create(:saved_transaction, user: user, account: account, category_type: type, transaction_date: Date.current + 1.day)
         end
       end
-      result
+      SavedTransaction.where(id: result.map(&:id))
     end
 
     let(:headers) { auth_headers }
@@ -28,7 +30,14 @@ RSpec.describe Api::V1::TransactionsController do
     it 'returns transactions by type' do
       for type in types
         params.merge(type: type)
-        expect(body).to include(*transactions.where(type: type).ids)
+        subject
+        expect(body).to include(*transactions.where(category_type: type).ids)
+      end
+    end
+
+    context 'when transaction date' do
+      it 'filter by transaction date' do
+        # TODO
       end
     end
   end

@@ -3,6 +3,8 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
   before_action :set_property, only: [:assign_property, :assign_expenses]
   before_action :set_expense, only: [:assign_expenses]
+  before_action :set_period, only: [:all]
+  before_action :set_category_type, only: [:all]
 
   def index
     refresh_transactions if params[:force_refresh] == 'true'
@@ -10,6 +12,22 @@ class Api::V1::TransactionsController < ApplicationController
     process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
   rescue RestClient::Exception => e
     render json: {success: false, message: e.message, data: nil}
+  end
+
+  def all
+    if incorrect_period?
+      return render json: { success: false, message: 'incorrect date period', date: [@period.first, @period.last] }
+    end
+
+    transactions =
+      @account.reload.
+        saved_transactions.
+        where({
+          category_type: @category_type,
+          transaction_date: @period
+        })
+
+    return render json: { succes: true, data: transactions.map { |t| [t.id, t.category_type, t.amount, t.description] }}
   end
 
   def categories
@@ -72,6 +90,23 @@ class Api::V1::TransactionsController < ApplicationController
   def set_expense
     @expense = current_user.expenses.find(params[:expense_id])
     render json: {success: false, message: 'invalid expense id', data: nil} if @expense.blank?
+  end
+
+  def set_period
+    @period = (Date.parse(params[:start_date])..Date.parse(params[:end_date]))
+  end
+
+  def set_category
+    @category_type = params[:category_type]
+  end
+
+  def incorrect_period?
+    return true unless params[:start_date].present? && params[:end_date].present?
+
+    start_date = Date.parse(params[:start_date])
+    end_date = Date.parse(params[:end_date])
+
+    (start_date > Date.current) || (start_date > end_date)
   end
 
   def persist_transactions(transactions)
