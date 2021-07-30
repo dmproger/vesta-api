@@ -1,7 +1,39 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::TransactionsController do
-  context 'expenses' do
+  describe 'when GET /api/v1/transactions/all' do
+    subject(:send_request) { get '/api/v1/transactions/all', params: params, headers: headers }
+
+    let(:user) { create(:user) }
+    let(:account) { create(:account) }
+    let(:types) { %w[INCOME EXPENSES TRANSFERS] }
+    let(:transactions) do
+      result = []
+      for type in types
+        (1..rand(2..3)).each do
+          result << create(:saved_transaction, user: user, account: account, category_type: type)
+        end
+      end
+      result
+    end
+
+    let(:headers) { auth_headers }
+    let(:params) { {} }
+
+    it 'returns all transactions' do
+      subject
+      expect(body).to include(*transactions.ids)
+    end
+
+    it 'returns transactions by type' do
+      for type in types
+        params.merge(type: type)
+        expect(body).to include(*transactions.where(type: type).ids)
+      end
+    end
+  end
+
+  context 'assigns' do
     describe 'when GET /api/v1/transactions/:id/assign_expenses' do
       subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/assign_expenses", params: params, headers: headers }
 
