@@ -1,9 +1,8 @@
 class Api::V1::TransactionsController < ApplicationController
-  before_action :set_account, except: [:categories, :assign_property, :assign_expenses]
+  before_action :set_account, except: [:categories, :assign_property, :assign_expenses, :all]
   before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
   before_action :set_property, only: [:assign_property, :assign_expenses]
   before_action :set_expense, only: [:assign_expenses]
-  before_action :set_period, only: [:all]
   before_action :set_category_type, only: [:all]
 
   def index
@@ -16,18 +15,17 @@ class Api::V1::TransactionsController < ApplicationController
 
   def all
     if incorrect_period?
-      return render json: { success: false, message: 'incorrect date period', date: [@period.first, @period.last] }
+      return render json: { success: false, message: 'incorrect date period' }
+    else
+      set_period
     end
 
-    transactions =
-      @account.reload.
-        saved_transactions.
-        where({
-          category_type: @category_type,
-          transaction_date: @period
-        })
+    filter = { transaction_date: @period }
+    filter.merge!({ category_type: @category_type }) if @category_type
 
-    return render json: { succes: true, data: transactions.map { |t| [t.id, t.category_type, t.amount, t.description] }}
+    transactions = current_user.saved_transactions.where(filter).order(:transaction_date)
+
+    render json: { succes: true, data: transactions.map { |t| [t.id, t.category_type, t.amount, t.description] }}
   end
 
   def categories
@@ -96,8 +94,8 @@ class Api::V1::TransactionsController < ApplicationController
     @period = (Date.parse(params[:start_date])..Date.parse(params[:end_date]))
   end
 
-  def set_category
-    @category_type = params[:category_type]
+  def set_category_type
+    @category_type = params[:type]
   end
 
   def incorrect_period?

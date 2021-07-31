@@ -38,8 +38,7 @@ Rails.application.routes.draw do
       end
 
       resources :transactions, only: :show do
-        get :categories
-        get :all
+        get :all, on: :collection
         post :assign_property, on: :member
         post :assign_expenses, on: :member
       end
