@@ -42,9 +42,10 @@ RSpec.describe Api::V1::TransactionsController do
 
       for $type in TRANSACTION_TYPES
         it "returns #{ $type } type transactions" do
-          params.merge(type: $type)
+          params.merge!(type: $type)
           subject
           expect(body).to include(*transactions.where(category_type: $type).ids)
+          expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [$type]).sample).ids)
         end
       end
     end
@@ -62,6 +63,11 @@ RSpec.describe Api::V1::TransactionsController do
         subject
         # TODO
         expect(body).not_to include(*transactions.ids)
+
+        # TODO also
+        # shared example
+        # filter attr and it is auto check
+        # like i want pagination in synergy
       end
     end
   end
