@@ -9,9 +9,8 @@ class User
           +447785136253
           +447785122365
           +4477555555
+          +447766666666
         ]
-
-      PHONES << '+4489613464' if Rails.env.development?
 
       class << self
         attr_reader :models
