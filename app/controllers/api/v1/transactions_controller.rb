@@ -28,7 +28,14 @@ class Api::V1::TransactionsController < ApplicationController
     render json: { succes: true, data: transactions.map { |t| [t.id, t.category_type, t.amount, t.description] }}
   end
 
+  def types
+    transactions_types = current_user.saved_transactions.select('distinct category_type')
+
+    render json: { success: true, data: transactions_types }
+  end
+
   def categories
+    # not actual
     render json: {success: true, message: 'transaction categories', data: SavedTransaction.user_defined_categories}
   end
 

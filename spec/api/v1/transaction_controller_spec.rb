@@ -1,6 +1,25 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::TransactionsController do
+  describe 'when GET /api/v1/transactions/types' do
+    subject(:send_request) { get '/api/v1/transactions/types', params: params, headers: headers }
+
+    let!(:user) { create(:user) }
+    let!(:account1) { create(:account) }
+    let!(:headers) { auth_headers }
+
+    let!(:types) { user.saved_transactions.map(&:category_type).uniq }
+
+    let(:params) { {} }
+
+    before { sign_in(user) }
+
+    it 'returns all transaction types' do
+      subject
+      expect(body).to include(*types)
+    end
+  end
+
   describe 'when GET /api/v1/transactions/all' do
     subject(:send_request) { get '/api/v1/transactions/all', params: params, headers: headers }
 
@@ -40,6 +59,7 @@ RSpec.describe Api::V1::TransactionsController do
         expect(body).to include(*transactions.ids)
       end
 
+      # dynamic examples for each transaction type
       for $type in TRANSACTION_TYPES
         it "returns #{ $type } type transactions" do
           params.merge!(type: $type)
@@ -51,21 +71,16 @@ RSpec.describe Api::V1::TransactionsController do
     end
 
     context 'for date period transactions' do
-      # TODO also
-      # shared example
-      # filter attr and it is auto check
-      # like i want pagination in synergy
-
       let(:min_date) { transactions.pluck(:transaction_date).min }
       let(:max_date) { transactions.pluck(:transaction_date).max }
 
-      it 'included in filter period' do
+      it 'returns included in filter period' do
         params.merge!(start_date: min_date - 1.day, end_date: max_date + 1.day)
         subject
         expect(body).to include(*transactions.ids)
       end
 
-      it 'not included not in filter period' do
+      it 'not returns not included in filter period' do
         params.merge!(start_date: min_date - 20.days, end_date: min_date - 10.days)
         subject
         expect(body).not_to include(*transactions.ids)

@@ -39,6 +39,7 @@ Rails.application.routes.draw do
 
       resources :transactions, only: :show do
         get :all, on: :collection
+        get :types, on: :collection
         post :assign_property, on: :member
         post :assign_expenses, on: :member
       end
