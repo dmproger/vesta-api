@@ -1,15 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::TransactionsController do
+  TRANSACTION_TYPES = %w[INCOME EXPENSES TRANSFERS]
+
   describe 'when GET /api/v1/transactions/types' do
     subject(:send_request) { get '/api/v1/transactions/types', params: params, headers: headers }
 
     let!(:user) { create(:user) }
     let!(:account1) { create(:account) }
+    let!(:user2) { create(:user) }
+    let!(:account2) { create(:account) }
+    let(:transactions_types) do
+      for type in TRANSACTION_TYPES + ['one two three']
+        create_list(:saved_transaction, rand(2..3), user: user, account: account1, category_type: type)
+      end
+      for type in TRANSACTION_TYPES + ['for five six']
+        create_list(:saved_transaction, rand(2..3), user: user2, account: account2, category_type: type)
+      end
+    end
+    let!(:types) { SavedTransaction.all.select('distinct category_type').to_a }
+
     let!(:headers) { auth_headers }
-
-    let!(:types) { user.saved_transactions.map(&:category_type).uniq }
-
     let(:params) { {} }
 
     before { sign_in(user) }
@@ -22,8 +33,6 @@ RSpec.describe Api::V1::TransactionsController do
 
   describe 'when GET /api/v1/transactions/all' do
     subject(:send_request) { get '/api/v1/transactions/all', params: params, headers: headers }
-
-    TRANSACTION_TYPES = %w[INCOME EXPENSES TRANSFERS]
 
     let!(:user) { create(:user) }
     let!(:account1) { create(:account) }

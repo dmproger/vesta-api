@@ -29,7 +29,7 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def types
-    transactions_types = current_user.saved_transactions.select('distinct category_type')
+    transactions_types = SavedTransactions.all.select('distinct category_type')
 
     render json: { success: true, data: transactions_types }
   end
