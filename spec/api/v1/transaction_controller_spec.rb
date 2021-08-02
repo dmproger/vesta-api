@@ -51,23 +51,24 @@ RSpec.describe Api::V1::TransactionsController do
     end
 
     context 'for date period transactions' do
-      it 'filter by period' do
-        min_date = transactions.pluck(:transaction_date).min
-        max_date = transactions.pluck(:transaction_date).max
+      # TODO also
+      # shared example
+      # filter attr and it is auto check
+      # like i want pagination in synergy
 
+      let(:min_date) { transactions.pluck(:transaction_date).min }
+      let(:max_date) { transactions.pluck(:transaction_date).max }
+
+      it 'included in filter period' do
         params.merge!(start_date: min_date - 1.day, end_date: max_date + 1.day)
         subject
         expect(body).to include(*transactions.ids)
+      end
 
-        params.merge!(start_date: min_date - 20.days, end_date: max_date - 10.days)
+      it 'not included not in filter period' do
+        params.merge!(start_date: min_date - 20.days, end_date: min_date - 10.days)
         subject
-        # TODO
         expect(body).not_to include(*transactions.ids)
-
-        # TODO also
-        # shared example
-        # filter attr and it is auto check
-        # like i want pagination in synergy
       end
     end
   end
