@@ -14,12 +14,7 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def all
-    if incorrect_period?
-      return render json: { success: false, message: 'incorrect date period' }
-    else
-      set_period
-    end
-
+    set_period
     filter = { transaction_date: @period }
     filter.merge!({ category_type: @category_type }) if @category_type
 
@@ -98,7 +93,17 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def set_period
-    @period = (Date.parse(params[:start_date])..Date.parse(params[:end_date]))
+    @period =
+      case [params[:start_date].present?, params[:end_date].present?]
+      when [true, true]
+        Date.parse(params[:start_date])..Date.parse(params[:end_date])
+      when [true, false]
+        Date.parse(params[:start_date])..
+      when [false, true]
+        ..Date.parse(params[:end_date])
+      else
+        (Date.current - 100.years)..(Date.current + 100.years)
+      end
   end
 
   def set_category_type

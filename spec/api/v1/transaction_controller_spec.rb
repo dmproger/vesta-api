@@ -58,7 +58,7 @@ RSpec.describe Api::V1::TransactionsController do
     end
 
     let(:headers) { auth_headers }
-    let(:params) { { start_date: Date.current - 1.year, end_date: Date.current + 1.year } }
+    let(:params) { {} }
 
     before { sign_in(user) }
 
@@ -80,19 +80,26 @@ RSpec.describe Api::V1::TransactionsController do
     end
 
     context 'for date period transactions' do
-      let(:min_date) { transactions.pluck(:transaction_date).min }
-      let(:max_date) { transactions.pluck(:transaction_date).max }
+      let(:min_date) { date_valid_transactions.pluck(:transaction_date).min }
+      let(:max_date) { date_valid_transactions.pluck(:transaction_date).max }
 
-      it 'returns included in filter period' do
-        params.merge!(start_date: min_date - 1.day, end_date: max_date + 1.day)
-        subject
-        expect(body).to include(*transactions.ids)
+      context 'included in filter period' do
+        let(:params) { { start_date: min_date - 1.day, end_date: max_date + 1.day } }
+
+        it 'returns date valid transactions' do
+          subject
+          expect(body).to include(*date_valid_transactions.ids)
+        end
       end
 
-      it 'not returns not included in filter period' do
-        params.merge!(start_date: min_date - 20.days, end_date: min_date - 10.days)
-        subject
-        expect(body).not_to include(*transactions.ids)
+      context 'not included in filter period' do
+        let(:start_date) { date_invalid_transactions.pluck(:transaction_date).sample }
+        let(:params) { { start_date: start_date, end_date: start_date + 1.day } }
+
+        it 'not returns date valid transactions' do
+          subject
+          expect(body).not_to include(*date_valid_transactions.ids)
+        end
       end
     end
   end
