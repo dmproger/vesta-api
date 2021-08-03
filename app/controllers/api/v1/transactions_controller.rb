@@ -1,5 +1,5 @@
 class Api::V1::TransactionsController < ApplicationController
-  before_action :set_account, except: [:categories, :assign_property, :assign_expenses, :all]
+  before_action :set_account, except: [:categories, :assign_property, :assign_expenses, :all, :types]
   before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
   before_action :set_property, only: [:assign_property, :assign_expenses]
   before_action :set_expense, only: [:assign_expenses]
@@ -23,13 +23,13 @@ class Api::V1::TransactionsController < ApplicationController
     filter = { transaction_date: @period }
     filter.merge!({ category_type: @category_type }) if @category_type
 
-    transactions = current_user.saved_transactions.where(filter).order(:transaction_date)
+    transactions = current_user.saved_transactions.where(filter).order(transaction_date: :desc)
 
-    render json: { succes: true, data: transactions.map { |t| [t.id, t.category_type, t.amount, t.description] }}
+    render json: { succes: true, data: transactions.map(&:attributes) }
   end
 
   def types
-    transactions_types = SavedTransactions.all.select('distinct category_type')
+    transactions_types = SavedTransaction.all.select('distinct category_type').map(&:category_type)
 
     render json: { success: true, data: transactions_types }
   end

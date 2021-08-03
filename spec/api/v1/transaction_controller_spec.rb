@@ -18,7 +18,7 @@ RSpec.describe Api::V1::TransactionsController do
         create_list(:saved_transaction, rand(2..3), user: user2, account: account2, category_type: type)
       end
     end
-    let!(:types) { SavedTransaction.all.select('distinct category_type').to_a }
+    let!(:types) { SavedTransaction.all.select('distinct category_type').map(&:category_type) }
 
     let!(:headers) { auth_headers }
     let(:params) { {} }

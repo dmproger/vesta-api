@@ -14,6 +14,10 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 #
+#
+
+ENV['DO_NOT_SEND_SMS'] = '1'
+
 require 'rspec/core'
 
 RSpec.configure do |config|
