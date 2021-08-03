@@ -10,15 +10,15 @@ RSpec.describe Api::V1::TransactionsController do
     let!(:account1) { create(:account) }
     let!(:user2) { create(:user) }
     let!(:account2) { create(:account) }
-    let(:transactions_types) do
-      for type in TRANSACTION_TYPES + ['one two three']
+    let!(:transactions_types) do
+      for type in TRANSACTION_TYPES + %w[one two three]
         create_list(:saved_transaction, rand(2..3), user: user, account: account1, category_type: type)
       end
-      for type in TRANSACTION_TYPES + ['for five six']
+      for type in TRANSACTION_TYPES + %w[for five six]
         create_list(:saved_transaction, rand(2..3), user: user2, account: account2, category_type: type)
       end
     end
-    let!(:types) { SavedTransaction.all.select('distinct category_type').map(&:category_type) }
+    let!(:types) { TRANSACTION_TYPES + %w[one two three for five six] }
 
     let!(:headers) { auth_headers }
     let(:params) { {} }

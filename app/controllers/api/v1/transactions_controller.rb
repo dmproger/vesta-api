@@ -24,7 +24,7 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def types
-    transactions_types = SavedTransaction.all.select('distinct category_type').map(&:category_type)
+    transactions_types = SavedTransaction.all.select('distinct category_type').map(&:category_type).sort
 
     render json: { success: true, data: transactions_types }
   end
