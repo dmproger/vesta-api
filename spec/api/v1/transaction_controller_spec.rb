@@ -101,6 +101,23 @@ RSpec.describe Api::V1::TransactionsController do
           expect(body).not_to include(*date_valid_transactions.ids)
         end
       end
+
+      context 'only start date in period' do
+        let(:params) { { start_date: min_date - 1.day } }
+
+        it 'returns date valid transactions' do
+          subject
+          expect(body).to include(*date_valid_transactions.ids)
+        end
+      end
+      context 'only end date in period' do
+        let(:params) { { end_date: max_date + 1.day } }
+
+        it 'returns date valid transactions' do
+          subject
+          expect(body).to include(*date_valid_transactions.ids)
+        end
+      end
     end
   end
 
