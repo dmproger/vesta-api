@@ -25,7 +25,7 @@ class Api::V1::ExpensesController < ApplicationController
 
   def destroy
     if @expense.destroy
-      render json: { success: true, data: "expense '#{@expense}' destroyed successfuly!" }
+      render json: { success: true, message: 'Expense successfuly destroyed', data: @expense.attributes }
     else
       render json: { success: false, data: @expense.errors }
     end
@@ -51,7 +51,7 @@ class Api::V1::ExpensesController < ApplicationController
 
   def save_expense
     if @expense.save
-      render json: { success: true, data: "expense '#{@expense}' successfully saved!" }
+      render json: { success: true, message: 'Expense successfuly saved!', data: @expense.attributes }
     else
       render json: { success: false, data: @expense.errors }
     end
