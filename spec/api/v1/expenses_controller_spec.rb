@@ -52,12 +52,14 @@ RSpec.describe Api::V1::ExpensesController do
     subject(:send_request) { post '/api/v1/expenses', params: params, headers: headers }
 
     let(:name) { 'FOO' }
-    let(:params) { { name: name } }
+    let(:report_state) { (Expense.report_states.keys - [Expense.new.report_state]).sample }
+    let(:params) { { name: name, report_state: report_state } }
 
     it 'creates expense' do
       expect { subject }.to change { Expense.count }.by(1)
 
       expect(body).to include(name)
+      expect(body).to include(report_state)
     end
   end
 
@@ -65,15 +67,18 @@ RSpec.describe Api::V1::ExpensesController do
     subject(:send_request) { put "/api/v1/expenses/#{ expense.id }", params: params, headers: headers }
 
     let(:name) { 'BAR' }
-    let(:params) { { name: name } }
+    let(:report_state) { (Expense.report_states.keys - [Expense.new.report_state]).sample }
+    let(:params) { { name: name, report_state: report_state } }
 
     it 'update specific expense' do
       expect(expense.name).not_to eq(name)
+      expect(expense.report_state).not_to eq(report_state)
 
       subject
 
       expense.reload
       expect(expense.name).to eq(name)
+      expect(expense.report_state).to eq(report_state)
     end
   end
 

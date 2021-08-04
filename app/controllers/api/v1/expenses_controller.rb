@@ -1,5 +1,6 @@
 class Api::V1::ExpensesController < ApplicationController
-  before_action :set_expense, only: [:create, :update, :destroy, :show]
+  before_action :set_attrs
+  before_action :set_expense, except: :index
 
   def index
     defaults!
@@ -15,7 +16,8 @@ class Api::V1::ExpensesController < ApplicationController
   end
 
   def update
-    @expense.name = params[:name]
+    @expense.assign_attributes(@attrs)
+
     save_expense
   end
 
@@ -39,13 +41,21 @@ class Api::V1::ExpensesController < ApplicationController
 
   private
 
+  def set_attrs
+    @attrs = {}
+
+    %i[name report_state].each do |attr|
+      @attrs.merge!(attr => params[attr]) if params[attr]
+    end
+  end
+
   def set_expense
     @expense =
       case action_name
       when 'show', 'update', 'destroy'
         Expense.find(params[:id])
       when 'create'
-        current_user.expenses.new(name: params[:name])
+        current_user.expenses.new(@attrs)
       end
   end
 

@@ -13,6 +13,8 @@ class Expense < ApplicationRecord
   belongs_to :user
   has_one :property, through: :expense_properties
 
+  enum report_state: { hidden: 0, visible: 1 }
+
   def self.defaults(user)
     where(user: user, name: DEFAULTS)
   end
