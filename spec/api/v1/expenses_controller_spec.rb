@@ -52,14 +52,13 @@ RSpec.describe Api::V1::ExpensesController do
     subject(:send_request) { post '/api/v1/expenses', params: params, headers: headers }
 
     let(:name) { 'FOO' }
-    let(:report_state) { (Expense.report_states.keys - [Expense.new.report_state]).sample }
-    let(:params) { { name: name, report_state: report_state } }
+    let(:params) { { name: name } }
 
     it 'creates expense' do
       expect { subject }.to change { Expense.count }.by(1)
 
       expect(body).to include(name)
-      expect(body).to include(report_state)
+      expect(body).to include(Expense.new.report_state)
     end
   end
 
