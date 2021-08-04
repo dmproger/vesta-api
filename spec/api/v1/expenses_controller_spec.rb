@@ -1,98 +1,91 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ExpensesController do
+  let!(:user) { create(:user) }
+  let!(:other_user) { create(:user) }
+
+  let(:expense) { create(:expense, user: user) }
+  let(:expenses) { create_list(:expense, rand(2..3), user: user) }
+  let(:other_expense) { create(:expense, user: user) }
+  let(:other_expenses) { create_list(:expense, rand(2..3), user: other_user) }
+
+  let(:headers) { auth_headers }
+  let(:params) { {} }
+
+  before { sign_in(user) }
+
   describe 'when GET /api/v1/expenses' do
     subject(:send_request) { get '/api/v1/expenses', params: params, headers: headers }
 
-    let!(:user) { create(:user) }
-    let!(:headers) { auth_headers }
-
-    context 'for defaults only' do
-      it 'returns default list' do
+    context 'when user has no created expenses' do
+      it 'returns default expenses' do
         subject
+
         expect(body).to include(*Expense::DEFAULTS)
       end
     end
 
-    context 'when user created expenses' do
-      let!(:expenses) { create_list(:expense, rand(2..3), user: user) }
-      let!(:other_user) { create(:user) }
-      let!(:other_expenses) { create_list(:expense, rand(2..3), user: other_user) }
+    context 'when user has created expenses' do
+      before { expenses }
 
-      it 'returns all user expenses' do
+      it 'returns users and default expenses' do
         subject
 
-        expect(body).to include(*expenses.map(&:name))
+        expect(body).to include(*(expenses.map(&:name) + Expense::DEFAULTS))
         expect(body).not_to include(*other_expenses.map(&:name))
       end
+    end
+  end
+
+  describe 'when GET /api/v1/expenses/:id' do
+    subject(:send_request) { get "/api/v1/expenses/#{ expense.id }", params: params, headers: headers }
+
+    it 'returns specific expense' do
+      subject
+
+      expect(body).to include(expense.id)
+      expect(body).not_to include(other_expense.id)
     end
   end
 
   describe 'when POST /api/v1/expenses' do
     subject(:send_request) { post '/api/v1/expenses', params: params, headers: headers }
 
-    let!(:user) { create(:user) }
-    let!(:other_user) { create(:user) }
-    let!(:other_expenses) { create_list(:expense, rand(2..3), user: other_user) }
+    let(:name) { 'FOO' }
+    let(:params) { { name: name } }
 
-    let!(:headers) { auth_headers }
-    let!(:params) { { name: 'FOO' } }
+    it 'creates expense' do
+      expect { subject }.to change { Expense.count }.by(1)
 
-    before { sign_in(user) }
-
-    it 'returns all user expenses' do
-      subject
-
-      get '/api/v1/expenses', headers: headers
-      expect(body).to include(params[:name])
-      expect(body).not_to include(*other_expenses.map(&:name))
+      expect(body).to include(name)
     end
   end
 
-  describe 'when PUT /api/v1/expenses' do
+  describe 'when PUT /api/v1/expenses/:id' do
     subject(:send_request) { put "/api/v1/expenses/#{ expense.id }", params: params, headers: headers }
 
-    let!(:user) { create(:user) }
-    let!(:expense) { create(:expense, user: user) }
-    let!(:other_user) { create(:user) }
-    let!(:other_expense) { create(:expense, user: other_user) }
+    let(:name) { 'BAR' }
+    let(:params) { { name: name } }
 
-    let!(:headers) { auth_headers }
-    let!(:params) { { name: 'BAR' } }
-
-    before { sign_in(user) }
-
-    it 'returns all user expenses' do
-      get '/api/v1/expenses', headers: headers
-      expect(body).to include(expense.name)
-      expect(body).not_to include(params[:name])
+    it 'update specific expense' do
+      expect(expense.name).not_to eq(name)
 
       subject
 
-      get '/api/v1/expenses', headers: headers
-      expect(body).to include(params[:name])
-      expect(body).not_to include(other_expense.name)
+      expense.reload
+      expect(expense.name).to eq(name)
     end
   end
 
   describe 'when DELETE /api/v1/expenses' do
     subject(:send_request) { delete "/api/v1/expenses/#{ expense.id }", params: params, headers: headers }
 
-    let!(:user) { create(:user) }
-    let!(:expense) { create(:expense, user: user) }
-
-    let!(:headers) { auth_headers }
-
-    before { sign_in(user) }
-
-    it 'returns all user expenses' do
-      get '/api/v1/expenses', headers: headers
-      expect(body).to include(expense.name)
+    it 'delete specific expense' do
+      expect { Expense.find(expense.id) }.not_to raise_error
 
       subject
 
-      get '/api/v1/expenses', headers: headers
-      expect(body).not_to include(expense.name)
+      expect { Expense.find(expense.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
