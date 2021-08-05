@@ -1,4 +1,4 @@
-class User::PropertySingle < ActiveRecord::Base
+class User::Info::PropertySingle < ActiveRecord::Base
   # include Adminable
 
   self.table_name = 'users'

@@ -1,4 +1,4 @@
-class User::PropertyMany < ActiveRecord::Base
+class User::Info::PropertyMany < ActiveRecord::Base
   # include Adminable
 
   self.table_name = 'users'

@@ -1,4 +1,4 @@
-class User::BankMany < ActiveRecord::Base
+class User::Info::BankMany < ActiveRecord::Base
   # include Adminable
 
   self.table_name = 'users'
