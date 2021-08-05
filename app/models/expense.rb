@@ -1,7 +1,7 @@
 class Expense < ApplicationRecord
   DEFAULTS = [
     'Mortage',
-    'Bills',
+    'Agency fees',
     'Service charge',
     'Ground rent',
     'Insurance',
