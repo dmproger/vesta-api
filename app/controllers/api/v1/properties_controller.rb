@@ -43,7 +43,7 @@ class Api::V1::PropertiesController < ApplicationController
         where(property: @property).
         joins(:saved_transaction, :expense).
         where(saved_transactions: { transaction_date: @period }).
-        where(expenses: { report_state: 'visible' }).
+        where(expenses: { report_state: :visible }).
         group(:expense_id).
         sum(:amount)
 
