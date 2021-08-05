@@ -7,7 +7,7 @@ class Api::V1::ExpensesController < ApplicationController
 
     render json: {
       success: true,
-      data: current_user.expenses.select('id, name')
+      data: current_user.expenses.map { |record| record.attributes.slice(*%w[id name report_state]) }
     }
   end
 
@@ -22,7 +22,7 @@ class Api::V1::ExpensesController < ApplicationController
   end
 
   def show
-    render json: { success: true, date: @expense.attributes.slice('id', 'name') }
+    render json: { success: true, date: @expense.attributes.slice(*%w[id name report_state]) }
   end
 
   def destroy
