@@ -3,14 +3,14 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
   before_action :set_property, only: [:assign_property, :assign_expenses]
   before_action :set_expense, only: [:assign_expenses]
-  before_action :set_category_type, only: [:all]
+  before_action :set_category_type, only: [:all, :types]
 
   def index
     refresh_transactions if params[:force_refresh] == 'true'
     @transactions = @account.reload.saved_transactions.income.includes(tenant: :joint_tenants)
     process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
   rescue RestClient::Exception => e
-    render json: {success: false, message: e.message, data: nil}
+    render json: { success: false, message: e.message, data: nil }
   end
 
   def all
@@ -20,13 +20,16 @@ class Api::V1::TransactionsController < ApplicationController
 
     transactions = current_user.saved_transactions.where(filter).order(transaction_date: :desc)
 
-    render json: { succes: true, data: transactions.map(&:attributes) }
+    render json: { success: true, data: transactions.map(&:attributes) }
   end
 
   def types
-    transactions_types = SavedTransaction.all.select('distinct category_type').map(&:category_type).sort
+    transactions_types = SavedTransaction.all.select('distinct category_type')
 
-    render json: { success: true, data: transactions_types }
+    filter = { category_type: @category_type } if @category_type
+    transactions_types = transactions_types.where(filter) if filter
+
+    render json: { success: true, data: transactions_types.map(&:category_type).sort }
   end
 
   def categories

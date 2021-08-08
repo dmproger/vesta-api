@@ -30,6 +30,8 @@ class Property < ApplicationRecord
   end
 
   def assign_expense(expense, transaction)
+    raise ActiveRecord::RecordInvalid unless /EXPENSE/.match(transaction.category_type)
+
     expense_properties.create!(expense: expense, saved_transaction: transaction)
   end
 end

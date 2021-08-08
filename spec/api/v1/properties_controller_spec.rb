@@ -7,7 +7,7 @@ RSpec.describe Api::V1::PropertiesController do
 
       let!(:user) { create(:user) }
       let!(:account) { create(:account) }
-      let!(:transactions) { create_list(:saved_transaction, 3, user: user, account: account, transaction_date: Date.current - 1.day) }
+      let!(:transactions) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
       let!(:expenses) { create_list(:expense, 3, user: user) }
       let!(:hidden_expenses) { create_list(:expense, 3, user: user, report_state: :hidden) }
       let!(:property) { create(:property, user: user) }
