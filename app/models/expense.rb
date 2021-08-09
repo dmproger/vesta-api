@@ -11,7 +11,9 @@ class Expense < ApplicationRecord
   ].freeze
 
   belongs_to :user
-  has_one :property, through: :expense_properties
+
+  has_one :property, through: :expense_property
+  has_one :saved_transaction, through: :expense_property
 
   enum report_state: { hidden: 0, visible: 1 }
 

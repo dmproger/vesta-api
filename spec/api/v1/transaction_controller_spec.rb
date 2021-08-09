@@ -63,19 +63,58 @@ RSpec.describe Api::V1::TransactionsController do
     before { sign_in(user) }
 
     context 'for no date transactions' do
-      it 'returns all transactions' do
-        subject
-        expect(body).to include(*transactions.ids)
+      context 'all transactions with expense categories included' do
+        let!(:expense) { create(:expense, user: user) }
+        let!(:property) { create(:property, user: user) }
+        let!(:expense_transactions) { transactions.where(category_type: 'EXPENSES') }
+
+        let(:data) { JSON.parse(body)['data'] }
+        let(:expense_records) { data.keep_if { |r| r['category_type'] == 'EXPENSES' } }
+        let(:other_records) { data.keep_if { |r| r['category_type'] != 'EXPENSES' } }
+
+        before do
+          expense_transactions.each do |transaction|
+            property.assign_expense(expense, transaction)
+            property.assign_expense(expense, transaction)
+          end
+        end
+
+        it 'returns all transactions' do
+          subject
+
+          expect(body).to include(*transactions.ids)
+          expect(body).to include(expense.name, expense.id)
+
+          expense_names = expense_records.map { |r| r['expense_name'] }.uniq
+          expect(expense_names.count).to eq(1)
+          expect(expense_names.first).to eq(expense.name)
+
+          expect(other_records).not_to include(expense.name)
+        end
       end
 
-      # dynamic examples for each transaction type
-      for $type in TRANSACTION_TYPES
-        it "returns #{ $type } type transactions" do
-          params.merge!(type: $type)
-          subject
-          expect(body).to include(*transactions.where(category_type: $type).ids)
-          expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [$type]).sample).ids)
-        end
+      it 'returns income type transactions' do
+        params.merge!(type: 'INCOME')
+
+        subject
+        expect(body).to include(*transactions.where(category_type: params[:type]).ids)
+        expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
+      end
+
+      it 'returns expenses type transactions' do
+        params.merge!(type: 'EXPENSES')
+
+        subject
+        expect(body).to include(*transactions.where(category_type: params[:type]).ids)
+        expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
+      end
+
+      it 'returns transfers type transactions' do
+        params.merge!(type: 'TRANSFERS')
+
+        subject
+        expect(body).to include(*transactions.where(category_type: params[:type]).ids)
+        expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
       end
     end
 

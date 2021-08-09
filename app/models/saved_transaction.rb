@@ -17,6 +17,9 @@ class SavedTransaction < ApplicationRecord
   has_one :tenant, through: :property_tenant,
           class_name: 'Tenant'
 
+  has_one :expense_property, dependent: :destroy
+  has_one :expense, through: :expense_property
+
   enum user_defined_category: [:rent, :mortgage, :ground_rent, :other]
   enum association_type: [:automatic, :manual]
 

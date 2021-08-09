@@ -18,7 +18,14 @@ class Api::V1::TransactionsController < ApplicationController
     filter = { transaction_date: @period }
     filter.merge!({ category_type: @category_type }) if @category_type
 
-    transactions = current_user.saved_transactions.where(filter).order(transaction_date: :desc)
+    transactions =
+      current_user.
+        saved_transactions.
+        includes(:expense).
+        where(filter).
+        order(transaction_date: :desc).
+        select('saved_transactions.*, expenses.name as expense_name, expenses.id as expense_id').
+        references(:expense)
 
     render json: { success: true, data: transactions.map(&:attributes) }
   end
