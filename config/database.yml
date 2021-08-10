@@ -4,6 +4,8 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: vesta
+  password: vesta12!
 
 development:
   <<: *default
@@ -16,11 +18,7 @@ test:
 staging:
   <<: *default
   database: vesta_rails_production
-  username: vesta
-  password: vesta12!
 
 production:
   <<: *default
   database: vesta_rails_production
-  username: vesta
-  password: vesta12!
