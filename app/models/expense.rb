@@ -22,16 +22,16 @@ class Expense < ApplicationRecord
   end
 
   def self.create_defaults(user)
-    (DEFAULTS - where(user: user).map(&:name)).each do |expense|
-      create!(user: user, name: expense)
+    (DEFAULTS - where(user: user).map(&:name)).each do |expense_name|
+      create!(user: user, name: expense_name)
     end
   end
 
   def self.restore_defaults(user)
     defaults(user).delete_all
 
-    DEFAULTS.each do |expense|
-      create!(user: user, name: expense)
+    DEFAULTS.each do |expense_name|
+      create!(user: user, name: expense_name)
     end
   end
 end

@@ -17,11 +17,17 @@ RSpec.describe Api::V1::ExpensesController do
   describe 'when GET /api/v1/expenses' do
     subject(:send_request) { get '/api/v1/expenses', params: params, headers: headers }
 
+
     context 'when user has no created expenses' do
       it 'returns default expenses' do
         subject
 
         expect(body).to include(*Expense::DEFAULTS)
+
+        # check, that default expenses created only once
+        default_expenses = JSON.parse(body)['data']
+        get '/api/v1/expenses', params: params, headers: headers
+        expect(JSON.parse(body)['data'].map { |r| r['id'] }.sort).to eq(default_expenses.map { |r| r['id'] }.sort)
       end
     end
 
