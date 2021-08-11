@@ -68,7 +68,7 @@ class Api::V1::ExpensesController < ApplicationController
   end
 
   def defaults!
-    return unless Expense.defaults(current_user).count == 0
+    return unless Expense.defaults(current_user).count.zero?
 
     Expense.create_defaults(current_user)
   end

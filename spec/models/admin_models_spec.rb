@@ -18,10 +18,14 @@ MODELS = %w[
 ]
 
 RSpec.describe User do
-  # dynamic exapmles
-  for model in MODELS
-    it "have no error on for #{ model } results" do
-      expect { model.constantize.all }.not_to raise_error
+  context 'specific builded user models' do
+    # dynamic exapmles
+    for model_name in MODELS
+      class_eval <<-STR
+        it "has no errors for #{ model_name } records list" do
+          expect { #{ model_name }.all }.not_to raise_error
+        end
+      STR
     end
   end
 end
