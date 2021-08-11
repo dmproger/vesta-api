@@ -62,63 +62,70 @@ RSpec.describe Api::V1::TransactionsController do
 
     before { sign_in(user) }
 
-    context 'for no date transactions' do
-      context 'all transactions with expense categories included' do
-        let!(:expense) { create(:expense, user: user) }
-        let!(:property) { create(:property, user: user) }
-        let!(:expense_transactions) { transactions.where(category_type: 'EXPENSES') }
+    context 'all transactions' do
+      it 'returns all transactions' do
+        subject
+        expect(body).to include(*transactions.ids)
+      end
+
+      context 'with expense assigned transactions' do
+        let(:type) { 'EXPENSES' }
+        let(:property) { create(:property, user: user) }
+        let(:expense_transactions) { transactions.where(category_type: type) }
+        let(:expenses) { create_list(:expense, expense_transactions.count, user: user) }
+        let(:other_transactions) { transactions.where.not(category_type: type) }
 
         let(:data) { JSON.parse(body)['data'] }
-        let(:expense_records) { data.keep_if { |r| r['category_type'] == 'EXPENSES' } }
-        let(:other_records) { data.keep_if { |r| r['category_type'] != 'EXPENSES' } }
+        let(:expense_assigned_records) { data.dup.keep_if { |r| r['category_type'] == type } }
+        let(:other_records) { data.dup.keep_if { |r| r['category_type'] != type } }
 
         before do
-          expense_transactions.each do |transaction|
-            property.assign_expense(expense, transaction)
-            property.assign_expense(expense, transaction)
+          expense_transactions.each_with_index do |transaction, index|
+            property.assign_expense(expenses[index], transaction)
           end
         end
 
-        it 'returns all transactions' do
+        it 'returns expense names and ids in specific transactions' do
           subject
 
-          expect(body).to include(*transactions.ids)
-          expect(body).to include(expense.name, expense.id)
+          expect(expense_assigned_records.map { |r| r['expense_name'] }.sort).to eq(expenses.map(&:name).sort)
+          expect(expense_assigned_records.map { |r| r['expense_id'] }.sort).to eq(expenses.map(&:id).sort)
 
-          expense_names = expense_records.map { |r| r['expense_name'] }.uniq
-          expect(expense_names.count).to eq(1)
-          expect(expense_names.first).to eq(expense.name)
-
-          expect(other_records).not_to include(expense.name)
+          expect(other_records.map { |r| r['expense_name'] }.uniq).to eq([nil])
+          expect(other_records.map { |r| r['expense_id'] }.uniq).to eq([nil])
         end
-      end
-
-      it 'returns income type transactions' do
-        params.merge!(type: 'INCOME')
-
-        subject
-        expect(body).to include(*transactions.where(category_type: params[:type]).ids)
-        expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
-      end
-
-      it 'returns expenses type transactions' do
-        params.merge!(type: 'EXPENSES')
-
-        subject
-        expect(body).to include(*transactions.where(category_type: params[:type]).ids)
-        expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
-      end
-
-      it 'returns transfers type transactions' do
-        params.merge!(type: 'TRANSFERS')
-
-        subject
-        expect(body).to include(*transactions.where(category_type: params[:type]).ids)
-        expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
       end
     end
 
-    context 'for date period transactions' do
+    context 'no date period filtered transactions' do
+      context 'specific type fitered transactions' do
+        it 'returns income type transactions' do
+          params.merge!(type: 'INCOME')
+
+          subject
+          expect(body).to include(*transactions.where(category_type: params[:type]).ids)
+          expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
+        end
+
+        it 'returns expenses type transactions' do
+          params.merge!(type: 'EXPENSES')
+
+          subject
+          expect(body).to include(*transactions.where(category_type: params[:type]).ids)
+          expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
+        end
+
+        it 'returns transfers type transactions' do
+          params.merge!(type: 'TRANSFERS')
+
+          subject
+          expect(body).to include(*transactions.where(category_type: params[:type]).ids)
+          expect(body).not_to include(*transactions.where(category_type: (TRANSACTION_TYPES - [params[:type]]).sample).ids)
+        end
+      end
+    end
+
+    context 'date period filtered transactions' do
       let(:min_date) { date_valid_transactions.pluck(:transaction_date).min }
       let(:max_date) { date_valid_transactions.pluck(:transaction_date).max }
 
@@ -149,6 +156,7 @@ RSpec.describe Api::V1::TransactionsController do
           expect(body).to include(*date_valid_transactions.ids)
         end
       end
+
       context 'only end date in period' do
         let(:params) { { end_date: max_date + 1.day } }
 
