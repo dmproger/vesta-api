@@ -1,6 +1,8 @@
 module Overrides
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
-    CREDENTIALS_PARAMS = %i[name email phone first_name surname].freeze
+
+    # телефон не может быть одновременно и авторизационным и изменяемым.
+    CREDENTIALS_PARAMS = %i[name email first_name surname].freeze
 
     skip_before_action :authenticate_user!
 

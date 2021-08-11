@@ -11,5 +11,9 @@ module Overrides
         render json: {success: false, message: 'phone does not exist', data: nil}, status: 422
       end
     end
+
+    def provider
+      'phone'
+    end
   end
 end
