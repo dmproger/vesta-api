@@ -76,23 +76,25 @@ RSpec.describe Api::V1::TransactionsController do
         let(:other_transactions) { transactions.where.not(category_type: type) }
 
         let(:data) { JSON.parse(body)['data'] }
-        let(:expense_assigned_records) { data.dup.keep_if { |r| r['category_type'] == type } }
+        let(:assigned_records) { data.dup.keep_if { |r| r['category_type'] == type } }
         let(:other_records) { data.dup.keep_if { |r| r['category_type'] != type } }
+        let(:assigns) { [] }
 
         before do
           expense_transactions.each_with_index do |transaction, index|
-            property.assign_expense(expenses[index], transaction)
+            expense = expenses[index]
+            property.assign_expense(expense, transaction)
+            assigns << [transaction.id, expense.id, expense.name]
           end
         end
 
         it 'returns expense names and ids in specific transactions' do
           subject
 
-          expect(expense_assigned_records.map { |r| r['expense_name'] }.sort).to eq(expenses.map(&:name).sort)
-          expect(expense_assigned_records.map { |r| r['expense_id'] }.sort).to eq(expenses.map(&:id).sort)
+          assigns_in_fact = assigned_records.map { |r| [r['id'], r['expense_id'], r['expense_name']] }
+          expect(assigns_in_fact.sort).to eq(assigns.sort)
 
-          expect(other_records.map { |r| r['expense_name'] }.uniq).to eq([nil])
-          expect(other_records.map { |r| r['expense_id'] }.uniq).to eq([nil])
+          expect(other_records.map { |r| [r['expense_id'], r['expense_name']] }.uniq.flatten).to eq([nil, nil])
         end
       end
     end
