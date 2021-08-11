@@ -1,4 +1,6 @@
 class SavedTransaction < ApplicationRecord
+  INCOME_CATEGORY_NAME = 'Rent'.freeze
+
   belongs_to :account
   belongs_to :user
 
