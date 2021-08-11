@@ -73,7 +73,6 @@ RSpec.describe Api::V1::TransactionsController do
         let(:property) { create(:property, user: user) }
         let(:expense_transactions) { transactions.where(category_type: type) }
         let(:expenses) { create_list(:expense, expense_transactions.count, user: user) }
-        let(:other_transactions) { transactions.where.not(category_type: type) }
 
         let(:data) { JSON.parse(body)['data'] }
         let(:assigned_records) { data.dup.keep_if { |r| r['category_type'] == type } }
