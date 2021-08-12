@@ -192,7 +192,7 @@ RSpec.describe Api::V1::TransactionsController do
 
           it 'assign expense to property and transaction' do
             subject
-            expect(property.expense_transactions.first.id).to eq(transaction.id)
+            expect(property.reload.expense_transactions.first.id).to eq(transaction.id)
           end
         end
 
@@ -203,6 +203,7 @@ RSpec.describe Api::V1::TransactionsController do
 
           it 'assign new expense to property and transaction' do
             subject
+
             expect(property.reload.expense_transactions.first.id).to eq(transaction.id)
           end
         end
