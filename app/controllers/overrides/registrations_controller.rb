@@ -7,21 +7,16 @@ module Overrides
     def create
       create_params = sign_up_params.dup
       email = create_params.delete(:email)&.downcase
-
-      @resource = params[:id] ? User.find(params[:id]) : User.new
-
-      @resource.email     = email
-      @resource.uid       = email
-      @resource.password  = Devise.friendly_token.first(8)
-      @resource.provider  = 'email'
-
+      @resource = User.new(email: email, uid: email,
+                           password: Devise.friendly_token.first(8),
+                           provider: 'email')
       @resource.assign_attributes(create_params)
-      @resource.save ? render_create_success : render_create_error
+      @resource.save ? render_success : render_error
     end
 
     private
 
-    def render_create_success
+    def render_success
       render json: {
           success: true,
           message: 'Registered successfully',
@@ -30,7 +25,7 @@ module Overrides
       }
     end
 
-    def render_create_error
+    def render_error
       render json: {
           success: false,
           message: @resource.errors.to_h.map {|k,v| "#{k} #{v}"}.join(', '),
