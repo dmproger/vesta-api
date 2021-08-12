@@ -6,10 +6,10 @@ RSpec.describe Api::V1::TransactionsController do
   describe 'when GET /api/v1/transactions/types' do
     subject(:send_request) { get '/api/v1/transactions/types', params: params, headers: headers }
 
-    let!(:user) { create(:user) }
-    let!(:account1) { create(:account) }
-    let!(:user2) { create(:user) }
-    let!(:account2) { create(:account) }
+    let(:user) { create(:user) }
+    let(:account1) { create(:account) }
+    let(:user2) { create(:user) }
+    let(:account2) { create(:account) }
     let!(:transactions) do
       for type in TRANSACTION_TYPES + %w[one two three]
         create_list(:saved_transaction, rand(2..3), user: user, account: account1, category_type: type)
@@ -18,9 +18,9 @@ RSpec.describe Api::V1::TransactionsController do
         create_list(:saved_transaction, rand(2..3), user: user2, account: account2, category_type: type)
       end
     end
-    let!(:types) { TRANSACTION_TYPES + %w[one two three for five six] }
+    let(:types) { TRANSACTION_TYPES + %w[one two three for five six] }
 
-    let!(:headers) { auth_headers }
+    let(:headers) { auth_headers }
     let(:params) { {} }
 
     before { sign_in(user) }
@@ -173,8 +173,7 @@ RSpec.describe Api::V1::TransactionsController do
     describe 'when GET /api/v1/transactions/:id/assign_expenses' do
       subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/assign_expenses", params: params, headers: headers }
 
-      let!(:user) { create(:user) }
-
+      let(:user) { create(:user) }
       let(:account) { create(:account) }
       let(:expense_transaction) { create(:saved_transaction, user: user, account: account, category_type: 'EXPENSE') }
       let(:another_expense_transaction) { create(:saved_transaction, user: user, account: account, category_type: 'EXPENSE') }

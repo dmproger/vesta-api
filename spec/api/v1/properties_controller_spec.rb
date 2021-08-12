@@ -5,18 +5,18 @@ RSpec.describe Api::V1::PropertiesController do
     describe 'when GET /api/v1/properties/:id/expenses_summary' do
       subject(:send_request) { get "/api/v1/properties/#{ property.id }/expenses_summary", params: params, headers: headers }
 
-      let!(:user) { create(:user) }
-      let!(:account) { create(:account) }
-      let!(:transactions_for_report) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
-      let!(:transactions_not_for_report) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
-      let!(:expenses) { create_list(:expense, 3, user: user) }
-      let!(:hidden_expenses) { create_list(:expense, 3, user: user, report_state: :hidden) }
-      let!(:property) { create(:property, user: user) }
+      let(:user) { create(:user) }
+      let(:account) { create(:account) }
+      let(:transactions_for_report) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
+      let(:transactions_not_for_report) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
+      let(:expenses) { create_list(:expense, 3, user: user) }
+      let(:hidden_expenses) { create_list(:expense, 3, user: user, report_state: :hidden) }
+      let(:property) { create(:property, user: user) }
 
-      let!(:headers) { auth_headers }
+      let(:headers) { auth_headers }
 
-      let!(:period) { (Date.current - 2.days)..(Date.current) }
-      let!(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
+      let(:period) { (Date.current - 2.days)..(Date.current) }
+      let(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
 
       before do
         sign_in(user)
@@ -37,11 +37,11 @@ RSpec.describe Api::V1::PropertiesController do
     describe 'when GET /api/v1/properties/expenses_summary' do
       subject(:send_request) { get "/api/v1/properties/expenses_summary", params: params, headers: headers }
 
-      let!(:user) { create(:user) }
-      let!(:property) { create(:property, user: user) }
-      let!(:headers) { auth_headers }
-      let!(:period) { (Date.current - 2.days)..(Date.current) }
-      let!(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
+      let(:user) { create(:user) }
+      let(:property) { create(:property, user: user) }
+      let(:headers) { auth_headers }
+      let(:period) { (Date.current - 2.days)..(Date.current) }
+      let(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
 
       before { sign_in(user) }
 
@@ -85,8 +85,8 @@ RSpec.describe Api::V1::PropertiesController do
           sum(:amount)
       end
 
-      let!(:headers) { auth_headers }
-      let!(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
+      let(:headers) { auth_headers }
+      let(:params) { { start_date: period.first.strftime('%F'), end_date: period.last.strftime('%F') } }
 
       before { sign_in(user) }
 
