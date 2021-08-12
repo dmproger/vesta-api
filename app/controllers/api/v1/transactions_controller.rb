@@ -1,4 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
+  include PeriodParams
+
   before_action :set_account, except: [:categories, :assign_property, :assign_expenses, :all, :types]
   before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
   before_action :set_property, only: [:assign_property, :assign_expenses]
@@ -100,20 +102,6 @@ class Api::V1::TransactionsController < ApplicationController
   def set_expense
     @expense = current_user.expenses.find(params[:expense_id])
     render json: {success: false, message: 'invalid expense id', data: nil} if @expense.blank?
-  end
-
-  def set_period
-    @period =
-      case [params[:start_date].present?, params[:end_date].present?]
-      when [true, true]
-        Date.parse(params[:start_date])..Date.parse(params[:end_date])
-      when [true, false]
-        Date.parse(params[:start_date])..
-      when [false, true]
-        ..Date.parse(params[:end_date])
-      else
-        (Date.current - 100.years)..(Date.current + 100.years)
-      end
   end
 
   def set_category_type

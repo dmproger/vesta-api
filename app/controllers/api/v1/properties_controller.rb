@@ -1,4 +1,6 @@
 class Api::V1::PropertiesController < ApplicationController
+  include PeriodParams
+
   before_action :set_property, only: [:show, :update, :destroy, :archive]
   before_action :set_period, only: [:collected_summary, :expenses_summary]
 
@@ -11,39 +13,41 @@ class Api::V1::PropertiesController < ApplicationController
   end
 
   def collected_summary
-    if incorrect_period?
-      return render json: { success: false, message: 'incorrect date period', date: [@period.first, @period.last] }
-    end
+    property_filter =
+      if params[:id]
+        set_property
+        { properties: { id: @property.id } }
+      else
+        {}
+      end
 
-    transactions =
+    summary =
       current_user.
-        saved_transactions.income.
+        saved_transactions.
+        income.
         where(transaction_date: @period).
-        joins(associated_transaction: :property)
+        joins(:property).
+        where(property_filter).
+        sum(:amount)
 
-    if params[:id]
-      set_property
-      transactions = transactions.where(property_tenants: { property: @property })
-    end
-
-    render json: { success: true, data: transactions.sum(:amount).to_f.round(2) || 0 }
+    render json: { success: true, data: summary.to_f.round(2) }
   end
 
   def expenses_summary
-    if incorrect_period?
-      return render json: { success: false, message: 'incorrect date period', date: [@period.first, @period.last] }
-    end
+    property_filter =
+      if params[:id]
+        set_property
+        { property: @property }
+      else
+        {}
+      end
 
-    if params[:id]
-      set_property
-    end
-
-    summary =
+    expense_properties =
       ExpenseProperty.
-        where(property: @property).
+        where(property_filter).
         joins(:saved_transaction, :expense).
-        where(saved_transactions: { transaction_date: @period }).
-        where(expenses: { report_state: :visible }).
+        where(saved_transactions: { user: current_user, transaction_date: @period, category_type: 'EXPENSES' }).
+        where(expenses: { report_state: :visible, user: current_user }).
         group(:expense_id).
         sum(:amount)
 
@@ -90,19 +94,6 @@ class Api::V1::PropertiesController < ApplicationController
     if @property.blank?
       render json: {success: false, message: 'invalid property id', data: nil}
     end
-  end
-
-  def set_period
-    @period = (Date.parse(params[:start_date])..Date.parse(params[:end_date]))
-  end
-
-  def incorrect_period?
-    return true unless params[:start_date].present? && params[:end_date].present?
-
-    start_date = Date.parse(params[:start_date])
-    end_date = Date.parse(params[:end_date])
-
-    (start_date > Date.current) || (start_date > end_date)
   end
 
   def property_params

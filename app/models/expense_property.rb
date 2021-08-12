@@ -3,6 +3,5 @@ class ExpenseProperty < ApplicationRecord
   belongs_to :property
   belongs_to :saved_transaction
 
-  # TODO
-  # db validate uniq expense, saved_transaction
+  validates :saved_transaction, uniqueness: true
 end

@@ -1,5 +1,7 @@
 require 'rails_helper'
 
+RSpec::Expectations.configuration.on_potential_false_positives = :nothing
+
 MODELS = %w[
   User::All
   User::Operation::Reset
