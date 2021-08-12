@@ -8,19 +8,15 @@ RSpec.describe Overrides::RegistrationsController do
       attributes.symbolize_keys.slice(*described_class::CREDENTIALS_PARAMS)
     end
 
-    let!(:user) { create(:user) }
-    let!(:credentials) { to_credentials(create(:user).attributes) }
+    let(:user) { create(:user) }
+    let(:credentials) { to_credentials(build(:user).attributes) }
 
-    let!(:headers) { auth_headers }
-    let!(:params) { { account_update: credentials } }
+    let(:headers) { auth_headers }
+    let(:params) { credentials }
 
-    before do
-      sign_in(user)
-    end
+    before { sign_in(user) }
 
     it 'change user credentials' do
-      pending
-
       expect(to_credentials(user.attributes)).not_to eq(credentials)
 
       subject
