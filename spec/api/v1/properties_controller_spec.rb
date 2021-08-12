@@ -7,7 +7,8 @@ RSpec.describe Api::V1::PropertiesController do
 
       let!(:user) { create(:user) }
       let!(:account) { create(:account) }
-      let!(:transactions) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
+      let!(:transactions_for_report) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
+      let!(:transactions_not_for_report) { create_list(:saved_transaction, 3, user: user, account: account, category_type: 'EXPENSE', transaction_date: Date.current - 1.day) }
       let!(:expenses) { create_list(:expense, 3, user: user) }
       let!(:hidden_expenses) { create_list(:expense, 3, user: user, report_state: :hidden) }
       let!(:property) { create(:property, user: user) }
@@ -20,15 +21,15 @@ RSpec.describe Api::V1::PropertiesController do
       before do
         sign_in(user)
         expenses.each_with_index do |expense, i|
-          property.assign_expense(expense, transactions[i])
-          property.assign_expense(hidden_expenses[i], transactions[i])
+          property.assign_expense(expense, transactions_for_report[i])
+          property.assign_expense(hidden_expenses[i], transactions_not_for_report[i])
         end
       end
 
       it 'returns expenses summary, included in report' do
         subject
 
-        expect(body).to include(*(transactions.map(&:amount) + expenses.map(&:id)).map(&:to_s))
+        expect(body).to include(*(transactions_for_report.map(&:amount) + expenses.map(&:id)).map(&:to_s))
         expect(body).not_to include(*hidden_expenses.map(&:id))
       end
     end
@@ -44,9 +45,9 @@ RSpec.describe Api::V1::PropertiesController do
 
       before { sign_in(user) }
 
-      it 'returns expenses' do
-        # TODO
-      end
+      # it 'returns expenses' do
+      # TODO
+      # end
     end
   end
 

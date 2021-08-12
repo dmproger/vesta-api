@@ -53,7 +53,7 @@ class Api::V1::ExpensesController < ApplicationController
     @expense =
       case action_name
       when 'show', 'update', 'destroy'
-        Expense.find(params[:id])
+        current_user.expenses.find(params[:id])
       when 'create'
         current_user.expenses.new(@attrs)
       end
