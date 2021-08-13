@@ -179,6 +179,7 @@ RSpec.describe Api::V1::TransactionsController do
       let(:income_transaction) { create(:saved_transaction, user: user, account: account) }
       let(:property) { create(:property, user: user) }
       let(:expense) { create(:expense, user: user) }
+      let(:other_expense) { create(:expense, user: user) }
 
       let(:headers) { auth_headers }
       let(:params) { { property_id: property.id, expense_id: expense.id } }
@@ -191,19 +192,26 @@ RSpec.describe Api::V1::TransactionsController do
         context 'when no expense category assigned' do
           it 'assign expense to property and transaction' do
             subject
-            expect(property.reload.expense_transactions.first.id).to eq(transaction.id)
+
+            property.reload
+            expect(property.expense_transactions.count).to eq(1)
+            expect(property.expenses.count).to eq(1)
+            expect(property.expense_transactions.first.id).to eq(transaction.id)
+            expect(property.expenses.first.id).to eq(expense.id)
           end
         end
 
         context 'when has assigned expense category' do
-          before { property.assign_expense(expense, transaction) }
+          before { property.assign_expense(other_expense, transaction) }
 
           it 'assign new expense to property and transaction' do
             subject
 
             property.reload
             expect(property.expense_transactions.count).to eq(1)
+            expect(property.expenses.count).to eq(1)
             expect(property.expense_transactions.first.id).to eq(transaction.id)
+            expect(property.expenses.first.id).to eq(expense.id)
           end
         end
       end
