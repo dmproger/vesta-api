@@ -42,7 +42,7 @@ Rails.application.routes.draw do
         get :types, on: :collection
         post :assign_property, on: :member
         post :assign_expense, on: :member
-        post :unassign_expense, on: :member
+        delete :assign_expense, on: :member
       end
 
       resources :tink_tokens, only: :create

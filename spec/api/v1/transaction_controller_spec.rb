@@ -226,8 +226,8 @@ RSpec.describe Api::V1::TransactionsController do
       end
     end
 
-    describe 'when POST /api/v1/transactions/:id/unassign_expense' do
-      subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/unassign_expense", params: params, headers: headers }
+    describe 'when DELETE /api/v1/transactions/:id/assign_expense' do
+      subject(:send_request) { delete "/api/v1/transactions/#{ transaction.id }/assign_expense", params: params, headers: headers }
 
       let(:transaction) { expense_transaction }
 

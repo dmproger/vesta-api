@@ -53,7 +53,7 @@ class SavedTransaction < ApplicationRecord
   end
 
   def unassign_expense
-    # secondary operation just in case, if multiple records (restrict on model validation)
+    # secondary operation just in case, if multiple records (now restricted on model)
     expense_property.destroy! && ExpenseProperty.where(saved_transaction: self).delete_all
   end
 end
