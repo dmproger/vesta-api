@@ -47,8 +47,10 @@ class Api::V1::TransactionsController < ApplicationController
 
   def update
     unless @transaction.update(transaction_params)
-      render json: {success: false, message: errors_to_string(@transaction), data: nil}
+      return render json: {success: false, message: errors_to_string(@transaction), data: nil}
     end
+
+    render json: {success: true, message: 'transaction updates successfuly', data: @transaction.reload.attributes}
   end
 
   def assign_property
@@ -74,6 +76,10 @@ class Api::V1::TransactionsController < ApplicationController
       @transaction.unassign_expense
       render json: { success: true, message: 'expenses unassigned successfuly!', data: nil }
     end
+
+    if request.put? || request.patch?
+      @transaction.report_state!(params[:report_state])
+    end
   end
 
   private
@@ -89,7 +95,7 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def transaction_params
-    params.require(:transaction).permit(:user_defined_category)
+    params.require(:transaction).permit(:user_defined_category, :report_state)
   end
 
   def set_transaction

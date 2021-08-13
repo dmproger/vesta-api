@@ -23,6 +23,8 @@ class SavedTransaction < ApplicationRecord
   enum user_defined_category: [:rent, :mortgage, :ground_rent, :other]
   enum association_type: [:automatic, :manual]
 
+  enum report_state: %i[hidden visible]
+
   def assign_to_tenant(joint_tenant, attributes = nil)
     property_tenant = find_property_tenant(attributes) || PropertyTenant.create(attributes)
     property_tenant.associated_transactions.create!(saved_transaction_id: id,
@@ -45,15 +47,24 @@ class SavedTransaction < ApplicationRecord
     property_tenant
   end
 
-  def assign_expense(expense, property)
+  def assign_expense(expense, property, report_state = :visible)
     raise ActiveRecord::RecordInvalid unless /EXPENSE/.match(category_type)
 
     unassign_expense if expense_property
     ExpenseProperty.create!(saved_transaction: self, expense: expense, property: property)
+
+    report_state!(report_state)
   end
 
   def unassign_expense
     # secondary operation just in case, if multiple records (now restricted on model)
     expense_property.destroy! && ExpenseProperty.where(saved_transaction: self).delete_all
+
+    report_state!(nil)
+  end
+
+  def report_state!(report_state)
+    self.report_state = report_state
+    save!
   end
 end

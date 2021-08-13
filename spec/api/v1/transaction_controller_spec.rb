@@ -194,11 +194,12 @@ RSpec.describe Api::V1::TransactionsController do
           it 'assign expense to property and transaction' do
             subject
 
-            property.reload
+            property.reload && transaction.reload
             expect(property.expense_transactions.count).to eq(1)
             expect(property.expenses.count).to eq(1)
             expect(property.expense_transactions.first.id).to eq(transaction.id)
             expect(property.expenses.first.id).to eq(expense.id)
+            expect(transaction.report_state).to eq('visible')
           end
         end
 
@@ -208,11 +209,12 @@ RSpec.describe Api::V1::TransactionsController do
           it 'assign new expense to property and transaction' do
             subject
 
-            property.reload
+            property.reload && transaction.reload
             expect(property.expense_transactions.count).to eq(1)
             expect(property.expenses.count).to eq(1)
             expect(property.expense_transactions.first.id).to eq(transaction.id)
             expect(property.expenses.first.id).to eq(expense.id)
+            expect(transaction.report_state).to eq('visible')
           end
         end
       end
@@ -226,6 +228,24 @@ RSpec.describe Api::V1::TransactionsController do
       end
     end
 
+    describe 'when PUT/PATCH /api/v1/transactions/:id/assign_expense' do
+      subject(:send_request) { put "/api/v1/transactions/#{ transaction.id }/assign_expense", params: params, headers: headers }
+
+      let(:transaction) { expense_transaction }
+      let(:report_state) { %w[hidden visible].sample }
+
+      let(:params) { { report_state: report_state } }
+
+      it 'changes report state' do
+        expect(transaction.report_state).to be_nil
+
+        subject
+
+        transaction.reload
+        expect(transaction.report_state).to eq(report_state)
+      end
+    end
+
     describe 'when DELETE /api/v1/transactions/:id/assign_expense' do
       subject(:send_request) { delete "/api/v1/transactions/#{ transaction.id }/assign_expense", params: params, headers: headers }
 
@@ -234,6 +254,7 @@ RSpec.describe Api::V1::TransactionsController do
       before { property.assign_expense(expense, transaction) }
 
       it 'unassign expense form specific transaction' do
+        expect(transaction.report_state).to eq('visible')
         expect(property.expense_transactions.any?).to be_truthy
         expect(property.expenses.any?).to be_truthy
 
@@ -242,6 +263,7 @@ RSpec.describe Api::V1::TransactionsController do
         property.reload
         expect(property.expense_transactions.any?).to be_falsey
         expect(property.expenses.any?).to be_falsey
+        expect(transaction.reload.report_state).to be_nil
       end
     end
   end

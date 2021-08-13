@@ -43,6 +43,8 @@ Rails.application.routes.draw do
         post :assign_property, on: :member
         post :assign_expense, on: :member
         delete :assign_expense, on: :member
+        patch :assign_expense, on: :member
+        put :assign_expense, on: :member
       end
 
       resources :tink_tokens, only: :create
