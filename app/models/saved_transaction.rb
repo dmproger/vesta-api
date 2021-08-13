@@ -44,4 +44,15 @@ class SavedTransaction < ApplicationRecord
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed
     property_tenant
   end
+
+  def assign_expense(expense, property)
+    raise ActiveRecord::RecordInvalid unless /EXPENSE/.match(category_type)
+
+    unassign_expense if expense_property
+    ExpenseProperty.create!(saved_transaction: self, expense: expense, property: property)
+  end
+
+  def unassign_expense
+    expense_property.destroy
+  end
 end

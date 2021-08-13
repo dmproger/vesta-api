@@ -170,8 +170,8 @@ RSpec.describe Api::V1::TransactionsController do
   end
 
   describe 'transaction assigns' do
-    describe 'when GET /api/v1/transactions/:id/assign_expenses' do
-      subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/assign_expenses", params: params, headers: headers }
+    describe 'when GET /api/v1/transactions/:id/assign_expense' do
+      subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/assign_expense", params: params, headers: headers }
 
       let(:user) { create(:user) }
       let(:account) { create(:account) }
@@ -220,6 +220,7 @@ RSpec.describe Api::V1::TransactionsController do
         let(:transaction) { income_transaction }
 
         it 'raise error' do
+          $a = 1
           expect { subject }.to raise_error
         end
       end

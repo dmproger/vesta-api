@@ -1,10 +1,10 @@
 class Api::V1::TransactionsController < ApplicationController
   include PeriodParams
 
-  before_action :set_account, except: [:categories, :assign_property, :assign_expenses, :all, :types]
-  before_action :set_transaction, only: [:update, :assign_property, :assign_expenses]
-  before_action :set_property, only: [:assign_property, :assign_expenses]
-  before_action :set_expense, only: [:assign_expenses]
+  before_action :set_account, except: [:categories, :assign_property, :assign_expense, :all, :types]
+  before_action :set_transaction, only: [:update, :assign_property, :assign_expense]
+  before_action :set_property, only: [:assign_property, :assign_expense]
+  before_action :set_expense, only: [:assign_expense]
   before_action :set_category_type, only: [:all, :types]
 
   def index
@@ -62,10 +62,16 @@ class Api::V1::TransactionsController < ApplicationController
     render json: {success: false, message: e.message, data: nil}
   end
 
-  def assign_expenses
-    @property.assign_expense(@expense, @transaction)
+  def assign_expense
+    @transaction.assign_expense(@expense, @property)
 
     render json: {success: true, message: 'expenses assigned successfuly!', data: nil }
+  end
+
+  def unassign_expense
+    @transaction.unassign_expense
+
+    render json: { success: true, message: 'expenses assigned successfuly!', data: nil }
   end
 
   private

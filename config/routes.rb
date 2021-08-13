@@ -41,7 +41,7 @@ Rails.application.routes.draw do
         get :all, on: :collection
         get :types, on: :collection
         post :assign_property, on: :member
-        post :assign_expenses, on: :member
+        post :assign_expense, on: :member
       end
 
       resources :tink_tokens, only: :create
