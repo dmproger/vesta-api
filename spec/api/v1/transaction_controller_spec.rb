@@ -170,18 +170,19 @@ RSpec.describe Api::V1::TransactionsController do
   end
 
   describe 'transaction assigns' do
-    describe 'when GET /api/v1/transactions/:id/assign_expense' do
+    let(:user) { create(:user) }
+    let(:account) { create(:account) }
+    let(:expense_transaction) { create(:saved_transaction, user: user, account: account, category_type: 'EXPENSE') }
+    let(:income_transaction) { create(:saved_transaction, user: user, account: account) }
+    let(:property) { create(:property, user: user) }
+    let(:expense) { create(:expense, user: user) }
+    let(:other_expense) { create(:expense, user: user) }
+
+    let(:headers) { auth_headers }
+
+    describe 'when POST /api/v1/transactions/:id/assign_expense' do
       subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/assign_expense", params: params, headers: headers }
 
-      let(:user) { create(:user) }
-      let(:account) { create(:account) }
-      let(:expense_transaction) { create(:saved_transaction, user: user, account: account, category_type: 'EXPENSE') }
-      let(:income_transaction) { create(:saved_transaction, user: user, account: account) }
-      let(:property) { create(:property, user: user) }
-      let(:expense) { create(:expense, user: user) }
-      let(:other_expense) { create(:expense, user: user) }
-
-      let(:headers) { auth_headers }
       let(:params) { { property_id: property.id, expense_id: expense.id } }
 
       before { sign_in(user) }
@@ -222,6 +223,25 @@ RSpec.describe Api::V1::TransactionsController do
         it 'raise error' do
           expect { subject }.to raise_error
         end
+      end
+    end
+
+    describe 'when POST /api/v1/transactions/:id/unassign_expense' do
+      subject(:send_request) { post "/api/v1/transactions/#{ transaction.id }/unassign_expense", params: params, headers: headers }
+
+      let(:transaction) { expense_transaction }
+
+      before { property.assign_expense(expense, transaction) }
+
+      it 'unassign expense form specific transaction' do
+        expect(property.expense_transactions.any?).to be_truthy
+        expect(property.expenses.any?).to be_truthy
+
+        subject
+
+        property.reload
+        expect(property.expense_transactions.any?).to be_falsey
+        expect(property.expenses.any?).to be_falsey
       end
     end
   end
