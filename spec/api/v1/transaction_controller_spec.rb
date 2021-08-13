@@ -241,8 +241,7 @@ RSpec.describe Api::V1::TransactionsController do
 
         subject
 
-        transaction.reload
-        expect(transaction.report_state).to eq(report_state)
+        expect(transaction.reload.report_state).to eq(report_state)
       end
     end
 

@@ -69,7 +69,7 @@ class Api::V1::TransactionsController < ApplicationController
       set_property
 
       @transaction.assign_expense(@expense, @property)
-      render json: {success: true, message: 'expenses assigned successfuly!', data: nil }
+      render json: { success: true, message: 'expenses assigned successfuly!', data: nil }
     end
 
     if request.delete?
@@ -79,6 +79,7 @@ class Api::V1::TransactionsController < ApplicationController
 
     if request.put? || request.patch?
       @transaction.report_state!(params[:report_state])
+      render json: { success: true, message: 'report state change successfuly!', data: params[:report_state] }
     end
   end
 
