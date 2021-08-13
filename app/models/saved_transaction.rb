@@ -1,4 +1,6 @@
 class SavedTransaction < ApplicationRecord
+  DEFAULT_REPORT_STATE = :visible
+
   belongs_to :account
   belongs_to :user
 
@@ -47,13 +49,13 @@ class SavedTransaction < ApplicationRecord
     property_tenant
   end
 
-  def assign_expense(expense, property, report_state = :visible)
+  def assign_expense(expense, property, report_state = nil)
     raise ActiveRecord::RecordInvalid unless /EXPENSE/.match(category_type)
 
     unassign_expense if expense_property
     ExpenseProperty.create!(saved_transaction: self, expense: expense, property: property)
 
-    report_state!(report_state)
+    report_state!(report_state || DEFAULT_REPORT_STATE)
   end
 
   def unassign_expense

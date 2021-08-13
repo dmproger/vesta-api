@@ -68,7 +68,7 @@ class Api::V1::TransactionsController < ApplicationController
       set_expense
       set_property
 
-      @transaction.assign_expense(@expense, @property)
+      @transaction.assign_expense(@expense, @property, params[:report_state])
       render json: { success: true, message: 'expenses assigned successfuly!', data: nil }
     end
 
