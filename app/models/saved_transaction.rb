@@ -53,6 +53,6 @@ class SavedTransaction < ApplicationRecord
   end
 
   def unassign_expense
-    expense_property.destroy
+    expense_property.destroy!
   end
 end

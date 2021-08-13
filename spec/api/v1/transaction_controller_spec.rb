@@ -220,7 +220,6 @@ RSpec.describe Api::V1::TransactionsController do
         let(:transaction) { income_transaction }
 
         it 'raise error' do
-          $a = 1
           expect { subject }.to raise_error
         end
       end

@@ -71,7 +71,7 @@ class Api::V1::TransactionsController < ApplicationController
   def unassign_expense
     @transaction.unassign_expense
 
-    render json: { success: true, message: 'expenses assigned successfuly!', data: nil }
+    render json: { success: true, message: 'expenses unassigned successfuly!', data: nil }
   end
 
   private
