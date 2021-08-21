@@ -11,8 +11,11 @@ FactoryBot.define do
     is_closed { Faker::Boolean.boolean(true_ratio: 0.2) }
 
     factory :account_with_credential do
+      transient do
+        status { Faker::Verb.past }
+      end
       after(:create) do |account, evaluator|
-        create(:tink_credential, account: account)
+        create(:tink_credential, account: account, status: evaluator.status)
         account.reload
       end
     end

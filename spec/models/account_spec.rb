@@ -13,8 +13,9 @@ RSpec.describe Account, type: :model do
   subject(:is_closed?) { account.is_closed? }
   subject(:saved_transactions) { account.saved_transactions }
   subject(:tink_credential) { account.tink_credential }
+  subject(:credentials_expired?) { account.credentials_expired? }
 
-  describe "Test account field values and relations received from FactoryBot" do
+  describe "Test field values, relations and methods of Account, created with FactoryBot" do
 
     it "Checks fields" do
       expect(bank_id.class).to eq(String)
@@ -28,6 +29,15 @@ RSpec.describe Account, type: :model do
     it "Checks relations" do
       expect(saved_transactions.count).to eq(0)
       expect(tink_credential.present?).to eq(false)
+    end
+
+    it "Checks methods" do
+      # TODO получается, что по умолчанию учётные данные не истёкшие (даже если
+      # их не существует). Такая логика не всегда может приводить к правильному
+      # пониманию, ведь данные которых нет лучше воспринимать как невалидные.
+      # Хотя в данном контексте это может быть оправдано, но это важный вопрос
+      # я считаю.
+      expect(credentials_expired?).to eq(false)
     end
 
     context "Closed account" do
@@ -66,6 +76,20 @@ RSpec.describe Account, type: :model do
       let(:account) { create(:account_with_credential) }
       it "Check credential exist" do
         expect(tink_credential.present?).to eq(true)
+      end
+    end
+
+    context "Account with non expired credential" do
+      let(:account) { create(:account_with_credential, status: 'UPDATED') }
+      it "Check credential expiration" do
+        expect(credentials_expired?).to eq(false)
+      end
+    end
+
+    context "Account with expired credential" do
+      let(:account) { create(:account_with_credential) }
+      it "Check credential expiration" do
+        expect(credentials_expired?).to eq(true)
       end
     end
   end
