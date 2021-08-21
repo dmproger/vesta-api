@@ -51,9 +51,9 @@ RSpec.describe Account, type: :model do
       end
     end
 
-    context "account Destroy should destroy dependent transactions" do
+    context "Account Destroy should destroy dependent transactions" do
       let(:account) { account_with_saved_transactions }
-      it do
+      it "Check transactions count" do
         expect(saved_transactions.count).to eq(5)
         account.destroy
         expect(saved_transactions.count).to eq(0)
