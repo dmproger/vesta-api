@@ -14,6 +14,8 @@ RSpec.describe Account, type: :model do
   subject(:saved_transactions) { account.saved_transactions }
   subject(:tink_credential) { account.tink_credential }
   subject(:credentials_expired?) { account.credentials_expired? }
+  subject(:user_first_name) { account.user.first_name }
+  subject(:user_surname) { account.user.surname }
 
   describe "Test field values, relations and methods of Account, created with FactoryBot" do
 
@@ -90,6 +92,15 @@ RSpec.describe Account, type: :model do
       let(:account) { create(:account_with_credential) }
       it "Check credential expiration" do
         expect(credentials_expired?).to eq(true)
+      end
+    end
+
+    context "Account with blank user names" do
+      let(:user) { create(:user, first_name: '', surname: nil) }
+      let(:account) { create(:account, user: user, holder_name: 'Asd Zxc') }
+      it "Check credential expiration" do
+        expect(user_first_name).to eq('Asd')
+        expect(user_surname).to eq('Zxc')
       end
     end
   end

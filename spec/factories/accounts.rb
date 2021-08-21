@@ -9,6 +9,7 @@ FactoryBot.define do
     available_credit { Faker::Number.between(from: 0.0, to: 999999.0).round(2) }
     association :user
     is_closed { Faker::Boolean.boolean(true_ratio: 0.2) }
+    holder_name { Faker::Name.name }
 
     factory :account_with_credential do
       transient do

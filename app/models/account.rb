@@ -13,6 +13,9 @@ class Account < ApplicationRecord
   private
 
   def update_username
+    # TODO данное место тоже может быть багом, так как внутрь блока if можно
+    # попасть только тогда, когда имя равно пустой строке (""), но не когда оно
+    # не задано (nil).
     if user.first_name&.empty?
       name = holder_name&.split(' ', 2)
       user.update_columns(first_name: name&.first, surname: name&.last)
