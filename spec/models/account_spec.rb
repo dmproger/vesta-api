@@ -12,10 +12,11 @@ RSpec.describe Account, type: :model do
   subject(:is_closed) { account.is_closed }
   subject(:is_closed?) { account.is_closed? }
   subject(:saved_transactions) { account.saved_transactions }
+  subject(:tink_credential) { account.tink_credential }
 
-  describe "Test account field values received from FactoryBot" do
+  describe "Test account field values and relations received from FactoryBot" do
 
-    it "Checks for field classes" do
+    it "Checks fields" do
       expect(bank_id.class).to eq(String)
       expect(account_number.class).to eq(String)
       expect(balance.class).to eq(BigDecimal)
@@ -24,16 +25,17 @@ RSpec.describe Account, type: :model do
       expect(is_closed.class).to be_in([TrueClass, FalseClass])
     end
 
-    describe "Closed account" do
+    it "Checks relations" do
+      expect(saved_transactions.count).to eq(0)
+      expect(tink_credential.present?).to eq(false)
+    end
+
+    context "Closed account" do
       let(:account) { create(:account, is_closed: true) }
       it "Check closed methods" do
         expect(is_closed).to eq(true)
         expect(is_closed?).to eq(true)
       end
-    end
-
-    it "No transasctions by default" do
-      expect(saved_transactions.count).to eq(0)
     end
 
     context "Account with default count transasctions:" do
@@ -57,6 +59,13 @@ RSpec.describe Account, type: :model do
         expect(saved_transactions.count).to eq(5)
         account.destroy
         expect(saved_transactions.count).to eq(0)
+      end
+    end
+
+    context "Account with credential" do
+      let(:account) { create(:account_with_credential) }
+      it "Check credential exist" do
+        expect(tink_credential.present?).to eq(true)
       end
     end
   end
