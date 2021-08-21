@@ -10,8 +10,10 @@ RSpec.describe Account, type: :model do
   subject(:available_credit) { account.available_credit }
   subject(:user) { account.user }
   subject(:is_closed) { account.is_closed }
+  subject(:is_closed?) { account.is_closed? }
+  subject(:saved_transactions) { account.saved_transactions }
 
-  context "Test account field values received from FactoryBot" do
+  describe "Test account field values received from FactoryBot" do
 
     it "Checks for field classes" do
       expect(bank_id.class).to eq(String)
@@ -22,10 +24,31 @@ RSpec.describe Account, type: :model do
       expect(is_closed.class).to be_in([TrueClass, FalseClass])
     end
 
-    let(:account) { create(:account, is_closed: false) }
+    describe "Closed account" do
+      let(:account) { create(:account, is_closed: true) }
+      it "Check closed methods" do
+        expect(is_closed).to eq(true)
+        expect(is_closed?).to eq(true)
+      end
+    end
 
-    it "Checks for field classes" do
-      expect(is_closed.class).to eq(FalseClass)
+    it "No transasctions by default" do
+      expect(saved_transactions.count).to eq(0)
+    end
+
+    context "Account with default count transasctions:" do
+      let(:account) { account_with_saved_transactions }
+      it "Default count must be 5" do
+        expect(saved_transactions.count).to eq(5)
+      end
+    end
+
+    context "Account with custom count transasctions:" do
+      let(:transactions_count) { 15 }
+      let(:account) { account_with_saved_transactions saved_transactions_count: transactions_count }
+      it "Count must be transactions_count" do
+        expect(saved_transactions.count).to eq(transactions_count)
+      end
     end
   end
 end

@@ -11,3 +11,9 @@ FactoryBot.define do
     is_closed { Faker::Boolean.boolean(true_ratio: 0.2) }
   end
 end
+
+def account_with_saved_transactions(saved_transactions_count: 5)
+  FactoryBot.create(:account) do |account|
+    FactoryBot.create_list(:saved_transaction, saved_transactions_count, account: account)
+  end
+end
