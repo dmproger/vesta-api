@@ -64,6 +64,16 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
+      def new_transactions
+        response = RestClient.get "#{API_ENDPOINT}/transactions/list",
+                                   {
+                                       Authorization: "Bearer #{access_token}",
+                                       content_type: "application/json; charset=utf-8"
+                                   }
+        JSON.parse(response.body).symbolize_keys
+      end
+
+
       def categories
         response = RestClient.get "#{API_ENDPOINT}/categories",
                                    {
