@@ -158,7 +158,12 @@ module TinkAPI
       end
 
       def renew_credentials(id:, provider_name:)
-        # TODO: call appropriate private method based on provider name
+        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}/refresh",
+                                  {
+                                    authorization: "Bearer #{access_token}"
+                                  }
+
+        JSON.parse(response.body).symbolize_keys
       end
 
       # Get credentials
