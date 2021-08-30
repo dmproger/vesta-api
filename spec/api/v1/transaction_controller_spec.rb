@@ -37,8 +37,8 @@ RSpec.describe Api::V1::TransactionsController do
     subject(:send_request) { get '/api/v1/transactions/all', params: params, headers: headers }
 
     let!(:user) { create(:user) }
-    let!(:account1) { create(:account) }
-    let!(:account2) { create(:account) }
+    let!(:account1) { create(:account, user: user) }
+    let!(:account2) { create(:account, user: user) }
     let!(:date_valid_transactions) do
       result = []
       for type in TRANSACTION_TYPES
@@ -68,6 +68,20 @@ RSpec.describe Api::V1::TransactionsController do
       it 'returns all transactions' do
         subject
         expect(body).to include(*transactions.ids)
+      end
+
+      context 'when specify account' do
+        let(:accounts) { [account1, account2] }
+        let(:account) { accounts.sample }
+        let(:other_account) { (accounts - [account]).sample }
+
+        before { params.merge!(account_id: account.id) }
+
+        it 'returns all account transactions' do
+          subject
+          expect(body).to include(*account.saved_transactions.ids)
+          expect(body).not_to include(*other_account.saved_transactions.ids)
+        end
       end
 
       context 'with expense assigned transactions' do
