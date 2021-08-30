@@ -1,3 +1,6 @@
+require_relative '../../../tink_api/v1/client'
+require_relative '../../../services/get_account_linking_code'
+
 class Api::V1::AccountsController < ApplicationController
   before_action :verify_account_linked?, only: :index
   before_action :set_account, only: [:update_credentials ,:renew_credentials_link]

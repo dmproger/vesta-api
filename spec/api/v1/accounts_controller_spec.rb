@@ -1,8 +1,9 @@
 return unless ENV['TINKTEST']
 
 require 'rails_helper'
+require_relative '../../../app/services/get_account_linking_code'
 
-[User, Account].each do |model|
+[User, Account, TinkCredential].each do |model|
   model.establish_connection(
     model.connection_config.merge(database: 'vesta_rails_development')
   )
@@ -15,7 +16,13 @@ RSpec.describe Api::V1::AccountsController do
   let(:user) { TEST_USER }
   let(:account) { Account.find_by(account_id: ACCOUNT_WITH_TRANSACTIONS) }
   let(:headers) { auth_headers(user) }
-  let(:params) { {} }
+  let(:params) do
+    {
+      callback_url: 'ru.test.vesta-tinkRenew://'
+    }
+  end
+
+  let(:data) { JSON.parse(body)['data'] }
 
   before { sign_in(user) }
 
@@ -23,7 +30,7 @@ RSpec.describe Api::V1::AccountsController do
     subject { get "/api/v1/accounts/#{ account.id }/renew_credentials_link", params: params, headers: headers }
 
     it 'gets correct renew link' do
-      # TODO
+      subject
     end
   end
 

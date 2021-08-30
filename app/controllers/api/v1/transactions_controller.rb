@@ -15,6 +15,9 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def all
+    refresh_all_transactions if params[:force_refresh] == 'true'
+    process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
+
     set_period
     filter = { transaction_date: @period }
     filter.merge!({ category_type: @category_type }) if @category_type
@@ -93,6 +96,14 @@ class Api::V1::TransactionsController < ApplicationController
     transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
                        .transactions(account_id: @account.account_id, query_tag: '')
     persist_transactions(transactions)
+  end
+
+  def refresh_all_transactions
+    current_user.accounts.each do |account|
+      transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
+                         .transactions(account_id: account.account_id, query_tag: '')
+      persist_transactions(transactions) if transactions.any?
+    end
   end
 
   def transaction_params
