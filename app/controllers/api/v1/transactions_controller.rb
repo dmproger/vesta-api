@@ -17,11 +17,14 @@ class Api::V1::TransactionsController < ApplicationController
   def all
     default_expenses!
 
-    refresh_all_transactions if params[:force_refresh] == 'true'
+    set_account if params[:account_id]
+
+    refresh_transactions if params[:force_refresh] == 'true'
     process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
 
     set_period
     filter = { transaction_date: @period }
+    filter.merge!({ account_id: @account.id }) if @account
     filter.merge!({ category_type: @category_type }) if @category_type
 
     transactions =
@@ -95,9 +98,9 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def refresh_transactions
-    transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
-                       .transactions(account_id: @account.account_id, query_tag: '')
-    persist_transactions(transactions)
+    return refresh_account_transactions if @account
+
+    refresh_all_transactions
   end
 
   def refresh_all_transactions
@@ -106,6 +109,12 @@ class Api::V1::TransactionsController < ApplicationController
                          .transactions(account_id: account.account_id, query_tag: '')
       persist_transactions(transactions, account) if transactions.any?
     end
+  end
+
+  def refresh_account_transactions
+    transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
+                       .transactions(account_id: @account.account_id, query_tag: '')
+    persist_transactions(transactions)
   end
 
   def transaction_params
