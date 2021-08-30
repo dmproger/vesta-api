@@ -104,7 +104,7 @@ class Api::V1::TransactionsController < ApplicationController
     current_user.accounts.each do |account|
       transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
                          .transactions(account_id: account.account_id, query_tag: '')
-      persist_transactions(transactions) if transactions.any?
+      persist_transactions(transactions, account) if transactions.any?
     end
   end
 
@@ -145,10 +145,12 @@ class Api::V1::TransactionsController < ApplicationController
     (start_date > Date.current) || (start_date > end_date)
   end
 
-  def persist_transactions(transactions)
+  def persist_transactions(transactions, account = nil)
+    account ||= @account
+
     PersistTransaction.new(transactions.dig(:results),
                            current_user,
-                           @account).call
+                           account).call
   end
 
   def default_expenses!

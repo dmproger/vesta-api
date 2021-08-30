@@ -26,6 +26,8 @@ RSpec.describe Api::V1::TransactionsController do
     before { sign_in(user) }
 
     it 'returns all transaction types' do
+      params.merge! force_refresh: true
+
       subject
       expect(body).to include(*types)
     end
