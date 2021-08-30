@@ -15,6 +15,8 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def all
+    default_expenses!
+
     refresh_all_transactions if params[:force_refresh] == 'true'
     process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
 
@@ -147,5 +149,11 @@ class Api::V1::TransactionsController < ApplicationController
     PersistTransaction.new(transactions.dig(:results),
                            current_user,
                            @account).call
+  end
+
+  def default_expenses!
+    return unless Expense.defaults(current_user).count.zero?
+
+    Expense.create_defaults(current_user)
   end
 end
