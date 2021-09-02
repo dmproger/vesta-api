@@ -34,8 +34,18 @@ RSpec.describe Api::V1::AccountsController do
     end
   end
 
-  describe 'when POST /api/v1/accounts/update_credentials' do
-    subject { post '/api/v1/accounts/renew_credentials_link', params: params, headers: headers }
+  describe 'when PUT /api/v1/accounts/:id/update_credentials' do
+    subject { put "/api/v1/accounts/#{ account.id }/update_credentials", params: params, headers: headers }
 
+    it 'update credentials' do
+      subject
+    end
+  end
+
+  describe 'when POST /api/v1/accounts/:id/refresh_credentials' do
+    subject { put "/api/v1/accounts/#{ account.id }/refresh_credentials", params: params, headers: headers }
+
+    it 'update credentials' do
+    end
   end
 end

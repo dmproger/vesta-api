@@ -157,8 +157,8 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
-      def renew_credentials(id:, provider_name:)
-        response = RestClient.get "#{API_ENDPOINT}/credentials/#{id}/refresh",
+      def refresh_credentials(id:, provider_name:)
+        response = RestClient.post "#{API_ENDPOINT}/credentials/#{id}/refresh",
                                   {
                                     authorization: "Bearer #{access_token}"
                                   }
