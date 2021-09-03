@@ -157,11 +157,21 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
-      def refresh_credentials(id:, provider_name:)
-        response = RestClient.post "#{API_ENDPOINT}/credentials/#{id}/refresh",
-                                  {
-                                    authorization: "Bearer #{access_token}"
-                                  }
+      def refresh_credentials(id:, provider_name: nil)
+        response = RestClient::Request.execute \
+          method: :post,
+          url: "#{API_ENDPOINT}/credentials/#{id}/refresh",
+          payload: { 'appUri' => 'http://ya.ru' }.to_json,
+          headers:
+            {
+              params: {
+                authenticate: false,
+                optIn: false
+              },
+              authorization: "Bearer #{access_token}",
+              content_type: :json,
+            },
+          log: Logger.new(STDOUT)
 
         JSON.parse(response.body).symbolize_keys
       end

@@ -47,7 +47,6 @@ class Api::V1::AccountsController < ApplicationController
   def refresh_credentials
     TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'credentials:refresh'))
                        .refresh_credentials(id: @account.credentials_id)
-
   end
 
   def update_credentials
