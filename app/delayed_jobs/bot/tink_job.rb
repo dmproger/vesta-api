@@ -1,4 +1,6 @@
 require_relative '../../tink_api/v1/client'
+
+MODELS = [Account, SavedTransaction]
 require_relative '../../../spec/support/manual/test_user_data'
 
 class Bot::TinkJob < Bot

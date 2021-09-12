@@ -8,8 +8,7 @@ namespace :bot do
       Dir.glob(glob).each { |file| require file }
       Bot.subclasses.each(&:schedule)
       loop do
-        p 'minute'
-        sleep 30
+        sleep 1
       end
     end
   end
