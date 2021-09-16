@@ -25,7 +25,7 @@ RSpec.describe Notification, type: :model do
     let(:transactions) { associated_transactions && saved_transactions }
 
     it 'creates notifications' do
-      expect { subject }.to change { described_class.count }.by(saved_transactions.count)
+      expect { subject }.to change { described_class.count }.by(transactions.count)
 
       expect(Notification.pluck(:title).uniq).to eq(['Rental payment recived'])
       # TODO
