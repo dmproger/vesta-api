@@ -10,8 +10,34 @@ class Bot::TinkJob < Bot
 
   def perform
     for user in USERS
-      Bot::TinkMailer.with(user: user).income_transactions.deliver_now
-      p "======= JOBBER TICK ==========="
+      matched_transaction_ids = user.associated_transactions.pluck(:id)
+
+      grab_transactions_form_tink(user)
+      match_transactions_with_properties(user)
+
+      new_matched_transactions =
+        user.
+          associated_transactions.reload.
+          where.not(id: matched_transaction_ids)
+
+      Notification.new_matched_transactions!(new_matched_transactions)
     end
+  end
+
+  private
+
+  def grab_transactions_form_tink(user)
+    user.accounts.each do |account|
+      transactions =
+        TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read')).
+          transactions(account_id: account.account_id, query_tag: '').
+          dig(:results)
+
+      PersistTransaction.new(transactions, user, account).call if transactions.any?
+    end
+  end
+
+  def match_transactions_with_properties(user)
+    AssociateTransactionsWithTenants.new(user.id)
   end
 end
