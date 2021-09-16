@@ -6,5 +6,6 @@ FactoryBot.define do
     category_type { 'INCOME' }
     association :user
     transaction_date { Date.current }
+    description { Faker::Name.first_name }
   end
 end
