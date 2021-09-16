@@ -1,6 +1,4 @@
 class Notification < ApplicationRecord
-  DELIMITER = ';'
-
   belongs_to :user
 
   enum subject: {
@@ -14,7 +12,7 @@ class Notification < ApplicationRecord
         user: user,
         subject: :rental_payment,
         title: 'Rental payment recived',
-        text: "+#{ transaction.amount } from #{ transaction.description } (#{ transaction.property.address })#{ DELIMITER}"
+        text: "+#{ transaction.amount } from #{ transaction.description } (#{ transaction.property.address })"
       )
     end
   end
