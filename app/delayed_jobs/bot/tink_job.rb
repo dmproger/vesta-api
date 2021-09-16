@@ -20,7 +20,7 @@ class Bot::TinkJob < Bot
           associated_transactions.reload.
           where.not(id: matched_transaction_ids)
 
-      Notification.new_matched_transactions!(new_matched_transactions)
+      Notification.rental_payment!(user, new_matched_transactions)
     end
   end
 
