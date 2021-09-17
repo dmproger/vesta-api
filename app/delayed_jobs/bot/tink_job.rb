@@ -1,12 +1,9 @@
 require_relative '../../tink_api/v1/client'
 
-MODELS = [Account, SavedTransaction]
-require_relative '../../../spec/support/manual/test_user_data'
-
 class Bot::TinkJob < Bot
-  USERS = [USER]
+  USER = [User.find_by(phone: '+447722222222')]
 
-  self.cron_expression = '*/1 * * * *'
+  self.cron_expression = '*/5 * * * *'
 
   def perform
     for user in USERS
