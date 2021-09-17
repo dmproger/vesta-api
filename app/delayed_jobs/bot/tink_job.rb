@@ -29,7 +29,7 @@ class Bot::TinkJob < Bot
   def grab_transactions_form_tink(user)
     user.accounts.each do |account|
       transactions =
-        TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read')).
+        TinkAPI::V1::Client.new(user.valid_tink_token(scopes: 'transactions:read')).
           transactions(account_id: account.account_id, query_tag: '').
           dig(:results)
 
