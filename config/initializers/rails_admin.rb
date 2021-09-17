@@ -65,6 +65,8 @@ RailsAdmin.config do |config|
     User::Success::WithTenant
     User::Success::WithTinkLink
     User::Success::WithBankAccount
+
+    Notification
   }
 
   User::Test::Builder.build
