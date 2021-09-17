@@ -7,12 +7,18 @@ RSpec.describe Notification, type: :model do
     let(:user) { create(:user) }
     let(:account) { create(:account) }
     let(:tenant) { create(:tenant) }
-    let(:property) { create(:property, user: user) }
-    let(:property_tenant) { create(:property_tenant, property: property, tenant: tenant) }
-    let(:saved_transactions) { create_list(:saved_transaction, rand(3..4), user: user, account: account, transaction_date: Date.current - 1.day) }
+    let(:properties) { create_list(:property, rand(3..4), user: user) }
+    let(:property_tenants) do
+      results = []
+      properties.each do |property|
+        results << create(:property_tenant, property: property, tenant: tenant)
+      end
+      results
+    end
+    let(:saved_transactions) { create_list(:saved_transaction, properties.count, user: user, account: account, transaction_date: Date.current - 1.day) }
     let(:associated_transactions) do
-      saved_transactions.each do |saved_transaction|
-        create(:associated_transaction, saved_transaction: saved_transaction, property_tenant: property_tenant)
+      saved_transactions.each_with_index do |saved_transaction, index|
+        create(:associated_transaction, saved_transaction: saved_transaction, property_tenant: property_tenants[index])
       end
     end
     let(:addresses) do
@@ -24,12 +30,11 @@ RSpec.describe Notification, type: :model do
 
     let(:transactions) { associated_transactions && saved_transactions }
 
-    it 'creates notifications' do
+    it 'creates notifications with correct data' do
       expect { subject }.to change { described_class.count }.by(transactions.count)
 
       expect(Notification.pluck(:title).uniq).to eq(['Rental payment recived'])
-      # TODO
-      # expect(Notification.pluck(:text).join).to include(*(transactions.pluck(:description, :amount).map(&:to_s) + addresses))
+      expect(Notification.pluck(:text).join).to include(*(transactions.pluck(:description, :amount).flatten.map(&:to_s) + addresses))
     end
   end
 end

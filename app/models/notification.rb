@@ -8,6 +8,8 @@ class Notification < ApplicationRecord
 
   def self.rental_payment!(user, transactions)
     for transaction in transactions
+      next unless transaction.property
+
       create!(
         user: user,
         subject: :rental_payment,
