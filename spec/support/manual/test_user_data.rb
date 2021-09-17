@@ -1,3 +1,5 @@
+return unless ENV['RAILS_ENV'] == 'test'
+
 [User, MODELS].flatten.each do |model|
   model.establish_connection(
     model.connection_config.merge(database: 'vesta_rails_development')
