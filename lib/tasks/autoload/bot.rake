@@ -12,8 +12,8 @@ namespace :bot do
 end
 
 # invoke jobs automatically after every migration and schema load
-%w[jobs:work].each do |task|
-  Rake::Task[task].enhance do
-    Rake::Task['bot:tink:job'].invoke
-  end
-end
+# %w[jobs:work].each do |task|
+  # Rake::Task[task].enhance do
+    # Rake::Task['bot:tink:job'].invoke
+  # end
+# end
