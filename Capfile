@@ -12,3 +12,4 @@ require "capistrano/rails/assets"
 require "capistrano/rails/migrations"
 require 'capistrano/delayed_job'
 Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }
+Dir.glob("lib/tasks/autoload/*.rake").each { |r| import r }
