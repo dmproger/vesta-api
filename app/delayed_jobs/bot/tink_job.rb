@@ -7,6 +7,6 @@ class Bot::TinkJob < Bot
   self.cron_expression = '*/5 * * * *'
 
   def perform
-    Bot::TinkService.get_rental_payment(USERS)
+    TinkService.get_rental_payment(USERS)
   end
 end
