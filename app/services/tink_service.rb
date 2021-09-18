@@ -2,7 +2,7 @@ class TinkService
   class << self
     def get_rental_payment(users, notification: true)
       for user in users
-        last_associated_transaction_date = user.associated_transactions.max(:updated_at)
+        last_associated_transaction_date = user.associated_transactions.max(:updated_at) || 1.year.ago
 
         grab_transactions_form_tink(user)
         match_transactions_with_properties(user)
