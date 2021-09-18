@@ -1,3 +1,4 @@
-glob = Rails.root.join('app', 'delayed_jobs', '**', '*.rb')
-Dir.glob(glob).each { |file| require file }
-Bot.subclasses.each(&:schedule)
+require_relative '../../app/jobs/bot'
+require_relative '../../app/delayed_jobs/bot/tink_job'
+
+Delayed::Job.enqueue(Bot::TinkJob.new, cron: '*/1 * * * *')
