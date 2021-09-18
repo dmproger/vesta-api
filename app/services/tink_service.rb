@@ -21,13 +21,15 @@ class TinkService
 
     def grab_transactions_form_tink(user)
       user.accounts.each do |account|
-        transactions =
-          TinkAPI::V1::Client.new(user.valid_tink_token(scopes: 'transactions:read')).
-            transactions(account_id: account.account_id, query_tag: '').
-            dig(:results)
-
+        transactions = get_tink_transactions(user, account)
         PersistTransaction.new(transactions, user, account).call if transactions.any?
       end
+    end
+
+    def get_tink_transactions(user, account)
+      TinkAPI::V1::Client.new(user.valid_tink_token(scopes: 'transactions:read')).
+        transactions(account_id: account.account_id, query_tag: '').
+        dig(:results)
     end
 
     def match_transactions_with_properties(user)
