@@ -1,4 +1,4 @@
-module Bot
+class Bot
   class TinkService
     class << self
       def get_rental_payment(users, notification: true)
