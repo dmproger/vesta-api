@@ -16,10 +16,10 @@ RSpec.describe TinkService do
     subject { described_class.get_rental_payment(users) }
 
     let(:users) { [USER] }
+    let(:tink_transactions) { build_list(:tink_transaction, rand(3..4)) }
 
     before do
       # TODO
-      # stub TinkService.get_tink_transactions
       # https://stackoverflow.com/questions/29111573/rspec-3-how-to-stub-methods-and-constants-from-code-we-have-yet-to-build-add
     end
 
