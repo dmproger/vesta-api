@@ -29,8 +29,8 @@ FactoryBot.define do
           notes: attributes[:notes],
           pending: attributes[:pending],
           userModified: attributes[:user_modified]
-        }
-      }.to_json
+        }.stringify_keys
+      }.stringify_keys
     end
   end
 end
