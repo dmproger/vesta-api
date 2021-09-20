@@ -4,7 +4,7 @@ class TinkService
       for user in users
         last_associated_transaction_date = user.associated_transactions.maximum(:updated_at) || 1.year.ago
 
-        grab_transactions_form_tink(user)
+        grab_tink_transactions(user)
         match_transactions_with_properties(user)
 
         return unless notification
@@ -19,7 +19,7 @@ class TinkService
       end
     end
 
-    def grab_transactions_form_tink(user, account: nil)
+    def grab_tink_transactions(user, account: nil)
       (account ? [account] : user.accounts).each do |account|
         transactions = get_tink_transactions(user, account)
         PersistTransaction.new(transactions, user, account).call if transactions.any?
