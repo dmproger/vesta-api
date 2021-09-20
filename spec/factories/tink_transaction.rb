@@ -7,7 +7,7 @@ FactoryBot.define do
   factory :tink_transaction, class: Array do
     timestamp { Time.current }
     score { 0.0 }
-    id { Faker::Crypto.sha1 }
+    id { Array.new(32) { Array('a'..'z').sample }.join }
     amount { 100 }
     category_type { 'INCOME' }
     description { '' }
@@ -29,7 +29,7 @@ FactoryBot.define do
           notes: attributes[:notes],
           pending: attributes[:pending],
           userModified: attributes[:user_modified]
-        }.stringify_keys
+        }
       }.stringify_keys
     end
   end

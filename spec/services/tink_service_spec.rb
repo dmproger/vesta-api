@@ -18,17 +18,23 @@ RSpec.describe TinkService do
 
     let(:user) { USER }
     let(:tink_transactions) { build_list(:tink_transaction, rand(3..4)) }
-    let!(:saved_transactions) { user.saved_transactions }
-    let!(:associated_transactions) { user.associated_transactions }
+    let!(:saved_transactions_count) { user.saved_transactions.count }
 
     before do
       mock(described_class.singleton_class, :get_tink_transactions, tink_transactions)
+      subject
     end
 
-    it 'get rental payments with notifications' do
-      subject
+    it 'grabs tink transactions' do
+      expect(user.saved_transactions.reload.count).to eq(saved_transactions_count + user.accounts.count * tink_transactions.count)
+    end
 
-      expect(user.saved_transactions.reload.count).to eq(saved_transactions.count + tink_transactions.count)
+    it 'associates with properties' do
+      # TODO
+    end
+
+    it 'creates notifications' do
+      # TODO
     end
   end
 end
