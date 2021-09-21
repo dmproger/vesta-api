@@ -18,18 +18,18 @@ FactoryBot.define do
 
     initialize_with do
       {
-        timestamp: attributes[:timestamp].to_i,
+        timestamp: (attributes[:timestamp].to_f * 1000).round,
         score: attributes[:score],
         transaction: {
           amount: attributes[:amount],
           categoryType: attributes[:category_type],
-          date: attributes[:date].to_i,
+          date: (attributes[:date].to_f * 1000).round,
           originalDescription: attributes[:description],
           id: attributes[:id],
           notes: attributes[:notes],
           pending: attributes[:pending],
           userModified: attributes[:user_modified]
-        }
+        }.stringify_keys
       }.stringify_keys
     end
   end

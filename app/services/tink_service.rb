@@ -36,7 +36,7 @@ class TinkService
     end
 
     def match_transactions_with_properties(user)
-      AssociateTransactionsWithTenants.new(user.id)
+      AssociateTransactionsWithTenants.new(user.id).perform
     end
   end
 end

@@ -20,35 +20,38 @@ RSpec.describe TinkService do
   describe '.grab_tink_transactions' do
     subject { described_class.grab_tink_transactions(user) }
 
+    let(:accounts) { user.accounts }
     let(:tink_transactions) { build_list(:tink_transaction, rand(3..4)) }
-    let!(:saved_transactions_count) { user.saved_transactions.count }
+    let(:tink_transaction_dates) { tink_transactions.map { |t| Time.at(t['transaction']['date'] / 1000).to_date } }
+    let!(:current_transactions_ids) { user.saved_transactions.ids }
+    let(:transactions) { user.saved_transactions.where.not(id: current_transactions_ids) }
 
     before { subject }
 
-    it 'add new transactions' do
-      expect(user.saved_transactions.reload.count).to eq(saved_transactions_count + user.accounts.count * tink_transactions.count)
+    it 'adds new transactions' do
+      expect(transactions.count).to eq(tink_transactions.count * accounts.count)
+    end
+
+    it 'has correct transactions dates' do
+      expect(transactions.pluck(:transaction_date).sort).to eq((tink_transaction_dates * accounts.count).sort)
     end
   end
 
   describe '.get_rental_payment' do
     subject { described_class.get_rental_payment([user]) }
 
-    let(:tenants) { create_list(:tenant, rand(3..4)) }
+    let(:tenants) { create_list(:tenant, rand(3..4), user: user) }
     let(:properties) { create_list(:property, rand(3..4), user: user) }
-    let(:property_tenants) do
-      for property, index in properties.each_with_index
-        create(:property_tenant, property: property, tenant: tenants[index])
-      end
-    end
     let(:tink_transactions) do
       tenants.each_with_object([]) do |tenant, tink_transactions|
-        tink_transactions << build(:tink_transaction, name: tenant.name)
+        tink_transactions << build(:tink_transaction, description: tenant.name)
       end.flatten
     end
 
     before { subject }
 
     it 'associates with properties' do
+      # TODO
       for property, index in properties.each_with_index
         expect(property.saved_transactions).not_to be_empty
       end
