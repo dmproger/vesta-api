@@ -22,7 +22,7 @@ RSpec.describe TinkService do
 
     let(:accounts) { user.accounts }
     let(:tink_transactions) { build_list(:tink_transaction, rand(3..4)) }
-    let(:tink_transaction_dates) { tink_transactions.map { |t| Time.at(t['transaction']['date'] / 1000).to_date } }
+    let(:tink_transaction_dates) { tink_transactions.map { |t| TinkService.to_time(t['transaction']['date']) } }
     let!(:current_transactions_ids) { user.saved_transactions.ids }
     let(:transactions) { user.saved_transactions.where.not(id: current_transactions_ids) }
 

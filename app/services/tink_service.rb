@@ -38,5 +38,13 @@ class TinkService
     def match_transactions_with_properties(user)
       AssociateTransactionsWithTenants.new(user.id).perform
     end
+
+    def to_tink_time(time)
+      (time.to_f * 1000).to_i
+    end
+
+    def to_time(tink_time)
+      Time.at(tink_time / 1000).to_date
+    end
   end
 end

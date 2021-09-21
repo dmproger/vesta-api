@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative '../../app/services/tink_service'
 
 #
 # example see at support/data/tink_transaction.yml
@@ -18,12 +19,12 @@ FactoryBot.define do
 
     initialize_with do
       {
-        timestamp: (attributes[:timestamp].to_f * 1000).round,
+        timestamp: TinkService.to_tink_time(attributes[:timestamp]),
         score: attributes[:score],
         transaction: {
           amount: attributes[:amount],
           categoryType: attributes[:category_type],
-          date: (attributes[:date].to_f * 1000).round,
+          date: TinkService.to_tink_time(attributes[:date]),
           originalDescription: attributes[:description],
           id: attributes[:id],
           notes: attributes[:notes],
