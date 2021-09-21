@@ -1,3 +1,5 @@
+return unless ENV['TINKTEST']
+
 require 'rails_helper'
 
 MODELS = [
