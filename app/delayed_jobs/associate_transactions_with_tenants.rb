@@ -40,9 +40,17 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
     # Checkout it, may not work
     #
     joint_tenants = user.tenants.includes(:joint_tenants)
-    user.tenants
-        .within(transaction.transaction_date)
-        .or(user.tenants.within(transaction.transaction_date).where(id: joint_tenants.ids))
-        .search(transaction.description).references(:joint_tenants).first
+    user.
+      tenants.
+        within(transaction.transaction_date).
+        or(
+          user.
+            tenants.
+              within(transaction.transaction_date).
+              where(id: joint_tenants.ids)
+        )
+        .search(transaction.description).
+        references(:joint_tenants).
+        first
   end
 end

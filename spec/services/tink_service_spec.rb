@@ -1,21 +1,9 @@
-return unless ENV['TINKTEST']
-
 require 'rails_helper'
-
-MODELS = [
-  Account,
-  SavedTransaction,
-  AssociatedTransaction,
-  Notification,
-  Property,
-  Tenant,
-  PropertyTenant
-]
-require_relative '../support/manual/test_user_data'
 require_relative '../support/mock'
 
 RSpec.describe TinkService do
-  let(:user) { USER }
+  let(:user) { create(:user) }
+  let(:account) { create(:account, user: user) }
 
   before { mock(described_class.singleton_class, :get_tink_transactions, tink_transactions) }
 
@@ -25,17 +13,15 @@ RSpec.describe TinkService do
     let(:accounts) { user.accounts }
     let(:tink_transactions) { build_list(:tink_transaction, rand(3..4)) }
     let(:tink_transaction_dates) { tink_transactions.map { |t| TinkService.to_time(t['transaction']['date']) } }
-    let!(:current_transactions_ids) { user.saved_transactions.ids }
-    let(:transactions) { user.saved_transactions.where.not(id: current_transactions_ids) }
 
     before { subject }
 
     it 'adds new transactions' do
-      expect(transactions.count).to eq(tink_transactions.count * accounts.count)
+      expect(user.saved_transactions.count).to eq(tink_transactions.count * accounts.count)
     end
 
     it 'has correct transactions dates' do
-      expect(transactions.pluck(:transaction_date).sort).to eq((tink_transaction_dates * accounts.count).sort)
+      expect(user.saved_transactions.pluck(:transaction_date).sort).to eq((tink_transaction_dates * accounts.count).sort)
     end
   end
 
@@ -54,6 +40,7 @@ RSpec.describe TinkService do
 
     it 'associates with properties' do
       # TODO
+      byebug
       for property, index in properties.each_with_index
         expect(property.saved_transactions).not_to be_empty
       end
