@@ -1,1 +1,9 @@
 ---
+Style/*:
+  Enabled: false
+Lint/*:
+  Enable: false
+Metrics/*:
+  Enable: false
+Layout/*:
+  Enable: false
