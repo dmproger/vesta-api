@@ -1,3 +1,5 @@
+require_relative '../tink_api/v1/client'
+
 class TinkService
   class << self
     def get_rental_payment(users, notification: true)

@@ -1,4 +1,3 @@
-require_relative '../../tink_api/v1/client'
 require_relative '../../../app/services/tink_service'
 
 class Bot::TinkJob < ApplicationJob
