@@ -3,7 +3,7 @@ require_relative '../support/mock'
 
 RSpec.describe TinkService do
   let(:user) { create(:user) }
-  let(:account) { create(:account, user: user) }
+  let!(:account) { create(:account, user: user) }
 
   before { mock(described_class.singleton_class, :get_tink_transactions, tink_transactions) }
 
@@ -26,28 +26,42 @@ RSpec.describe TinkService do
   end
 
   describe '.get_rental_payment' do
-    subject { described_class.get_rental_payment([user]) }
+    subject { described_class.get_rental_payment([user], notification: notification) }
 
-    let(:tenants) { create_list(:tenant, rand(3..4), user: user) }
     let(:properties) { create_list(:property, rand(3..4), user: user) }
-    let(:tink_transactions) do
+    let(:tenants) do
+      properties.each_with_object([]) do |property, tenants|
+        tenants << create(:tenant, property: property)
+      end
+    end
+    let!(:tink_transactions) do
       tenants.each_with_object([]) do |tenant, tink_transactions|
-        tink_transactions << build(:tink_transaction, description: tenant.name)
+        tink_transactions << build_list(:tink_transaction, rand(2..3), description: tenant.name)
       end.flatten
     end
+    let!(:notification) { true }
 
     before { subject }
 
-    it 'associates with properties' do
-      # TODO
-      byebug
+    it 'associates transactions with properties and tenants' do
       for property, index in properties.each_with_index
         expect(property.saved_transactions).not_to be_empty
+        expect(property.tenants.first.saved_transactions).not_to be_empty
+        expect(property.saved_transactions.pluck(:description).uniq).to eq(property.tenants.pluck(:name))
       end
     end
 
     it 'creates notifications' do
-      # TODO
+      expect(Notification.pluck(:subject).uniq).to eq(['rental_payment'])
+      expect(Notification.pluck(:text).join).to include(*(properties.map(&:address) + tenants.map(&:name)))
+    end
+
+    context 'without notification flag' do
+      let(:notification) { false }
+
+      it 'do not creates notifications' do
+        expect(Notification.all).to be_empty
+      end
     end
   end
 end

@@ -1,6 +1,7 @@
 class AssociateTransactionsWithTenants < Struct.new(:user_id)
   def perform
     user = User.find_by(id: user_id)
+
     return if user.blank?
     return unless user.properties.exists?
     return unless user.tenants.exists?
