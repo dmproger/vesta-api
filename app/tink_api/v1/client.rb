@@ -5,7 +5,10 @@ module TinkAPI
     class Client
       API_ENDPOINT = 'https://api.tink.com/api/v1'.freeze
       ACTOR_CLIENT_ID = 'df05e4b379934cd09963197cc855bfe9'.freeze
+
       TRANSACTION_RESULT_LIMIT = 100_000.freeze # we want all records for last 2 years
+      # TRANSACTION_START_DATE = 2.year.ago.beginning_of_year
+      TRANSACTION_START_DATE = 3.months.ago
 
       attr_reader :access_token
 
@@ -54,7 +57,7 @@ module TinkAPI
                                       sort: 'DATE',
                                       order: 'DESC',
                                       limit: TRANSACTION_RESULT_LIMIT,
-                                      startDate: 2.year.ago.beginning_of_year.to_i * 1000
+                                      startDate: TRANSACTION_START_DATE.to_i * 1000
                                   }.to_json,
                                    {
                                        Authorization: "Bearer #{access_token}",
