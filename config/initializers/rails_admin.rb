@@ -164,4 +164,13 @@ RailsAdmin.config do |config|
   config.model User::Success::WithProperty do
     list { list_info }
   end
+
+  config.model Notification do
+    list do
+      field :title
+      field :text
+      field :viewed
+      field :created_at
+    end
+  end
 end
