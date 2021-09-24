@@ -27,6 +27,10 @@ class SavedTransaction < ApplicationRecord
 
   enum report_state: %i[hidden visible]
 
+  def self.from_tink(tink_transactions)
+    # TODO
+  end
+
   def assign_to_tenant(joint_tenant, attributes = nil)
     property_tenant = find_property_tenant(attributes) || PropertyTenant.create(attributes)
     property_tenant.associated_transactions.create!(saved_transaction_id: id,
