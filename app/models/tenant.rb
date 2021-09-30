@@ -86,7 +86,7 @@ class Tenant < ApplicationRecord
 
   # being used in a callback (after_create & after_update)
   def process_transactions
-    Delayed::Job.enqueue AssociateTransactionsWithTenants.new(self.user)
+    Delayed::Job.enqueue AssociateTransactionsWithTenants.new(user.id)
   end
 
   def joint_payee?

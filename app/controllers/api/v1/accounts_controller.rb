@@ -1,6 +1,9 @@
+require_relative '../../../tink_api/v1/client'
+require_relative '../../../services/get_account_linking_code'
+
 class Api::V1::AccountsController < ApplicationController
   before_action :verify_account_linked?, only: :index
-  before_action :set_account, only: [:update_credentials ,:renew_credentials_link]
+  before_action :set_account, only: [:update_credentials, :refresh_credentials, :renew_credentials_link]
 
   def index
     accounts = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'accounts:read')).accounts
@@ -39,6 +42,11 @@ class Api::V1::AccountsController < ApplicationController
     url << '&test=true' if ENV['SANDBOX_ENV'] == 'true'
 
     render json: {success: true, message: 'tink link refresh credentials', data: {code: user_auth_code, url: url}}
+  end
+
+  def refresh_credentials
+    TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'credentials:refresh'))
+                       .refresh_credentials(id: @account.credentials_id)
   end
 
   def update_credentials

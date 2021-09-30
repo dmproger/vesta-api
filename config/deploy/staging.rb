@@ -1,4 +1,4 @@
-server '35.177.182.142', user: 'ubuntu', roles: %w{web app db}
+server '3.10.223.121', user: 'ubuntu', roles: %w{web app db}
 
 set :application, 'vesta-rails'
 set :repo_url, 'git@github.com:dmproger/vesta-api.git'
@@ -28,7 +28,6 @@ set :puma_workers, 0
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false
-
 
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"

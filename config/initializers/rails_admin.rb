@@ -65,6 +65,8 @@ RailsAdmin.config do |config|
     User::Success::WithTenant
     User::Success::WithTinkLink
     User::Success::WithBankAccount
+
+    Notification
   }
 
   User::Test::Builder.build
@@ -161,5 +163,14 @@ RailsAdmin.config do |config|
   end
   config.model User::Success::WithProperty do
     list { list_info }
+  end
+
+  config.model Notification do
+    list do
+      field :title
+      field :text
+      field :viewed
+      field :created_at
+    end
   end
 end

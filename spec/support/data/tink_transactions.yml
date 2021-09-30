@@ -1,0 +1,49 @@
+---
+score: 0.0
+timestamp: 1631959200000
+transaction:
+  accountId: 2fcf3599c45d4088b18c2a4d5ba8f103
+  amount: -60.0
+  categoryId: d8f37f7d19c240abb4ef5d5dbebae4ef
+  categoryType: INCOME
+  date: 1631959200000
+  description: 'Donald Trump'
+  formattedDescription: 'Revolut**1265* Internet'
+  id: b2fb872abc3a47d59405d0979062fe65:
+  inserted: 1631979432000
+  lastModified: 1631979432447
+  merchantId:
+  notes:
+  originalAmount: -60.0
+  originalDate: 1631959200000
+  originalDescription: 'Revolut**1265* internet        GB',
+  payload:
+    TRANSFER_TWIN: 63a1c6a15dfa4ca590fbb63d4d50714c
+    DETAILS: '{"currency": "GBP"}'
+    TRANSFER_ACCOUNT: e7d0d9ae113442f594ae472035437728
+    pending: true
+    timestamp: 1631979432152
+    type: TRANSFER
+    userId: d4fc8c21384846739000c643224edad9
+    upcoming: false
+    userModifiedAmount: false
+    userModifiedCategory: false
+    userModifiedDate: false
+    userModifiedDescription: false
+    userModifiedLocation: false
+    currencyDenominatedAmount:
+      unscaledValue: -600.0
+      scale: 1
+      currencyCode: GBP
+      currencyDenominatedOriginalAmount:
+        unscaledValue: -600.0
+        scale: 1
+        currencyCode: GBP
+        parts: []
+        internalPayload: {}
+        partnerPayload: {}
+        dispensableAmount: -60.0
+        userModified: false
+        identifiers:
+          providerExternalId: '1832021261111154430010000-0250BP0000000000060000000000000060000000000000VIS'
+      type: TRANSACTION

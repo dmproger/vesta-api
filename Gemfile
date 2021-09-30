@@ -53,6 +53,7 @@ gem 'aws-sdk-s3', '~> 1.81', '>= 1.81.1', require: false
 
 # ActiveRecord backend for Delayed::Job
 gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.4'
+gem 'delayed_cron_job'
 
 # A gem for calling the GoCardless Pro API
 gem 'gocardless_pro', '~> 2.24'

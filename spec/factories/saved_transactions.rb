@@ -7,5 +7,6 @@ FactoryBot.define do
     association :user
     association :account
     transaction_date { Date.current }
+    description { Faker::Name.first_name }
   end
 end

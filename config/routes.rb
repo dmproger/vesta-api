@@ -33,7 +33,8 @@ Rails.application.routes.draw do
       resources :accounts, only: :index do
         get :linking_code, on: :collection
         get :renew_credentials_link, on: :member
-        get :update_credentials, on: :member
+        put :update_credentials, on: :member
+        put :refresh_credentials, on: :member
         resources :transactions, only: [:index, :update]
       end
 

@@ -1,6 +1,7 @@
 class AssociateTransactionsWithTenants < Struct.new(:user_id)
   def perform
     user = User.find_by(id: user_id)
+
     return if user.blank?
     return unless user.properties.exists?
     return unless user.tenants.exists?
@@ -40,9 +41,17 @@ class AssociateTransactionsWithTenants < Struct.new(:user_id)
     # Checkout it, may not work
     #
     joint_tenants = user.tenants.includes(:joint_tenants)
-    user.tenants
-        .within(transaction.transaction_date)
-        .or(user.tenants.within(transaction.transaction_date).where(id: joint_tenants.ids))
-        .search(transaction.description).references(:joint_tenants).first
+    user.
+      tenants.
+        within(transaction.transaction_date).
+        or(
+          user.
+            tenants.
+              within(transaction.transaction_date).
+              where(id: joint_tenants.ids)
+        )
+        .search(transaction.description).
+        references(:joint_tenants).
+        first
   end
 end

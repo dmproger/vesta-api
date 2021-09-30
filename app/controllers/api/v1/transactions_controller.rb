@@ -15,8 +15,16 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def all
+    default_expenses!
+
+    set_account if params[:account_id]
+
+    refresh_transactions if params[:force_refresh] == 'true'
+    process_transactions if params[:force_refresh] == 'true' && current_user.properties.exists? && current_user.tenants.exists?
+
     set_period
     filter = { transaction_date: @period }
+    filter.merge!({ account_id: @account.id }) if @account
     filter.merge!({ category_type: @category_type }) if @category_type
 
     transactions =
@@ -90,6 +98,20 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def refresh_transactions
+    return refresh_account_transactions if @account
+
+    refresh_all_transactions
+  end
+
+  def refresh_all_transactions
+    current_user.accounts.each do |account|
+      transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
+                         .transactions(account_id: account.account_id, query_tag: '')
+      persist_transactions(transactions, account) if transactions.any?
+    end
+  end
+
+  def refresh_account_transactions
     transactions = TinkAPI::V1::Client.new(current_user.valid_tink_token(scopes: 'transactions:read'))
                        .transactions(account_id: @account.account_id, query_tag: '')
     persist_transactions(transactions)
@@ -132,9 +154,17 @@ class Api::V1::TransactionsController < ApplicationController
     (start_date > Date.current) || (start_date > end_date)
   end
 
-  def persist_transactions(transactions)
+  def persist_transactions(transactions, account = nil)
+    account ||= @account
+
     PersistTransaction.new(transactions.dig(:results),
                            current_user,
-                           @account).call
+                           account).call
+  end
+
+  def default_expenses!
+    return unless Expense.defaults(current_user).count.zero?
+
+    Expense.create_defaults(current_user)
   end
 end

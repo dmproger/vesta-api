@@ -5,7 +5,10 @@ module TinkAPI
     class Client
       API_ENDPOINT = 'https://api.tink.com/api/v1'.freeze
       ACTOR_CLIENT_ID = 'df05e4b379934cd09963197cc855bfe9'.freeze
+
       TRANSACTION_RESULT_LIMIT = 100_000.freeze # we want all records for last 2 years
+      # TRANSACTION_START_DATE = 2.year.ago.beginning_of_year
+      TRANSACTION_START_DATE = 3.months.ago
 
       attr_reader :access_token
 
@@ -54,7 +57,7 @@ module TinkAPI
                                       sort: 'DATE',
                                       order: 'DESC',
                                       limit: TRANSACTION_RESULT_LIMIT,
-                                      startDate: 2.year.ago.beginning_of_year.to_i * 1000
+                                      startDate: TRANSACTION_START_DATE.to_i * 1000
                                   }.to_json,
                                    {
                                        Authorization: "Bearer #{access_token}",
@@ -63,6 +66,16 @@ module TinkAPI
 
         JSON.parse(response.body).symbolize_keys
       end
+
+      def new_transactions
+        response = RestClient.get "#{API_ENDPOINT}/transactions/list",
+                                   {
+                                       Authorization: "Bearer #{access_token}",
+                                       content_type: "application/json; charset=utf-8"
+                                   }
+        JSON.parse(response.body).symbolize_keys
+      end
+
 
       def categories
         response = RestClient.get "#{API_ENDPOINT}/categories",
@@ -147,8 +160,23 @@ module TinkAPI
         JSON.parse(response.body).symbolize_keys
       end
 
-      def renew_credentials(id:, provider_name:)
-        # TODO: call appropriate private method based on provider name
+      def refresh_credentials(id:, provider_name: nil)
+        response = RestClient::Request.execute \
+          method: :post,
+          url: "#{API_ENDPOINT}/credentials/#{id}/refresh",
+          payload: { 'appUri' => 'http://ya.ru' }.to_json,
+          headers:
+            {
+              params: {
+                authenticate: false,
+                optIn: false
+              },
+              authorization: "Bearer #{access_token}",
+              content_type: :json,
+            },
+          log: Logger.new(STDOUT)
+
+        JSON.parse(response.body).symbolize_keys
       end
 
       # Get credentials
