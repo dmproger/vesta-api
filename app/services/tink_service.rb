@@ -37,6 +37,27 @@ class TinkService
       end.flatten
     end
 
+    def to_saved_transactions(transactions)
+      User.new.saved_transactions.build(to_saved_transaction_hash(transactions))
+    end
+
+    def to_saved_transaction_attrs(transactions)
+      [transactions].flatten.map do |transaction|
+        transaction.symbolize_keys!
+        hash = {}
+        hash[:amount] = transaction.dig(:amount)
+        hash[:category_id] = transaction.dig(:categoryId)
+        hash[:category_type] = transaction.dig(:categoryType)
+        hash[:transaction_date] = Time.at(transaction.dig(:date) / 1000).to_date
+        hash[:description] = transaction.dig(:originalDescription)
+        hash[:transaction_id] = transaction.dig(:id)
+        hash[:notes] = transaction.dig(:notes)
+        hash[:is_pending] = transaction.dig(:pending)
+        hash[:is_modified] = transaction.dig(:userModified)
+        hash
+      end
+    end
+
     def match_transactions_with_properties(user)
       AssociateTransactionsWithTenants.new(user.id).perform
     end
