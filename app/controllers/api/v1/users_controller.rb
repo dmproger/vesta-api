@@ -1,7 +1,7 @@
 class Api::V1::UsersController < ApplicationController
   NOTIFICATION_VERSION = 'v1'
 
-  skip_before_action :authenticate_user!, only: [:verify_otp, :email_status, :phone_status, :notification_config]
+  skip_before_action :authenticate_user!, only: [:verify_otp, :email_status, :phone_status]
 
   before_action :set_user, only: :verify_otp
 
@@ -51,13 +51,14 @@ class Api::V1::UsersController < ApplicationController
       return render json: { success: false, message: 'no type, interval or time params passed' } unless params[:type] || params[:interval] || params[:time]
     end
 
-    config = current_user.notification[NOTIFICATION_VERSION] || {}
+    byebug
+    config = current_user.notification&[NOTIFICATION_VERSION] || {}
 
     config.merge!(type: params[:type] || config[:type])
     config.merge!(interval: params[:interval] || config[:interval])
     config.merge!(time: params[:time] || config[:time])
 
-    current.user.update! notification: { NOTIFICATION_VERSION => config }
+    current_user.update! notification: { NOTIFICATION_VERSION => config.stringify_keys }
   end
 
   private
