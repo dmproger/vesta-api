@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :users, only: :index do
+        match 'notification_config', to: 'notification_config', via: [:get, :post, :patch]
+
         collection do
           get :email_status
           get :phone_status
