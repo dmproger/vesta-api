@@ -42,19 +42,18 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def notification_config
-    return render json: { success: false, message: 'no type params passed' } unless params[:type]
-
     case request.method
     when 'GET'
       return render json: { success: true, data: current_user.notification[NOTIFICATION_VERSION] }
     when 'POST'
-      return render json: { success: false, message: 'no interval and time params passed' } unless params[:interval] && params[:time]
+      return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time]
     when 'PATCH'
-      return render json: { success: false, message: 'no interval or time params passed' } unless params[:interval] || params[:time]
+      return render json: { success: false, message: 'no type, interval or time params passed' } unless params[:type] || params[:interval] || params[:time]
     end
 
     config = current_user.notification[NOTIFICATION_VERSION] || {}
 
+    config.merge!(type: params[:type] || config[:type])
     config.merge!(interval: params[:interval] || config[:interval])
     config.merge!(time: params[:time] || config[:time])
 
