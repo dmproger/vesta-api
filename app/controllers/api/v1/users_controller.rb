@@ -54,6 +54,12 @@ class Api::V1::UsersController < ApplicationController
       return render json: { success: true, message: 'notification disabled!' }
     end
 
+    if %w[POST PATCH PUT].include?(request.method)
+      return render json: { success: false, message: 'incorrect param time, need 12:30 for example' } unless params[:time] && /^\d\d:\d\d$/.match?(params[:time])
+      return render json: { success: false, message: 'incorrect param interval, need 3 for example' } unless params[:interval] && /^\d\d?$/.match?(params[:interval])
+      return render json: { success: false, message: 'incorrect param type, need late or income' } unless params[:type] && /(^late$)|(^income$)/.match?(params[:type])
+    end
+
     config = current_user.notification&.send(:[], NOTIFICATION_VERSION) || {}
 
     config.merge!(type: params[:type] || config[:type])

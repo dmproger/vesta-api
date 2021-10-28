@@ -38,9 +38,36 @@ RSpec.describe Api::V1::UsersController do
       params.delete(params.keys.sample)
 
       subject
+      expect(json_body["success"]).to be_falsey
+    end
+
+    it 'returns error if time wrong format' do
+      user.update! notification: nil
+      params.merge!(time: '23:0')
+
+      subject
+      expect(json_body["success"]).to be_falsey
+      expect(user.reload.notification).to be_nil
+    end
+    it 'returns error if interval wrong format' do
+      user.update! notification: nil
+      params.merge!(interval: '230')
+
+      subject
+      expect(json_body["success"]).to be_falsey
+      expect(user.reload.notification).to be_nil
+    end
+
+    it 'returns error if type wrong format' do
+      user.update! notification: nil
+      params.merge!(type: 'foo')
+
+      subject
       expect(json_body["success"]).to eq(false)
+      expect(user.reload.notification).to be_nil
     end
   end
+
 
   describe 'when PATCH /api/v1/users/:id/notification_config' do
     subject(:send_request) { patch "/api/v1/users/#{ user.id }/notification_config", params: params, headers: headers }
@@ -63,7 +90,7 @@ RSpec.describe Api::V1::UsersController do
       user.update! notification: { VERSION => config.stringify_keys }
 
       subject
-      expect(user.reload.notification).to eq(nil)
+      expect(user.reload.notification).to be_nil
     end
   end
 end
