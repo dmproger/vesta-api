@@ -47,18 +47,22 @@ class Api::V1::UsersController < ApplicationController
       return render json: { success: true, data: current_user.notification[NOTIFICATION_VERSION] }
     when 'POST'
       return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time]
-    when 'PATCH'
+    when 'PATCH', 'PUT'
       return render json: { success: false, message: 'no type, interval or time params passed' } unless params[:type] || params[:interval] || params[:time]
+    when 'DELETE'
+      current_user.update! notification: nil
+      return render json: { success: true, message: 'notification disabled!' }
     end
 
-    byebug
-    config = current_user.notification&[NOTIFICATION_VERSION] || {}
+    config = current_user.notification&.send(:[], NOTIFICATION_VERSION) || {}
 
     config.merge!(type: params[:type] || config[:type])
     config.merge!(interval: params[:interval] || config[:interval])
     config.merge!(time: params[:time] || config[:time])
 
     current_user.update! notification: { NOTIFICATION_VERSION => config.stringify_keys }
+
+    render json: { success: true, data: current_user.notification[NOTIFICATION_VERSION] }
   end
 
   private
