@@ -87,7 +87,7 @@ RSpec.describe Api::V1::UsersController do
       user.update! notification: { VERSION => config.stringify_keys }
 
       subject
-      expect(user.reload.notification[VERSION]["interval"]).to eq(interval)
+      expect(user.reload.notification[VERSION]).to eq(params.stringify_keys)
     end
   end
 
