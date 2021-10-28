@@ -4,7 +4,7 @@ RSpec.describe Api::V1::UsersController do
   VERSION = described_class::NOTIFICATION_VERSION
 
   let!(:user) { create(:user) }
-  let(:config) { { type: 'late', interval: '3', time: '15:30' } }
+  let(:config) { { type: 'late', interval: '3', time: '15:30', enable: '1' } }
   let(:headers) { auth_headers }
   let(:json_body) { JSON.parse(body) }
   let(:data) { json_body['data'] }
@@ -66,8 +66,16 @@ RSpec.describe Api::V1::UsersController do
       expect(json_body["success"]).to eq(false)
       expect(user.reload.notification).to be_nil
     end
-  end
 
+    it 'returns error if enable wrong format' do
+      user.update! notification: nil
+      params.merge!(enable: '3')
+
+      subject
+      expect(json_body["success"]).to eq(false)
+      expect(user.reload.notification).to be_nil
+    end
+  end
 
   describe 'when PATCH /api/v1/users/:id/notification_config' do
     subject(:send_request) { patch "/api/v1/users/#{ user.id }/notification_config", params: params, headers: headers }

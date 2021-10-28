@@ -46,9 +46,9 @@ class Api::V1::UsersController < ApplicationController
     when 'GET'
       return render json: { success: true, data: current_user.notification[NOTIFICATION_VERSION] }
     when 'POST'
-      return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time]
+      return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time] && params[:enable]
     when 'PATCH', 'PUT'
-      return render json: { success: false, message: 'no type, interval or time params passed' } unless params[:type] || params[:interval] || params[:time]
+      return render json: { success: false, message: 'no type, interval or time params passed' } unless params[:type] || params[:interval] || params[:time] || params[:enable]
     when 'DELETE'
       current_user.update! notification: nil
       return render json: { success: true, message: 'notification disabled!' }
@@ -58,6 +58,7 @@ class Api::V1::UsersController < ApplicationController
       return render json: { success: false, message: 'incorrect param time, need 12:30 for example' } unless params[:time] && /^\d\d:\d\d$/.match?(params[:time])
       return render json: { success: false, message: 'incorrect param interval, need 3 for example' } unless params[:interval] && /^\d\d?$/.match?(params[:interval])
       return render json: { success: false, message: 'incorrect param type, need late or income' } unless params[:type] && /(^late$)|(^income$)/.match?(params[:type])
+      return render json: { success: false, message: 'incorrect param enable, need 1 or 0' } unless params[:enable] && /^0|1$/.match?(params[:enable])
     end
 
     config = current_user.notification&.send(:[], NOTIFICATION_VERSION) || {}
@@ -65,6 +66,7 @@ class Api::V1::UsersController < ApplicationController
     config.merge!(type: params[:type] || config[:type])
     config.merge!(interval: params[:interval] || config[:interval])
     config.merge!(time: params[:time] || config[:time])
+    config.merge!(enable: params[:enable] || config[:enable])
 
     current_user.update! notification: { NOTIFICATION_VERSION => config.stringify_keys }
 
