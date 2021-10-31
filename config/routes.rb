@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      resources :messages
+
       resources :users, only: :index do
         match :notification_config, via: :all
 
