@@ -37,6 +37,7 @@ class Api::V1::MessagesController < ApplicationController
   end
 
   def message_params
-    params.permit(:topic, :text, :viewed, :grade, images: [])
+    params[:kind] = params[:kind].to_i if params[:kind]
+    params.permit(:kind, :topic, :text, :viewed, :grade, images: [])
   end
 end
