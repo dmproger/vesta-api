@@ -4,6 +4,6 @@ class Message < ApplicationRecord
 
   has_many_attached :images
 
-  scope sended_by: ->(user){ where(user: user) }
-  scope recived_by: ->(user){ where(reciver: user) }
+  scope from: ->(user){ where(user: user) }
+  scope to: ->(user){ where(reciver: user) }
 end
