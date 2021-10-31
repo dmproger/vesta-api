@@ -3,6 +3,7 @@ class CreateMessages < ActiveRecord::Migration[6.0]
     create_table :messages, id: :uuid do |t|
       t.uuid :user_id, null: false, foreign_key: true
       t.uuid :reciver
+      t.integer :kind
       t.string :topic
       t.text :text
       t.boolean :viewed

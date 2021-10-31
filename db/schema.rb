@@ -138,6 +138,7 @@ ActiveRecord::Schema.define(version: 2021_10_31_144244) do
   create_table "messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "reciver"
+    t.integer "kind"
     t.string "topic"
     t.text "text"
     t.boolean "viewed"
