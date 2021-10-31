@@ -28,8 +28,7 @@ class Api::V1::MessagesController < ApplicationController
   private
 
   def set_messages
-    type = params[:type] || ''
-    @messages = current_user.send("#{type}messages")
+    @messages = current_user.messages.where(kind: params[:kind].to_i)
   end
 
   def set_message
