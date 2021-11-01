@@ -8,6 +8,10 @@ RSpec.describe Api::V1::UsersController do
   let(:message) { create(:message, user: user) }
   let(:params) { build(:message, user: user).attributes_before_type_cast.slice(*%w[topic text kind]) }
 
+  let(:other_user) { create(:user) }
+  let(:other_message) { create(:message, user: other_user) }
+  let(:other_messages) { create_list(:message, rand(2..3), user: other_user) }
+
   let(:headers) { auth_headers }
   let(:json_body) { JSON.parse(body) }
   let(:data) { json_body['data'] }
@@ -43,6 +47,15 @@ RSpec.describe Api::V1::UsersController do
       it 'returns empty array' do
         subject
         expect(data).to eq([])
+      end
+    end
+
+    context 'of other user' do
+      let(:messages) { other_messages }
+
+      it 'not includes other user messages' do
+        subject 
+        expect(data.to_s).not_to include(*[topics + texts].flatten)
       end
     end
   end
