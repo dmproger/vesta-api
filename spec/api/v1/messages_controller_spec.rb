@@ -79,8 +79,24 @@ RSpec.describe Api::V1::UsersController do
   end
 
   describe 'when PATCH /api/v1/messages/:id' do
-    subject(:send_request) { get "/api/v1/messages/#{ message.id }", params: params, headers: headers }
+    subject(:send_request) { patch "/api/v1/messages/#{ message.id }", params: params, headers: headers }
 
+    before { params.merge!(topic: 'foo', viewed: !message.viewed) }
+
+    it 'update message' do
+      subject
+      message.reload
+      expect(message.topic).to eq(params[:topic])
+      expect(message.viewed).to eq(params[:viewed])
+    end
+
+    context 'of other user' do
+      let(:message) { other_message }
+
+      it 'do not returns other user message' do
+        expect{ subject }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   describe 'when DELETE /api/v1/messages/:id' do
