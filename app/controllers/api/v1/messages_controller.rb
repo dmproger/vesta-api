@@ -1,7 +1,7 @@
 class Api::V1::MessagesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_messages, only: [:index]
-  before_action :set_message, only: [:update, :destroy]
+  before_action :set_message, only: [:show, :update, :destroy]
 
   def index
     render json: { success: true, data: @messages }
@@ -32,7 +32,7 @@ class Api::V1::MessagesController < ApplicationController
   end
 
   def set_message
-    @message = Message.find(params[:id])
+    @message = Message.find_by!(user: current_user, id: params[:id])
   end
 
   def message_params

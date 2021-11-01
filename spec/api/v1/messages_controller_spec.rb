@@ -63,6 +63,19 @@ RSpec.describe Api::V1::UsersController do
   describe 'when GET /api/v1/messages/:id' do
     subject(:send_request) { get "/api/v1/messages/#{ message.id }", params: params, headers: headers }
 
+    it 'returns specific message' do
+      subject
+      expect(data.class).to eq(Hash)
+      expect(data.slice(%w[topic text]).values.sort).to eq(message.attributes.slice(%w[topic text]).sort)
+    end
+
+    context 'of other user' do
+      let(:message) { other_message }
+
+      it 'do not returns other user message' do
+        expect{ subject }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   describe 'when PATCH /api/v1/messages/:id' do
