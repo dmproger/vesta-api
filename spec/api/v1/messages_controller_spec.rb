@@ -38,7 +38,7 @@ RSpec.describe Api::V1::UsersController do
     end
 
     context 'when not existing messages kind' do
-      let!(:not_existing_kind_params) { params.merge!(kind: 100) }
+      before { params.merge!(kind: 100) }
 
       it 'returns empty array' do
         subject
