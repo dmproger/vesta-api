@@ -1,12 +1,13 @@
 FactoryBot.define do
   factory :message do
-    user { nil }
-    reciver { "MyString" }
-    topic { "MyString" }
-    text { "MyText" }
+    association :user
+    reciver { nil }
+    kind { 1 }
+    topic { Faker::Movie.title }
+    text { Faker::Book.title }
     images { nil }
     viewed { false }
     helpful { false }
-    grade { 1 }
+    grade { nil }
   end
 end
