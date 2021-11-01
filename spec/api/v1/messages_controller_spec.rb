@@ -73,7 +73,7 @@ RSpec.describe Api::V1::UsersController do
       let(:message) { other_message }
 
       it 'do not returns other user message' do
-        expect{ subject }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end
@@ -94,13 +94,25 @@ RSpec.describe Api::V1::UsersController do
       let(:message) { other_message }
 
       it 'do not returns other user message' do
-        expect{ subject }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end
 
   describe 'when DELETE /api/v1/messages/:id' do
-    subject(:send_request) { get "/api/v1/messages/#{ message.id }", params: params, headers: headers }
+    subject(:send_request) { delete "/api/v1/messages/#{ message.id }", params: params, headers: headers }
 
+    it 'delete message' do
+      subject
+      expect { message.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    context 'of other user' do
+      let(:message) { other_message }
+
+      it 'do not destroy other user message' do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 end 
