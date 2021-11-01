@@ -8,6 +8,8 @@ RSpec.describe Api::V1::UsersController do
   let(:params) { { topic: topic, text: text, kind: 1 } }
 
   let(:headers) { auth_headers }
+  let(:json_body) { JSON.parse(body) }
+  let(:data) { json_body['data'] }
 
   before { sign_in(user) }
 
@@ -23,6 +25,27 @@ RSpec.describe Api::V1::UsersController do
   describe 'when GET /api/v1/messages' do
     subject(:send_request) { get '/api/v1/messages', params: params, headers: headers }
 
+    let(:count) { rand(2..3) }
+
+    before do
+      Message.delete_all
+      count.times { post '/api/v1/messages', params: params, headers: headers }
+    end
+
+    it 'returns messages' do
+      subject
+      expect(data.count).to eq(count)
+      expect(data.to_s).to include(*params.slice(:topic, :text).values)
+    end
+
+    context 'when not existing messages kind' do
+      let!(:not_existing_kind_params) { params.merge!(kind: 100) }
+
+      it 'returns empty array' do
+        subject
+        expect(data).to eq([])
+      end
+    end
   end
 
   describe 'when GET /api/v1/messages/:id' do
