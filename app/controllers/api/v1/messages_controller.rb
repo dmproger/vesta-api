@@ -32,7 +32,7 @@ class Api::V1::MessagesController < ApplicationController
   private
 
   def set_messages
-    @messages = current_user.messages.where(kind: params[:kind].to_i)
+    @messages = current_user.messages.where(message_params)
   end
 
   def set_message

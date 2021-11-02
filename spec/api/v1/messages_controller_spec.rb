@@ -41,6 +41,7 @@ RSpec.describe Api::V1::UsersController do
 
     let(:topics) { messages.map(&:topic) }
     let(:texts) { messages.map(&:text) }
+    let(:params) { {} }
 
     before { messages }
 
@@ -48,6 +49,19 @@ RSpec.describe Api::V1::UsersController do
       subject
       expect(data.count).to eq(count)
       expect(data.to_s).to include(*[topics + texts].flatten)
+    end
+
+    context 'filtering messages by params' do
+      let(:filtered_messages) { create_list(:message, rand(2..3), user: user, viewed: true) }
+      let(:params) { { viewed: true } }
+
+      before { messages && filtered_messages }
+
+      it 'returns filtered messages' do
+        subject
+        expect(data.to_s).to include(*filtered_messages.map(&:id))
+        expect(data.to_s).not_to include(*messages.map(&:id))
+      end
     end
 
     context 'when not existing messages kind' do
