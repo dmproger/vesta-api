@@ -14,7 +14,7 @@ class Message < ApplicationRecord
   scope :to_user, ->(user){ where(reciver: user) }
 
 
-  def ui_kinds
+  def self.ui_kinds
     Message.kinds.map { |k, v| [v, KINDS[k.to_sym]] }.to_h
   end
 end

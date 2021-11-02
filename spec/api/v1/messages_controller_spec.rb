@@ -18,6 +18,15 @@ RSpec.describe Api::V1::UsersController do
 
   before { sign_in(user) }
 
+  describe 'when GET /api/v1/messages/kinds' do
+    subject(:send_request) { get '/api/v1/messages/kinds', params: params, headers: headers }
+
+    it 'returns kinds' do
+      subject
+      expect(data.to_s).to include(*[Message::KINDS.values + Message.kinds.values.map(&:to_s)].flatten)
+    end
+  end
+
   describe 'when POST /api/v1/messages' do
     subject(:send_request) { post '/api/v1/messages', params: params, headers: headers }
 
