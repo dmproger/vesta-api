@@ -3,6 +3,10 @@ class Api::V1::MessagesController < ApplicationController
   before_action :set_messages, only: [:index]
   before_action :set_message, only: [:show, :update, :destroy]
 
+  def kinds
+    Message.ui_kinds
+  end
+
   def index
     render json: { success: true, data: @messages }
   end
