@@ -34,7 +34,7 @@ RSpec.describe Api::V1::UsersController do
 
     it 'returns kinds' do
       subject
-      expect(data).to include(Message::KINDS.stringify_keys)
+      expect(data).to eq(Message::KINDS.stringify_keys)
     end
   end
 
@@ -77,12 +77,9 @@ RSpec.describe Api::V1::UsersController do
         expect(data.to_s).to include(*filtered_messages.map(&:id))
         expect(data.to_s).not_to include(*messages.map(&:id))
       end
-    end
 
-    context 'when not existing messages kind' do
-      before { params.merge!(kind: 100) }
-
-      it 'returns empty array' do
+      it 'returns empty list when target messages not exists' do
+        filter_params.merge!(topic: 'foo')
         subject
         expect(data).to eq([])
       end
