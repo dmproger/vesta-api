@@ -3,8 +3,12 @@ class Api::V1::MessagesController < ApplicationController
   before_action :set_messages, only: [:index]
   before_action :set_message, only: [:show, :update, :destroy]
 
+  def departments
+    render json: { success: true, data: Message.departments_list }
+  end
+
   def kinds
-    render json: { success: true, data: Message.ui_kinds }
+    render json: { success: true, data: Message.kinds_list }
   end
 
   def index
@@ -40,7 +44,6 @@ class Api::V1::MessagesController < ApplicationController
   end
 
   def message_params
-    params[:kind] = params[:kind].to_i if params[:kind]
-    params.permit(:kind, :topic, :text, :viewed, :grade, images: [])
+    params.permit(:kind, :department, :topic, :text, :viewed, :grade, images: [])
   end
 end

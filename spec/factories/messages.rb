@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :message do
     association :user
-    reciver { nil }
+    department { 1 }
     kind { 1 }
     topic { Faker::Movie.title }
     text { Faker::Book.title }

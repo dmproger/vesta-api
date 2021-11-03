@@ -6,7 +6,6 @@ RSpec.describe Api::V1::UsersController do
   let(:count) { rand(2..3) }
   let(:messages) { create_list(:message, count, user: user) }
   let(:message) { create(:message, user: user) }
-  let(:params) { build(:message, user: user).attributes_before_type_cast.slice(*%w[topic text kind]) }
 
   let(:other_user) { create(:user) }
   let(:other_message) { create(:message, user: other_user) }
@@ -16,14 +15,26 @@ RSpec.describe Api::V1::UsersController do
   let(:json_body) { JSON.parse(body) }
   let(:data) { json_body['data'] }
 
+  let(:message_params) { build(:message, user: user).slice(*%w[kind department topic text viewed]) }
+  let(:params) { message_params }
+
   before { sign_in(user) }
+
+  describe 'when GET /api/v1/messages/departments' do
+    subject(:send_request) { get '/api/v1/messages/departments', params: params, headers: headers }
+
+    it 'returns departments' do
+      subject
+      expect(data).to eq(Message::DEPARTMENTS.stringify_keys)
+    end
+  end
 
   describe 'when GET /api/v1/messages/kinds' do
     subject(:send_request) { get '/api/v1/messages/kinds', params: params, headers: headers }
 
     it 'returns kinds' do
       subject
-      expect(data.to_s).to include(*[Message::KINDS.values + Message.kinds.values.map(&:to_s)].flatten)
+      expect(data).to include(Message::KINDS.stringify_keys)
     end
   end
 
@@ -32,7 +43,7 @@ RSpec.describe Api::V1::UsersController do
 
     it 'creates message' do
       expect { subject }.to change { Message.count }.by(1)
-      expect(Message.last.attributes.to_s).to include(*params.slice(%w[topic text]).values)
+      expect(Message.last.attributes.to_s).to include(*params.values.map(&:to_s))
     end
   end
 
@@ -41,6 +52,7 @@ RSpec.describe Api::V1::UsersController do
 
     let(:topics) { messages.map(&:topic) }
     let(:texts) { messages.map(&:text) }
+
     let(:params) { {} }
 
     before { messages }
@@ -52,8 +64,11 @@ RSpec.describe Api::V1::UsersController do
     end
 
     context 'filtering messages by params' do
-      let(:filtered_messages) { create_list(:message, rand(2..3), user: user, viewed: true) }
-      let(:params) { { viewed: true } }
+      let(:filter) { { viewed: true, kind: :income } }
+      let(:filter_params) { filter.slice(filter.keys.sample, filter.keys.sample) }
+      let(:filtered_messages) { create_list(:message, rand(2..3), user: user, **filter_params) }
+
+      let(:params) { filter_params }
 
       before { messages && filtered_messages }
 

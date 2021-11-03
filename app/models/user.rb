@@ -26,7 +26,6 @@ class User < ActiveRecord::Base
   has_many :tink_credentials, through: :accounts
   has_many :expenses, dependent: :destroy
   has_many :messages
-  has_many :income_messages, class_name: 'Message', foreign_key: :reciver
 
   has_many :associated_transactions, through: :properties
 

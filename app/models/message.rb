@@ -1,20 +1,27 @@
 class Message < ApplicationRecord
+  DEPARTMENTS = {
+    support: 'Support'
+  }
   KINDS = {
-    to_support: 'Cлужба поддержки'
+    income: 'Income',
+    outcome: 'Outcome'
   }
 
   belongs_to :user
-  belongs_to :reciver, class_name: 'User', foreign_key: :reciver, optional: true
 
-  enum kind: { to_support: 1 }
+  enum kind: { outcome: 1, income: 2 }
+  enum department: { support: 1 }
 
   has_many_attached :images
 
-  scope :form_user, ->(user){ where(user: user) }
-  scope :to_user, ->(user){ where(reciver: user) }
+  scope :income, ->{ where(kind: :income) }
+  scope :outcome, ->{ where(kind: :income) }
 
+  def self.departments_list
+    DEPARTMENTS
+  end
 
-  def self.ui_kinds
-    Message.kinds.map { |k, v| [v, KINDS[k.to_sym]] }.to_h
+  def self.kinds_list
+    KINDS
   end
 end
