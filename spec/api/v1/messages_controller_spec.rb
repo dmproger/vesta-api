@@ -56,6 +56,16 @@ RSpec.describe Api::V1::UsersController do
         expect(message.kind).to eq('outcome')
       end
     end
+
+    context 'unable to create' do
+      before { params[:text] = '' }
+
+      it 'do not creates message' do
+        subject
+        expect(json_body['success']).to be_falsey
+        expect(json_body['message']).to include('Text', 'must', 'exists')
+      end
+    end
   end
 
   describe 'when GET /api/v1/messages' do

@@ -20,6 +20,8 @@ class Api::V1::MessagesController < ApplicationController
   end
   
   def create
+    return render json: { success: false, message: 'Text of message must exists' } unless params[:text].present?
+
     message_params.delete(:kind)
     message = Message.create!(message_params.merge(user: current_user))
     render json: { success: true, data: message }
