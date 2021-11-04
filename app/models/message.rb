@@ -12,7 +12,7 @@ class Message < ApplicationRecord
   enum kind: { outcome: 1, income: 2 }
   enum department: { support: 1 }
 
-  has_many_attached :images
+  # has_many_attached :images
 
   scope :income, ->{ where(kind: :income) }
   scope :outcome, ->{ where(kind: :income) }

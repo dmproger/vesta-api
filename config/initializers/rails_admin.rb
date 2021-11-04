@@ -173,4 +173,12 @@ RailsAdmin.config do |config|
       field :created_at
     end
   end
+
+  config.model Message do
+    list do
+      field :topic
+      field :text
+      field :created_at
+    end
+  end
 end
