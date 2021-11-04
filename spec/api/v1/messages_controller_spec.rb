@@ -46,11 +46,15 @@ RSpec.describe Api::V1::UsersController do
       expect(Message.last.attributes.to_s).to include(*params.values.map(&:to_s))
     end
 
-    it 'creates message with default parameters' do
-      subject
-      message = Message.last
-      expect(message.department).to eq('support')
-      expect(message.kind).to eq('outcome')
+    context 'defaults' do
+      before { %i[kind department].each { |param| params.delete(param) } }
+
+      it 'creates message with default parameters' do
+        subject
+        message = Message.last
+        expect(message.department).to eq('support')
+        expect(message.kind).to eq('outcome')
+      end
     end
   end
 
