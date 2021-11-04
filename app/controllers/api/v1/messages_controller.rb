@@ -20,6 +20,7 @@ class Api::V1::MessagesController < ApplicationController
   end
   
   def create
+    message_params.delete(:kind)
     message = Message.create!(message_params.merge(user: current_user))
     render json: { success: true, data: message }
   end
@@ -44,6 +45,6 @@ class Api::V1::MessagesController < ApplicationController
   end
 
   def message_params
-    params.permit(:topic, :text, :viewed, :grade, :helpful, images: [])
+    params.permit(:kind, :department, :topic, :text, :viewed, :grade, :helpful, images: [])
   end
 end

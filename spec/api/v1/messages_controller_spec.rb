@@ -15,7 +15,7 @@ RSpec.describe Api::V1::UsersController do
   let(:json_body) { JSON.parse(body) }
   let(:data) { json_body['data'] }
 
-  let(:message_params) { build(:message, user: user).slice(*%w[kind department topic text viewed]) }
+  let(:message_params) { build(:message, user: user).slice(*%w[department kind topic text viewed]) }
   let(:params) { message_params }
 
   before { sign_in(user) }
@@ -44,6 +44,13 @@ RSpec.describe Api::V1::UsersController do
     it 'creates message' do
       expect { subject }.to change { Message.count }.by(1)
       expect(Message.last.attributes.to_s).to include(*params.values.map(&:to_s))
+    end
+
+    it 'creates message with default parameters' do
+      subject
+      message = Message.last
+      expect(message.department).to eq('support')
+      expect(message.kind).to eq('outcome')
     end
   end
 
