@@ -67,6 +67,7 @@ RailsAdmin.config do |config|
     User::Success::WithBankAccount
 
     Notification
+    Message
   }
 
   User::Test::Builder.build
