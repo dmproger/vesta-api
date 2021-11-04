@@ -44,6 +44,6 @@ class Api::V1::MessagesController < ApplicationController
   end
 
   def message_params
-    params.permit(:kind, :department, :topic, :text, :viewed, :grade, images: [])
+    params.permit(:topic, :text, :viewed, :grade, :helpful, images: [])
   end
 end
