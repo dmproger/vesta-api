@@ -149,7 +149,7 @@ RSpec.describe Api::V1::UsersController do
     context 'of other user' do
       let(:message) { other_message }
 
-      it 'do not returns other user message' do
+      it 'do not updates other user message' do
         expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
