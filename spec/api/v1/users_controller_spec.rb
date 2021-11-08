@@ -29,7 +29,7 @@ RSpec.describe Api::V1::UsersController do
       user.update! notification: nil
 
       subject
-      expect(data).to eq(described_class::DEFAULT_NOTIFICATION)
+      expect(data).to eq(User::DEFAULT_NOTIFICATION)
     end
   end
 

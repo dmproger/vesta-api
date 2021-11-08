@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
+  DEFAULT_NOTIFICATION = {
+    'late' => { 'enable' => false, 'time' => '12:00', 'interval' => 30 }
+  }
+
   extend Devise::Models
 
   has_one_time_password length: 5 #OTP for phone number verification
@@ -120,6 +124,6 @@ class User < ActiveRecord::Base
   def notification_config
     return if notification
 
-    update! notification: { 'late' => { 'enable' => true } }
+    update! notification: DEFAULT_NOTIFICATION
   end
 end

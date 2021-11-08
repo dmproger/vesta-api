@@ -1,5 +1,4 @@
 class Api::V1::UsersController < ApplicationController
-  DEFAULT_NOTIFICATION = { 'late' => { 'enable' => true } }
   BOOLEAN = { 'true' => true, 'false' => false }
 
   skip_before_action :authenticate_user!, only: [:verify_otp, :email_status, :phone_status]
@@ -45,7 +44,7 @@ class Api::V1::UsersController < ApplicationController
   def notification_config
     case request.method
     when 'GET'
-      return render json: { success: true, data: current_user.notification || DEFAULT_NOTIFICATION }
+      return render json: { success: true, data: current_user.notification || User::DEFAULT_NOTIFICATION }
     when 'POST'
       return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time] && params[:enable]
     when 'PATCH', 'PUT'
