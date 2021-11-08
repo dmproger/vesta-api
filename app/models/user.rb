@@ -15,6 +15,7 @@ class User < ActiveRecord::Base
   has_one :tink_access_token
 
   after_create :send_otp
+  after_create :notification_config
 
   has_many :properties, dependent: :destroy
   has_many :tenants, through: :properties
@@ -112,5 +113,13 @@ class User < ActiveRecord::Base
 
   def valid_tink_token(scopes:)
     GetTinkAccessToken.new(scopes: scopes, current_user: self).call
+  end
+
+  private
+
+  def notification_config
+    return if notification
+
+    update! notification: { 'late' => { 'enable' => true } }
   end
 end
