@@ -1,5 +1,6 @@
 class Api::V1::UsersController < ApplicationController
-  NOTIFICATION_VERSION = 'v1'
+  DEFAULT_NOTIFICATION = { 'late' => { 'enable' => true } }
+  BOOLEAN = { 'true' => true, 'false' => false }
 
   skip_before_action :authenticate_user!, only: [:verify_otp, :email_status, :phone_status]
 
@@ -44,7 +45,7 @@ class Api::V1::UsersController < ApplicationController
   def notification_config
     case request.method
     when 'GET'
-      return render json: { success: true, data: current_user.notification[NOTIFICATION_VERSION] }
+      return render json: { success: true, data: current_user.notification || DEFAULT_NOTIFICATION }
     when 'POST'
       return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time] && params[:enable]
     when 'PATCH', 'PUT'
@@ -58,19 +59,18 @@ class Api::V1::UsersController < ApplicationController
       return render json: { success: false, message: 'incorrect param time, need 12:30 for example' } unless params[:time] && /^\d\d:\d\d$/.match?(params[:time])
       return render json: { success: false, message: 'incorrect param interval, need 3 for example' } unless params[:interval] && /^\d\d?$/.match?(params[:interval])
       return render json: { success: false, message: 'incorrect param type, need late or income' } unless params[:type] && /(^late$)|(^income$)/.match?(params[:type])
-      return render json: { success: false, message: 'incorrect param enable, need 1 or 0' } unless params[:enable] && /^0|1$/.match?(params[:enable])
+      return render json: { success: false, message: 'incorrect param enable, need 1 or 0' } unless params[:enable] && /^(true)|(false)$/.match?(params[:enable])
     end
 
-    config = current_user.notification&.send(:[], NOTIFICATION_VERSION) || {}
+    config = current_user.notification&.send(:[], params[:type]) || {}
 
-    config.merge!(type: params[:type] || config[:type])
-    config.merge!(interval: params[:interval] || config[:interval])
-    config.merge!(time: params[:time] || config[:time])
-    config.merge!(enable: params[:enable] || config[:enable])
+    config.merge!('interval' => params[:interval].to_i || config[:interval])
+    config.merge!('time' => params[:time] || config[:time])
+    config.merge!('enable' => BOOLEAN[params[:enable]] || config[:enable])
 
-    current_user.update! notification: { NOTIFICATION_VERSION => config.stringify_keys }
+    current_user.update! notification: (current_user.notification || {}).merge(params[:type].to_sym => config)
 
-    render json: { success: true, data: current_user.notification[NOTIFICATION_VERSION] }
+    render json: { success: true, data: current_user.notification }
   end
 
   private
