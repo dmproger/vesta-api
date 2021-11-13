@@ -11,7 +11,13 @@ module Overrides
                            password: Devise.friendly_token.first(8),
                            provider: 'email')
       @resource.assign_attributes(create_params)
-      @resource.save ? (@resource.send_otp && render_success) : render_error
+
+      if @resource.save
+        SendOtpJob.perform_later("Your Vesta OTP is #{@resource.otp_code}", @resource.phone).call
+        render_success
+      else
+        render_error
+      end
     end
 
     private
