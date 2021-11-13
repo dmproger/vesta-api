@@ -5,7 +5,7 @@ FactoryBot.define do
     kind { 1 }
     topic { Faker::Movie.title }
     text { Faker::Book.title }
-    images { nil }
+    # images { nil }
     viewed { false }
     helpful { false }
     grade { nil }
