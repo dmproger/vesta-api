@@ -11,7 +11,7 @@ module Overrides
                            password: Devise.friendly_token.first(8),
                            provider: 'email')
       @resource.assign_attributes(create_params)
-      @resource.save ? render_success : render_error
+      @resource.save ? (@resource.send_otp && render_success) : render_error
     end
 
     private
