@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   has_one :tink_access_token
 
   after_create :send_otp
-  after_create :notification_config
+  after_save :notification_config
 
   has_many :properties, dependent: :destroy
   has_many :tenants, through: :properties
