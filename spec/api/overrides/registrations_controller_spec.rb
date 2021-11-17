@@ -21,31 +21,30 @@ RSpec.describe Overrides::RegistrationsController do
         it 'creates user' do
           expect { subject }.to change { User.count }.by(1)
         end
-      end
-    end
+      end end
   end
 
   context 'change user credentials' do
     subject { put '/api/v1/auth', headers: headers, params: params }
 
-    def to_credentials(attributes)
-      attributes.symbolize_keys.slice(*described_class::CREDENTIALS_PARAMS)
+    def to_params(attributes)
+      params = attributes.symbolize_keys.slice(*described_class::CREDENTIALS_PARAMS)
+      params[:notification] = params[:notification]['late'].merge('type' => 'late', 'interval' => 100)
+      params
     end
 
     let(:user) { create(:user) }
-    let(:credentials) { to_credentials(build(:user).attributes) }
-
     let(:headers) { auth_headers }
-    let(:params) { credentials }
+    let(:params) { to_params(build(:user).attributes) }
 
     before { sign_in(user) }
 
     it 'change user credentials' do
-      expect(to_credentials(user.attributes)).not_to eq(credentials)
+      expect(to_params(user.attributes)).not_to eq(params)
 
       subject
 
-      expect(to_credentials(user.reload.attributes)).to eq(credentials)
+      expect(to_params(user.reload.attributes)).to eq(params)
     end
   end
 end
