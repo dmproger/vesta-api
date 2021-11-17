@@ -110,7 +110,9 @@ class User < ActiveRecord::Base
   end
 
   def send_otp
-    SendTwilioMessage.new("Your Vesta OTP is #{otp_code}", phone).call
+    return unless Rails.env.production?
+
+    Delayed::Job.enqueue SendOtpCode.new("Your Vesta OTP is: #{ otp_code }", phone)
   rescue StandardError => e
     puts "Unable to send OTP: #{e.message}"
   end
