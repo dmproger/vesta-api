@@ -14,7 +14,7 @@ module Overrides
       @resource.assign_attributes(create_params)
 
       if @resource.save
-        Delayed::Job.enqueue SendOtpCode.new("Your Vesta OTP is: #{ @resource.otp_code }", @resource.phone)
+        @resource.send_otp
         render_success
       else
         render_error

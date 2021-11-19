@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
 
   has_one :tink_access_token
 
-  after_create :send_otp
+  # after_create :send_otp
   after_create :late_notification_config
   after_create :rent_notification_config
 
@@ -110,9 +110,9 @@ class User < ActiveRecord::Base
   end
 
   def send_otp
-    return unless Rails.env.production?
+    return unless Rails.env.production? || ENV['TWILLIO_TEST']
 
-    Delayed::Job.enqueue SendOtpCode.new("Your Vesta OTP is: #{ otp_code }", phone)
+    SendTwilioMessage.new("Your Vesta OTP is: #{ otp_code }", phone).call
   rescue StandardError => e
     puts "Unable to send OTP: #{e.message}"
   end
