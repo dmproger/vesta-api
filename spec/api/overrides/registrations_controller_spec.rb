@@ -21,30 +21,43 @@ RSpec.describe Overrides::RegistrationsController do
         it 'creates user' do
           expect { subject }.to change { User.count }.by(1)
         end
-      end end
+      end
+    end
   end
 
   context 'change user credentials' do
-    subject { put '/api/v1/auth', headers: headers, params: params }
+    subject { patch '/api/v1/auth', headers: headers, params: params }
 
     def to_params(attributes)
-      params = attributes.symbolize_keys.slice(*described_class::CREDENTIALS_PARAMS)
-      params[:notification] = params[:notification]['late'].merge('type' => 'late', 'interval' => 100)
-      params
+      attributes.slice(described_class::PARAMS_TO_UPDATE)
     end
 
     let(:user) { create(:user) }
     let(:headers) { auth_headers }
-    let(:params) { to_params(build(:user).attributes) }
+    let(:params) { to_params(build(:user).attributes.merge(patched_params)) }
+    let(:user_params) { to_params(user.attributes.merge(patched_params)) }
+    let(:updated_user_params) { to_params(user.reload.attributes.merge(patched_params)) }
 
     before { sign_in(user) }
 
-    it 'change user credentials' do
-      expect(to_params(user.attributes)).not_to eq(params)
+    context 'late notification' do
+      let(:patched_params) { { 'late_notification' => { 'enable' => true } } }
 
-      subject
+      it 'updates user params' do
+        expect(user_params).not_to eq(params)
+        subject
+        expect(updated_user_params).to eq(params)
+      end
+    end
 
-      expect(to_params(user.reload.attributes)).to eq(params)
+    context 'rent notification' do
+      let(:patched_params) { { 'rent_notification' => { 'enable' => true } } }
+
+      it 'updates user params' do
+        expect(user_params).not_to eq(params)
+        subject
+        expect(updated_user_params).to eq(params)
+      end
     end
   end
 end

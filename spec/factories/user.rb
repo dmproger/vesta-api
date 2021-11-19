@@ -8,7 +8,8 @@ FactoryBot.define do
     uid { email }
     phone { Faker::PhoneNumber.cell_phone_in_e164 }
     password { Faker::Internet.password }
-    notification { { 'late' => { 'interval' => 30, 'time' => '12:00', 'enable' => false } } }
+    late_notification { User::LATE_NOTIFICATION_CONFIG }
+    rent_notification { User::RENT_NOTIFICATION_CONFIG }
   end
 
   factory :tink_user, parent: :user do

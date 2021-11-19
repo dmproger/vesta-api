@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_04_122704) do
+ActiveRecord::Schema.define(version: 2021_11_18_171504) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -312,7 +312,8 @@ ActiveRecord::Schema.define(version: 2021_11_04_122704) do
     t.boolean "reset_properties", default: false
     t.boolean "reset_tenants", default: false
     t.boolean "reset_transactions", default: false
-    t.jsonb "notification"
+    t.jsonb "late_notification"
+    t.jsonb "rent_notification"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

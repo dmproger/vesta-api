@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
-  DEFAULT_NOTIFICATION = {
-    'late' => { 'enable' => false, 'time' => '12:00', 'interval' => 30 }
-  }
+  LATE_NOTIFICATION_CONFIG = { 'enable' => false, 'time' => '12:00', 'interval' => 30 }
+  RENT_NOTIFICATION_CONFIG = { 'enable' => false }
 
   extend Devise::Models
 
@@ -19,7 +18,8 @@ class User < ActiveRecord::Base
   has_one :tink_access_token
 
   after_create :send_otp
-  after_save :notification_config
+  after_create :late_notification_config
+  after_create :rent_notification_config
 
   has_many :properties, dependent: :destroy
   has_many :tenants, through: :properties
@@ -123,9 +123,15 @@ class User < ActiveRecord::Base
 
   private
 
-  def notification_config
-    return if notification
+  def late_notification_config
+    return if late_notification
 
-    update! notification: DEFAULT_NOTIFICATION
+    update! late_notification: LATE_NOTIFICATION_CONFIG
+  end
+
+  def rent_notification_config
+    return if rent_notification
+
+    update! rent_notification: RENT_NOTIFICATION_CONFIG
   end
 end

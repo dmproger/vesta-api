@@ -22,8 +22,11 @@ module Overrides
     end
 
     def update
-      update_notification if @notification = params[:notification]
-      return if @notification_error
+      @params = params[:notification]
+      @notification = current_user.notification
+
+      update_notification if @params
+      return render json: @notification_error if @notification_error
 
       super
     end
@@ -49,36 +52,40 @@ module Overrides
 
     def update_notification
       notification_type_error
-      return render json: @notification_error if @notification_error
+      return if @notification_error
 
-      @config = current_user.notification[@notification[:type]]
+      send("#{ @params[:type] }_notification_error")
+      return if @notification_error
 
-      send("update_#{ @notification[:type] }_notification")
+      @config = @notification[@params[:type]]
+      send("update_#{ @params[:type] }_notification_config")
+
+      current_user.update!(notification: @notification.merge(@params[:type] => @config))
     end
 
-    def update_late_notification
-      late_notification_errors
-      return render json: @notification_error if @notification_error
-
-      @config.merge!('interval' => @notification[:interval].to_i || @config[:interval])
-      @config.merge!('time' => @notification[:time] || @config[:time])
-      @config.merge!('enable' => (@notification[:enable].present? ? BOOLEAN[@notification[:enable]] : @config[:enable]))
-
-      current_user.update! notification: { 'late' => @config }
+    def update_late_notification_config
+      @config.merge!('interval' => @params[:interval].to_i || @config[:interval])
+      @config.merge!('time' => @params[:time] || @config[:time])
+      @config.merge!('enable' => (@params[:enable].present? ? BOOLEAN[@params[:enable]] : @config[:enable]))
     end
 
-    def update_rent_notification
+    def update_rent_notification_config
+      @config.merge!('enable' => (@params[:enable].present? ? BOOLEAN[@params[:enable]] : @config[:enable]))
     end
 
     def notification_type_error
-      @notification_error = { success: false, message: 'incorrect param type' } unless @notification[:type] && /(^late$)|(^income$)/.match?(@notification[:type])
+      @notification_error = { success: false, message: 'incorrect param type' } unless @params[:type] && /(^late$)|(^income$)/.match?(@params[:type])
     end
 
-    def late_notification_errors
-      @notification_error = { success: false, message: 'one of time/interval/enable must exists' } unless @notification[:interval] || @notification[:time] || @notification[:enable]
-      @notification_error = { success: false, message: 'incorrect param time, need 12:30 for example' } unless @notification[:time] && /^\d\d:\d\d$/.match?(@notification[:time])
-      @notification_error = { success: false, message: 'incorrect param interval, need 3 for example' } unless @notification[:interval] && /^\d\d?$/.match?(@notification[:interval])
-      @notification_error = { success: false, message: 'incorrect param enable, need 1 or 0' } unless @notification[:enable] && /^(true)|(false)$/.match?(@notification[:enable])
+    def late_notification_error
+      @notification_error = { success: false, message: 'one of time/interval/enable must exists' } unless @params[:interval] || @params[:time] || @params[:enable].present?
+      @notification_error = { success: false, message: 'incorrect param time, need 12:30 for example' } unless @params[:time] && /^\d\d:\d\d$/.match?(@params[:time])
+      @notification_error = { success: false, message: 'incorrect param interval, need 3 for example' } unless @params[:interval] && /^\d{,3}$/.match?(@params[:interval])
+      @notification_error = { success: false, message: 'incorrect param enable, need true or false' } unless @params[:enable] && /^(true)|(false)$/.match?(@params[:enable])
+    end
+
+    def rent_notification_error
+      @notification_error = { success: false, message: 'incorrect param enable, need true or false' } unless @params[:enable] && /^(true)|(false)$/.match?(@params[:enable])
     end
   end
 end
