@@ -1,6 +1,6 @@
 module Overrides
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
-    CREDENTIALS_PARAMS = %i[name email phone first_name surname notification].freeze
+    PARAMS_TO_UPDATE = %w[name email phone first_name surname late_notification rent_notification].freeze
     BOOLEAN = { 'true' => true, 'false' => false }
 
     skip_before_action :authenticate_user!, only: [:create]
@@ -22,10 +22,7 @@ module Overrides
     end
 
     def update
-      @params = params[:notification]
-      @notification = current_user.notification
-
-      update_notification if @params
+      update_notification_config
       return render json: @notification_error if @notification_error
 
       super
@@ -50,42 +47,35 @@ module Overrides
       }, status: 422
     end
 
-    def update_notification
-      notification_type_error
-      return if @notification_error
-
-      send("#{ @params[:type] }_notification_error")
-      return if @notification_error
-
-      @config = @notification[@params[:type]]
-      send("update_#{ @params[:type] }_notification_config")
-
-      current_user.update!(notification: @notification.merge(@params[:type] => @config))
+    def update_notification_config
+      update_late_notification_config if @params = params[:late_notification]&.permit(%i[enable time interval])
+      update_rent_notification_config if @params = params[:rent_notification]&.permit(%i[enable])
     end
 
     def update_late_notification_config
-      @config.merge!('interval' => @params[:interval].to_i || @config[:interval])
-      @config.merge!('time' => @params[:time] || @config[:time])
-      @config.merge!('enable' => (@params[:enable].present? ? BOOLEAN[@params[:enable]] : @config[:enable]))
+      late_notification_error
+      return if @notification_error
+
+      current_user.update! late_notification: current_user.late_notification.merge(@params)
     end
 
     def update_rent_notification_config
-      @config.merge!('enable' => (@params[:enable].present? ? BOOLEAN[@params[:enable]] : @config[:enable]))
-    end
+      rent_notification_error
+      return if @notification_error
 
-    def notification_type_error
-      @notification_error = { success: false, message: 'incorrect param type' } unless @params[:type] && /(^late$)|(^income$)/.match?(@params[:type])
+      current_user.update! rent_notification: current_user.rent_notification.merge(@params)
     end
 
     def late_notification_error
       @notification_error = { success: false, message: 'one of time/interval/enable must exists' } unless @params[:interval] || @params[:time] || @params[:enable].present?
-      @notification_error = { success: false, message: 'incorrect param time, need 12:30 for example' } unless @params[:time] && /^\d\d:\d\d$/.match?(@params[:time])
-      @notification_error = { success: false, message: 'incorrect param interval, need 3 for example' } unless @params[:interval] && /^\d{,3}$/.match?(@params[:interval])
-      @notification_error = { success: false, message: 'incorrect param enable, need true or false' } unless @params[:enable] && /^(true)|(false)$/.match?(@params[:enable])
+      @notification_error = { success: false, message: 'incorrect param time, need 12:30 for example' } if @params[:time] && !/^\d\d:\d\d$/.match?(@params[:time])
+      @notification_error = { success: false, message: 'incorrect param interval, need 3 for example' } if @params[:interval] && !/^\d{,3}$/.match?(@params[:interval])
+      @notification_error = { success: false, message: 'incorrect param enable, need true or false' } if @params[:enable].present? && !/^(true)|(false)$/.match?(@params[:enable])
     end
 
     def rent_notification_error
-      @notification_error = { success: false, message: 'incorrect param enable, need true or false' } unless @params[:enable] && /^(true)|(false)$/.match?(@params[:enable])
+      @notification_error = { success: false, message: 'enable must exists' } unless @params[:enable].present?
+      @notification_error = { success: false, message: 'incorrect param enable, need true or false' } if @params[:enable].present? && !/^(true)|(false)$/.match?(@params[:enable])
     end
   end
 end

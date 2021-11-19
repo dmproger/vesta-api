@@ -29,7 +29,7 @@ RSpec.describe Overrides::RegistrationsController do
     subject { patch '/api/v1/auth', headers: headers, params: params }
 
     def to_params(attributes)
-      attributes.slice(described_class::PARAMS_TO_UPDATE)
+      attributes.slice(*described_class::PARAMS_TO_UPDATE)
     end
 
     let(:user) { create(:user) }
@@ -41,7 +41,12 @@ RSpec.describe Overrides::RegistrationsController do
     before { sign_in(user) }
 
     context 'late notification' do
-      let(:patched_params) { { 'late_notification' => { 'enable' => true } } }
+      let(:patched_params) do
+        {
+          'late_notification' => { 'enable' => true, 'interval' => 100 },
+          'rent_notification' => nil
+        }
+      end
 
       it 'updates user params' do
         expect(user_params).not_to eq(params)
@@ -51,7 +56,12 @@ RSpec.describe Overrides::RegistrationsController do
     end
 
     context 'rent notification' do
-      let(:patched_params) { { 'rent_notification' => { 'enable' => true } } }
+      let(:patched_params) do
+        {
+          'rent_notification' => { 'enable' => true },
+          'late_notification' => nil
+        }
+      end
 
       it 'updates user params' do
         expect(user_params).not_to eq(params)
