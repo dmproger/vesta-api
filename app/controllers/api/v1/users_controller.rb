@@ -48,10 +48,9 @@ class Api::V1::UsersController < ApplicationController
       elsif params[:type] == 'late'
         @resource.notifications&.late_payment
       else
-        return render json: { success: false, message: 'Type can be late or rent only', data: nil }
+        @resource.notifications.order(:created_at)
       end
 
-    byebug
     render json: { success: true, data: results }
   end
 

@@ -15,6 +15,16 @@ RSpec.describe Api::V1::UsersController do
     let(:rent_notifications) { create_list(:notification, rand(2..3), user: user, subject: :rental_payment) }
     let(:late_notifications) { create_list(:notification, rand(2..3), user: user, subject: :late_payment) }
 
+    it 'returns all notifications' do
+      rent_notifications && late_notifications
+
+      subject
+      expect(data.to_s).to include(*rent_notifications.pluck(:id))
+      expect(data.to_s).to include(*late_notifications.pluck(:id))
+    end
+
+
+
     it 'returns rent notifications' do
       rent_notifications
       params.merge!(type: 'rent')
