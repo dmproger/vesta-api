@@ -168,6 +168,15 @@ RailsAdmin.config do |config|
 
   config.model Notification do
     list do
+      field :user
+      field :title
+      field :text
+      field :viewed
+      field :created_at
+    end
+
+    show do
+      field :user
       field :title
       field :text
       field :viewed
