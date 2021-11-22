@@ -3,7 +3,8 @@ class Notification < ApplicationRecord
 
   enum subject: {
     income_transactions: 0,
-    rental_payment: 1
+    rental_payment: 1,
+    late_payment: 2
   }
 
   def self.rental_payment!(user, transactions)
@@ -17,5 +18,8 @@ class Notification < ApplicationRecord
         text: "+#{ transaction.amount } from #{ transaction.description } (#{ transaction.property.address })"
       )
     end
+  end
+
+  def self.late_payment!(user, property)
   end
 end

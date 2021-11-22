@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :notification do
-    user_id { nil }
-    code { 1 }
-    text { "MyText" }
-    viewed { "" }
+    association :user
+    subject { :rental_payment }
+    title { Faker::Movie.title }
+    text { Faker::Book.title }
+    viewed { false }
   end
 end

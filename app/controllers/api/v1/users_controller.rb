@@ -3,7 +3,7 @@ class Api::V1::UsersController < ApplicationController
 
   skip_before_action :authenticate_user!, only: [:verify_otp, :email_status, :phone_status]
 
-  before_action :set_user, only: :verify_otp
+  before_action :set_user, only: [:verify_otp, :notifications]
 
   before_action :verify_user_id, only: :subscription_status
 
@@ -41,35 +41,18 @@ class Api::V1::UsersController < ApplicationController
     }
   end
 
-  def notification_config
-    case request.method
-    when 'GET'
-      return render json: { success: true, data: current_user.notification || User::DEFAULT_NOTIFICATION }
-    when 'POST'
-      return render json: { success: false, message: 'no type, interval and time params passed' } unless params[:type] && params[:interval] && params[:time] && params[:enable]
-    when 'PATCH', 'PUT'
-      return render json: { success: false, message: 'no type, interval or time params passed' } unless params[:type] || params[:interval] || params[:time] || params[:enable]
-    when 'DELETE'
-      current_user.update! notification: nil
-      return render json: { success: true, message: 'notification disabled!' }
-    end
+  def notifications
+    results =
+      if params[:type] == 'rent'
+        @resource.notifications&.rental_payment
+      elsif params[:type] == 'late'
+        @resource.notifications&.late_payment
+      else
+        return render json: { success: false, message: 'Type can be late or rent only', data: nil }
+      end
 
-    if %w[POST PATCH PUT].include?(request.method)
-      return render json: { success: false, message: 'incorrect param time, need 12:30 for example' } unless params[:time] && /^\d\d:\d\d$/.match?(params[:time])
-      return render json: { success: false, message: 'incorrect param interval, need 3 for example' } unless params[:interval] && /^\d\d?$/.match?(params[:interval])
-      return render json: { success: false, message: 'incorrect param type, need late or income' } unless params[:type] && /(^late$)|(^income$)/.match?(params[:type])
-      return render json: { success: false, message: 'incorrect param enable, need 1 or 0' } unless params[:enable] && /^(true)|(false)$/.match?(params[:enable])
-    end
-
-    config = current_user.notification&.send(:[], params[:type]) || {}
-
-    config.merge!('interval' => params[:interval].to_i || config[:interval])
-    config.merge!('time' => params[:time] || config[:time])
-    config.merge!('enable' => BOOLEAN[params[:enable]] || config[:enable])
-
-    current_user.update! notification: (current_user.notification || {}).merge(params[:type].to_sym => config)
-
-    render json: { success: true, data: current_user.notification }
+    byebug
+    render json: { success: true, data: results }
   end
 
   private

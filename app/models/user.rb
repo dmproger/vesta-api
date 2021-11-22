@@ -30,6 +30,7 @@ class User < ActiveRecord::Base
   has_many :saved_transactions, dependent: :destroy
   has_many :tink_credentials, through: :accounts
   has_many :expenses, dependent: :destroy
+  has_many :notifications
   has_many :messages
 
   has_many :associated_transactions, through: :properties

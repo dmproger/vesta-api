@@ -21,8 +21,6 @@ Rails.application.routes.draw do
       resources :messages
 
       resources :users, only: :index do
-        match :notification_config, via: :all
-
         collection do
           get :email_status
           get :phone_status
@@ -33,6 +31,7 @@ Rails.application.routes.draw do
           get :verify_otp
           get :accounts
           get :subscription_status
+          get :notifications
         end
       end
 
