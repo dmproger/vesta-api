@@ -56,6 +56,7 @@ module Overrides
       late_notification_error
       return if @notification_error
 
+      resolve_params_types
       current_user.update! late_notification: current_user.late_notification.merge(@params)
     end
 
@@ -63,6 +64,7 @@ module Overrides
       rent_notification_error
       return if @notification_error
 
+      resolve_params_types
       current_user.update! rent_notification: current_user.rent_notification.merge(@params)
     end
 
@@ -76,6 +78,11 @@ module Overrides
     def rent_notification_error
       @notification_error = { success: false, message: 'enable must exists' } unless @params[:enable].present?
       @notification_error = { success: false, message: 'incorrect param enable, need true or false' } if @params[:enable].present? && !/^(true)|(false)$/.match?(@params[:enable])
+    end
+
+    def resolve_params_types
+      @params[:enable] = BOOLEAN[@params[:enable]] if @params[:enable]
+      @params[:interval] = @params[:interval].to_i if @params[:interval]
     end
   end
 end

@@ -40,11 +40,10 @@ RSpec.describe Overrides::RegistrationsController do
 
     before { sign_in(user) }
 
-    context 'late notification' do
+    context 'late notification only' do
       let(:patched_params) do
         {
           'late_notification' => { 'enable' => true, 'interval' => 100 },
-          'rent_notification' => nil
         }
       end
 
@@ -55,11 +54,10 @@ RSpec.describe Overrides::RegistrationsController do
       end
     end
 
-    context 'rent notification' do
+    context 'rent notification only' do
       let(:patched_params) do
         {
           'rent_notification' => { 'enable' => true },
-          'late_notification' => nil
         }
       end
 
@@ -69,5 +67,21 @@ RSpec.describe Overrides::RegistrationsController do
         expect(updated_user_params).to eq(params)
       end
     end
+
+    context 'late and rent notification' do
+      let(:patched_params) do
+        {
+          'late_notification' => { 'enable' => true, 'interval' => 100 },
+          'rent_notification' => { 'enable' => true },
+        }
+      end
+
+      it 'updates user params' do
+        expect(user_params).not_to eq(params)
+        subject
+        expect(updated_user_params).to eq(params)
+      end
+    end
+
   end
 end
