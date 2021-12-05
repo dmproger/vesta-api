@@ -4,7 +4,7 @@ module Overrides
     BOOLEAN = { 'true' => true, 'false' => false }
 
     skip_before_action :authenticate_user!, only: [:create]
-    skip_before_action :verify_authenticity_token, only: [:update]
+    before_action :authenticate_user!, only: [:update]
 
     def create
       create_params = sign_up_params.dup
@@ -23,7 +23,7 @@ module Overrides
     end
 
     def update
-      if @resource
+      if current_user
         update_notification_config
         return render json: @notification_error if @notification_error
       end
@@ -32,7 +32,7 @@ module Overrides
 
     private
 
-    def render_success
+    def render_success(*args)
       render json: {
           success: true,
           message: 'Registered successfully',
@@ -41,7 +41,7 @@ module Overrides
       }
     end
 
-    def render_error
+    def render_error(*args)
       render json: {
           success: false,
           message: @resource.errors.to_h.map {|k,v| "#{k} #{v}"}.join(', '),
@@ -59,7 +59,7 @@ module Overrides
       return if @notification_error
 
       resolve_params_types
-      @resource.update! late_notification: @resource.late_notification.merge(@params)
+      current_user.update! late_notification: current_user.late_notification.merge(@params)
     end
 
     def update_rent_notification_config
@@ -67,7 +67,7 @@ module Overrides
       return if @notification_error
 
       resolve_params_types
-      @resource.update! rent_notification: @resource.rent_notification.merge(@params)
+      current_user.update! rent_notification: current_user.rent_notification.merge(@params)
     end
 
     def late_notification_error
