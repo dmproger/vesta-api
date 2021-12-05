@@ -4,7 +4,7 @@ module Overrides
     BOOLEAN = { 'true' => true, 'false' => false }
 
     skip_before_action :authenticate_user!, only: [:create]
-    before_action :authenticate_user!, only: [:update]
+    protect_from_forgery with: :null_session
 
     def create
       create_params = sign_up_params.dup
@@ -23,11 +23,14 @@ module Overrides
     end
 
     def update
-      if current_user
+      cloned_params = params.clone
+
+      super
+
+      if @resource
         update_notification_config
         return render json: @notification_error if @notification_error
       end
-      super
     end
 
     private
@@ -50,8 +53,8 @@ module Overrides
     end
 
     def update_notification_config
-      update_late_notification_config if @params = params[:late_notification]&.permit(%i[enable time interval])
-      update_rent_notification_config if @params = params[:rent_notification]&.permit(%i[enable])
+      update_late_notification_config if @params = cloned_params[:late_notification]&.permit(%i[enable time interval])
+      update_rent_notification_config if @params = cloned_params[:rent_notification]&.permit(%i[enable])
     end
 
     def update_late_notification_config
@@ -59,7 +62,7 @@ module Overrides
       return if @notification_error
 
       resolve_params_types
-      current_user.update! late_notification: current_user.late_notification.merge(@params)
+      @resource.update! late_notification: @resource.late_notification.merge(@params)
     end
 
     def update_rent_notification_config
@@ -67,7 +70,7 @@ module Overrides
       return if @notification_error
 
       resolve_params_types
-      current_user.update! rent_notification: current_user.rent_notification.merge(@params)
+      @resource.update! rent_notification: @resource.rent_notification.merge(@params)
     end
 
     def late_notification_error
