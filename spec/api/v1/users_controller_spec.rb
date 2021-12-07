@@ -13,10 +13,6 @@ RSpec.describe Api::V1::UsersController do
   describe 'when PATCH /api/v1/users/:id' do
     subject { patch "/api/v1/users/#{ user.id }", headers: headers, params: params }
 
-    def to_params(attributes)
-      attributes.slice(*described_class::PARAMS_TO_UPDATE.map(&:to_s))
-    end
-
     let(:params) { patched_params.stringify_keys }
     let(:user_params) { user.attributes.slice(*params.keys) }
     let(:updated_user_params) { user.reload.attributes.slice(*params.keys) }
