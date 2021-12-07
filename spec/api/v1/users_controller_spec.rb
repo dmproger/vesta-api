@@ -32,6 +32,21 @@ RSpec.describe Api::V1::UsersController do
       end
     end
 
+    context 'personal data and notification config' do
+      let(:patched_params) do
+        {
+          'email': 'mr_jhon@email.com',
+          'late_notification': { 'enable' => true, 'interval' => 100, 'time' => '11:11' }
+        }
+      end
+
+      it 'updates personal data' do
+        expect(user_params).not_to eq(params)
+        subject
+        expect(updated_user_params).to eq(params)
+      end
+    end
+
     context 'late notification only' do
       let(:patched_params) do
         {
