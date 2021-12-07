@@ -32,6 +32,7 @@ Rails.application.routes.draw do
           get :accounts
           get :subscription_status
           get :notifications
+          patch :update
         end
       end
 
