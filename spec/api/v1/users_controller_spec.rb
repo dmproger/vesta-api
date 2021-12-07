@@ -30,7 +30,6 @@ RSpec.describe Api::V1::UsersController do
       end
 
       it 'updates personal data' do
-        byebug
         expect(user_params).not_to eq(params)
         subject
         expect(updated_user_params).to eq(params)
@@ -77,6 +76,34 @@ RSpec.describe Api::V1::UsersController do
         expect(user_params).not_to eq(params)
         subject
         expect(updated_user_params).to eq(params)
+      end
+    end
+
+    context 'incorrect interval notification param' do
+      let(:patched_params) do
+        {
+          'late_notification' => { 'enable' => true, 'interval' => 1000, 'time' => '11:11' },
+        }
+      end
+
+      it 'do not updates notification config' do
+        subject
+        expect(user.attributes).to eq(user.reload.attributes)
+        expect(json_body["success"]).to be_falsey
+      end
+    end
+
+    context 'incorrect time notification param' do
+      let(:patched_params) do
+        {
+          'late_notification' => { 'enable' => true, 'interval' => 100, 'time' => 'foo' },
+        }
+      end
+
+      it 'do not updates notification config' do
+        subject
+        expect(user.attributes).to eq(user.reload.attributes)
+        expect(json_body["success"]).to be_falsey
       end
     end
   end
