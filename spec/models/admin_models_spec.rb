@@ -23,11 +23,9 @@ RSpec.describe User do
   context 'specific builded user models' do
     # dynamic exapmles
     for model_name in MODELS
-      class_eval <<-STR
         it "has no errors for #{ model_name } records list" do
-          expect { #{ model_name }.all }.not_to raise_error
+          expect { model_name.constantize.all }.not_to raise_error
         end
-      STR
     end
   end
 end
