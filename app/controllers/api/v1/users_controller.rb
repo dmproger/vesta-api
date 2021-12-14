@@ -11,6 +11,8 @@ class Api::V1::UsersController < ApplicationController
   before_action :set_user, only: [:verify_otp]
   before_action :verify_user_id, only: :subscription_status
 
+  skip_before_action :verify_authenticity_token, only: [:update, :notifications]
+
   def verify_otp
     if @resource.authenticate_otp(params.dig( :otp).to_s, drift: VERIFICATION_TIMEOUT)
       sign_in_user

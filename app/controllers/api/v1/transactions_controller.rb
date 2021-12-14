@@ -6,6 +6,8 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :set_property, only: [:assign_property]
   before_action :set_category_type, only: [:all, :types]
 
+  skip_before_action :verify_authenticity_token, only: [:all]
+
   def index
     refresh_transactions if params[:force_refresh] == 'true'
     @transactions = @account.reload.saved_transactions.income.includes(tenant: :joint_tenants)
