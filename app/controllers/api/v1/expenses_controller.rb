@@ -2,6 +2,9 @@ class Api::V1::ExpensesController < ApplicationController
   before_action :set_attrs
   before_action :set_expense, except: :index
 
+  # tmp
+  skip_before_action :verify_authenticity_token
+
   def index
     defaults!
 
