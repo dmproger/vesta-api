@@ -69,8 +69,10 @@ class Api::V1::UsersController < ApplicationController
   private
 
   def update_profile_params
-    update_personal_data
-    update_notification_config
+    ActiveRecord::Base.transaction do
+      update_personal_data
+      update_notification_config
+    end
   end
 
   def update_personal_data
@@ -90,8 +92,6 @@ class Api::V1::UsersController < ApplicationController
     resolve_params_types
     @params = @params.permit(*User::LATE_NOTIFICATION_CONFIG.keys.map(&:to_sym))
     current_user.update! late_notification: current_user.late_notification.merge(@params)
-
-    @profile_error = nil
   end
 
   def update_rent_notification_config
@@ -101,24 +101,22 @@ class Api::V1::UsersController < ApplicationController
     resolve_params_types
     @params = @params.permit(*User::RENT_NOTIFICATION_CONFIG.keys.map(&:to_sym))
     current_user.update! rent_notification: current_user.rent_notification.merge(@params)
-
-    @profile_error = nil
   end
 
   def late_notification_error
-    @profile_error = { success: false, message: 'one of time/interval/enable must exists' } unless @params[:interval] || @params[:time] || @params[:enable].present?
+    @profile_error = { success: false, message: 'one of time/interval/enable must exists' } unless @params[:interval] || @params[:time] || "#{@params[:enable]}".present?
     @profile_error = { success: false, message: 'incorrect param time, need 12:30 for example' } if @params[:time] && !/^\d\d:\d\d$/.match?(@params[:time])
     @profile_error = { success: false, message: 'incorrect param interval, need 3 for example' } if @params[:interval] && !/^\d{,3}$/.match?(@params[:interval])
-    @profile_error = { success: false, message: 'incorrect param enable, need true or false' } if @params[:enable].present? && !/^(true)|(false)$/.match?("#{@params[:enable]}")
+    @profile_error = { success: false, message: 'incorrect param enable, need true or false' } if "#{@params[:enable]}".present? && !/^(true)|(false)$/.match?("#{@params[:enable]}")
   end
 
   def rent_notification_error
-    @profile_error = { success: false, message: 'enable must exists' } unless @params[:enable].present?
-    @profile_error = { success: false, message: 'incorrect param enable, need true or false' } if @params[:enable].present? && !/^(true)|(false)$/.match?("#{@params[:enable]}")
+    @profile_error = { success: false, message: 'enable must exists' } unless "#{@params[:enable]}".present?
+    @profile_error = { success: false, message: 'incorrect param enable, need true or false' } if "#{@params[:enable]}".present? && !/^(true)|(false)$/.match?("#{@params[:enable]}")
   end
 
   def resolve_params_types
-    @params[:enable] = BOOLEAN["#{@params[:enable]}"] if @params[:enable].present?
+    @params[:enable] = BOOLEAN["#{@params[:enable]}"] if "#{@params[:enable]}".present?
     @params[:interval] = @params[:interval].to_i if @params[:interval]
   end
 

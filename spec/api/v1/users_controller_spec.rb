@@ -78,8 +78,8 @@ RSpec.describe Api::V1::UsersController do
     context 'late and rent notification' do
       let(:patched_params) do
         {
-          'late_notification' => { 'enable' => true, 'interval' => 100, 'time' => '11:11' },
-          'rent_notification' => { 'enable' => true },
+          'late_notification' => { 'enable' => false, 'interval' => 100, 'time' => '11:11' },
+          'rent_notification' => { 'enable' => false },
         }
       end
 
