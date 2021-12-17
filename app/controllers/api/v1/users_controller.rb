@@ -106,7 +106,7 @@ class Api::V1::UsersController < ApplicationController
   def late_notification_error
     @profile_error = { success: false, message: 'one of time/interval/enable must exists' } unless @params[:interval] || @params[:time] || "#{@params[:enable]}".present?
     @profile_error = { success: false, message: 'incorrect param time, need 12:30 for example' } if @params[:time] && !/^\d\d:\d\d$/.match?(@params[:time])
-    @profile_error = { success: false, message: 'incorrect param interval, need 3 for example' } if @params[:interval] && !/^\d{,3}$/.match?(@params[:interval])
+    @profile_error = { success: false, message: 'incorrect param interval, need 3 for example' } if @params[:interval] && !/^\d{,3}$/.match?("#{@params[:interval]}")
     @profile_error = { success: false, message: 'incorrect param enable, need true or false' } if "#{@params[:enable]}".present? && !/^(true)|(false)$/.match?("#{@params[:enable]}")
   end
 
