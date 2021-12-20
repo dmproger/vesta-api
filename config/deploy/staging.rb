@@ -15,7 +15,7 @@ set :rvm_ruby_version, 'ruby-2.7.0'
 set :default_env, {
   'SANDBOX_ENV' => 'false',
   'TWILLIO_ACCOUNT_SID' => 'AC4fb3525ff5dae1c71030ea529b177c2e',
-  'TWILLIO_AUTH_TOKEN' => '9e8d55cd991623b6b3872063069038be',
+  'TWILLIO_AUTH_TOKEN' => '8754712c50f042a16988b9f4b44a688d',
   'TWILLIO_FROM_NUMBER' => '+17195816957'
 }
 
