@@ -114,7 +114,13 @@ class User < ActiveRecord::Base
   rescue StandardError => e
     puts "Unable to send OTP: #{e.message}"
     puts attributes
-    puts ENV['DO_NOT_SEND_SMS']
+    puts '::::::::::::::'
+    puts "SID #{ENV['TWILLIO_ACCOUNT_SID']}"
+    puts "TOKEN #{ENV['TWILLIO_AUTH_TOKEN']}"
+    puts "FROM #{ENV['TWILLIO_FROM_NUMBER']}"
+    puts "phone #{phone}"
+    puts "otp #{otp_code}"
+    puts '::::::::::::::'
   end
 
   def valid_tink_token(scopes:)
