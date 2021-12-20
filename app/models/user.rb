@@ -110,7 +110,7 @@ class User < ActiveRecord::Base
   end
 
   def send_otp
-    SendTwilioMessage.new("Your Vesta OTP is: #{ otp_code }", phone).call
+    SendTwilioMessage.new("Your Vesta OTP is: #{ reload.otp_code }", reload.phone).call
   rescue StandardError => e
     puts "Unable to send OTP: #{e.message}"
   end

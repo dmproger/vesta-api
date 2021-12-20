@@ -14,7 +14,7 @@ module Overrides
       @resource.assign_attributes(create_params)
 
       if @resource.save
-        @resource.send_otp
+        @resource.reload.send_otp
         render_success
       else
         render_error
