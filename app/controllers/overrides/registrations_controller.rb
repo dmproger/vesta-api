@@ -1,6 +1,6 @@
 module Overrides
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
-    PARAMS_TO_UPDATE = %w[name email phone first_name surname late_notification rent_notification].freeze
+    CREDENTIALS_PARAMS = %i[name email phone first_name surname notification].freeze
     BOOLEAN = { 'true' => true, 'false' => false }
 
     skip_before_action :authenticate_user!, only: [:create]
@@ -14,16 +14,13 @@ module Overrides
       @resource.assign_attributes(create_params)
 
       if @resource.save
-        @resource.send_otp
         render_success
       else
         render_error
       end
     end
 
-    private
-
-    def render_success(*args)
+    def render_success
       render json: {
           success: true,
           message: 'Registered successfully',
@@ -32,7 +29,7 @@ module Overrides
       }
     end
 
-    def render_error(*args)
+    def render_error
       render json: {
           success: false,
           message: @resource.errors.to_h.map {|k,v| "#{k} #{v}"}.join(', '),
