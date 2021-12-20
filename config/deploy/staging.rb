@@ -12,7 +12,12 @@ set :keep_releases, 5
 set :rvm_type, :user
 set :rvm_ruby_version, 'ruby-2.7.0'
 
-set :default_env, { 'SANDBOX_ENV' => 'false' }
+set :default_env, {
+  'SANDBOX_ENV' => 'false',
+  'TWILLIO_ACCOUNT_SID' => 'AC4fb3525ff5dae1c71030ea529b177c2e',
+  'TWILLIO_AUTH_TOKEN' => '9e8d55cd991623b6b3872063069038be',
+  'TWILLIO_FROM_NUMBER' => '+17195816957'
+}
 
 set :puma_rackup, -> { File.join(current_path, 'config.ru') }
 set :puma_state, "#{shared_path}/tmp/pids/puma.state"
