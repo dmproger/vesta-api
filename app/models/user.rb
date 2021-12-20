@@ -110,8 +110,6 @@ class User < ActiveRecord::Base
   end
 
   def send_otp
-    return Rails.env.test? && !ENV['TWILLIO_TEST']
-
     SendTwilioMessage.new("Your Vesta OTP is: #{ otp_code }", phone).call
   rescue StandardError => e
     puts "Unable to send OTP: #{e.message}"
