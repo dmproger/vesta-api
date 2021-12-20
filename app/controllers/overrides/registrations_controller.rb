@@ -14,7 +14,7 @@ module Overrides
       @resource.assign_attributes(create_params)
 
       if @resource.save
-        @resource.reload.send_otp
+        User.find_by(email: @resource.email).send_otp
         render_success
       else
         render_error
