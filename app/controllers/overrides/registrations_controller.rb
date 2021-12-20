@@ -14,7 +14,7 @@ module Overrides
       @resource.assign_attributes(create_params)
 
       if @resource.save
-        User.find_by(email: @resource.email).send_otp
+        SendTwilioMessage.new("Your Vesta OTP is: #{ @resource.otp_code }", @resource.phone).call
         render_success
       else
         render_error
