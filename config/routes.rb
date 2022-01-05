@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   default_url_options host: ENV['HOST_URL'] || 'localhost:3000'
 
-  mount RailsAdmin::Engine => '/fjvbeiubs0285htdhsb3384q9hv75q343rubfv74qrgid98034uhfsqrbbq2lmbe7e', as: 'rails_admin'
+  mount RailsAdmin::Engine => '/adminvesta', as: 'rails_admin'
 
   resources :properties
   mount_devise_token_auth_for 'User', at: 'api/v1/auth',  controllers: {

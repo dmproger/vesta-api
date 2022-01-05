@@ -1,3 +1,5 @@
+require 'digest'
+
 RailsAdmin.config do |config|
 
   ### Popular gems integration
@@ -22,6 +24,29 @@ RailsAdmin.config do |config|
   ## == Gravatar integration ==
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
+
+  #
+  # AUTHENTICATION
+  # because of devise token flow and api only
+  # there is a problems with standard authentication
+  # so here is manual http basic auth
+  #
+  # you need provide two env vars
+  # ADMIN_NAME env is administrator name
+  # ADMIN_PASSWORD env is a md5 generated value from password
+  # generate password value: Digest::MD5.hexdigest('any password')
+  #
+  config.authenticate_with do
+    session.clear
+
+    authenticate_or_request_with_http_basic('Login required') do |username, password|
+      raise ActiveModel::ForbiddenAttributesError \
+        unless username == ENV['ADMIN_NAME'] && Digest::MD5.hexdigest(password) == ENV['ADMIN_PASSWORD']
+
+      Admin = Struct.new(:name, :email)
+      Admin.new('admin', 'nomail')
+    end
+  end
 
   config.actions do
     dashboard                     # mandatory
