@@ -27,6 +27,14 @@ set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false
 
+set :default_env, {
+  'SANDBOX_ENV' => 'false',
+  'ADMIN_NAME' => 'admin',
+  'ADMIN_PASSWORD' => '466f45767ece027ad0f4be76e9b60d92',
+  # 'TWILLIO_ACCOUNT_SID' => 'fill it',
+  # 'TWILLIO_AUTH_TOKEN' => 'fill it',
+  # 'TWILLIO_FROM_NUMBER' => 'fill it'
+}
 
 set :puma_bind,       "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
