@@ -41,7 +41,7 @@ RailsAdmin.config do |config|
 
     authenticate_or_request_with_http_basic('Login required') do |username, password|
       raise ActiveModel::ForbiddenAttributesError \
-        unless username == ENV['ADMIN_NAME'] && Digest::MD5.hexdigest(password) == ENV['ADMIN_PASSWORD']
+        unless username == ENV['RAILSADMIN_NAME'] && Digest::MD5.hexdigest(password) == ENV['RAILSADMIN_PASS']
 
       Admin = Struct.new(:name, :email)
       Admin.new('admin', 'nomail')

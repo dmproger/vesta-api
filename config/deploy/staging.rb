@@ -14,8 +14,8 @@ set :rvm_ruby_version, 'ruby-2.7.0'
 
 set :default_env, {
   'SANDBOX_ENV' => 'false',
-  'ADMIN_NAME' => 'admin',
-  'ADMIN_PASSWORD' => '466f45767ece027ad0f4be76e9b60d92',
+  'RAILSADMIN_NAME' => 'admin',
+  'RAILSADMIN_PASS' => '466f45767ece027ad0f4be76e9b60d92',
   'TWILLIO_ACCOUNT_SID' => 'AC4fb3525ff5dae1c71030ea529b177c2e',
   'TWILLIO_AUTH_TOKEN' => '8754712c50f042a16988b9f4b44a688d',
   'TWILLIO_FROM_NUMBER' => '+17195816957'
